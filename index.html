@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050816">
+  <title>分散型・自己完結型デジタル名刺</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="デジタル名刺">
+  <link rel="apple-touch-icon" href="icons/icon-192.svg">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #02010a;
+      --bg-elevated: #050816;
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.1);
+      --accent-strong: rgba(129, 140, 248, 0.35);
+      --border-subtle: rgba(148, 163, 184, 0.35);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #f97373;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Noto Sans JP", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #02010a 55%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .app-root {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: env(safe-area-inset-top, 16px) 16px env(safe-area-inset-bottom, 24px);
+      gap: 16px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 2px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(248, 250, 252, 0.35), transparent 55%),
+        radial-gradient(circle at 70% 80%, rgba(94, 234, 212, 0.45), transparent 65%),
+        radial-gradient(circle at 15% 80%, rgba(129, 140, 248, 0.5), transparent 60%),
+        linear-gradient(145deg, #020617, #111827);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 16px 40px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .brand-mark span {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .brand-text-main {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-text-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mode-toggle {
+      display: inline-flex;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 3px;
+      gap: 2px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.9);
+    }
+
+    .mode-toggle button {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.14s ease-out;
+    }
+
+    .mode-toggle button.active {
+      background: linear-gradient(135deg, #4f46e5, #22d3ee);
+      color: white;
+      box-shadow:
+        0 0 0 1px rgba(191, 219, 254, 0.6),
+        0 10px 26px rgba(56, 189, 248, 0.55);
+    }
+
+    .mode-toggle button span.icon {
+      font-size: 12px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+    }
+
+    .card {
+      position: relative;
+      flex: 1;
+      border-radius: 26px;
+      padding: 16px 16px 18px;
+      background:
+        radial-gradient(circle at top left, rgba(79, 70, 229, 0.45), transparent 50%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.35), transparent 55%),
+        linear-gradient(145deg, #020617, #020617 10%, #030712 50%, #020617 100%);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow:
+        0 24px 70px rgba(15, 23, 42, 0.95),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .id-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .name-main {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .name-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+    }
+
+    .meta-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      color: var(--text-muted);
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .chip-strong {
+      border-color: rgba(129, 140, 248, 0.8);
+      color: #c7d2fe;
+      background: radial-gradient(circle at top left, rgba(129, 140, 248, 0.5), transparent 70%);
+    }
+
+    .qr-shell {
+      position: relative;
+      margin-top: 6px;
+      flex: 1;
+      min-height: 260px;
+      max-height: 340px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top, rgba(15, 23, 42, 0.8), transparent 55%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.9), transparent 60%),
+        linear-gradient(145deg, #020617, #020617 20%, #020617 80%);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      box-shadow:
+        inset 0 0 0 1px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      overflow: hidden;
+    }
+
+    .qr-inner {
+      position: relative;
+      width: 100%;
+      max-width: 260px;
+      aspect-ratio: 1 / 1;
+      border-radius: 18px;
+      background: radial-gradient(circle at top left, rgba(129, 140, 248, 0.25), transparent 65%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      box-shadow:
+        0 26px 40px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    #qrcode {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brightness-tip {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.92);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.9);
+    }
+
+    .brightness-tip span.icon {
+      font-size: 12px;
+    }
+
+    .contact-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .contact-meta-left {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .contact-meta-left strong {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+    }
+
+    .sync-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+    }
+
+    .sync-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
+    }
+
+    .btn-ghost {
+      border-radius: 999px;
+      padding: 5px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--text-main);
+      font-size: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-ghost span.icon {
+      font-size: 12px;
+    }
+
+    /* 編集フォーム */
+    .form-root {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .form-root.active {
+      display: flex;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .field-row > div {
+      flex: 1;
+    }
+
+    .input-shell {
+      position: relative;
+    }
+
+    .input-shell input,
+    .input-shell textarea {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.88);
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out, background 0.12s ease-out;
+    }
+
+    .input-shell input::placeholder,
+    .input-shell textarea::placeholder {
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    .input-shell input:focus,
+    .input-shell textarea:focus {
+      border-color: rgba(129, 140, 248, 0.95);
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 1),
+        0 0 0 1px rgba(129, 140, 248, 0.85),
+        0 15px 30px rgba(30, 64, 175, 0.9);
+      background: rgba(15, 23, 42, 0.97);
+    }
+
+    textarea {
+      min-height: 52px;
+      resize: vertical;
+    }
+
+    .hint {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      border-radius: 999px;
+      padding: 10px 14px;
+      border: none;
+      background: linear-gradient(135deg, #4f46e5, #22d3ee);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow:
+        0 0 0 1px rgba(191, 219, 254, 0.4),
+        0 18px 38px rgba(59, 130, 246, 0.7);
+    }
+
+    .btn-primary span.icon {
+      font-size: 14px;
+    }
+
+    .btn-secondary {
+      border-radius: 999px;
+      padding: 8px 12px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.88);
+      color: var(--text-main);
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .danger-text {
+      color: var(--danger);
+    }
+
+    .badge-offline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+
+    .badge-offline .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+    }
+
+    .dot-online {
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.95);
+    }
+
+    .dot-offline {
+      background: #f97373;
+      box-shadow: 0 0 10px rgba(248, 113, 113, 0.95);
+    }
+
+    .small-print {
+      margin-top: 6px;
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    @media (min-width: 768px) {
+      .app-root {
+        padding-top: 32px;
+        padding-bottom: 36px;
+      }
+
+      .qr-shell {
+        min-height: 320px;
+        max-height: 380px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-root">
+    <header>
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span>VC</span>
+        </div>
+        <div>
+          <div class="brand-text-main">Self-Hosted vCard</div>
+          <div class="brand-text-sub">PRIVACY-FIRST DIGITAL BUSINESS CARD</div>
+        </div>
+      </div>
+      <div class="mode-toggle" role="tablist" aria-label="モード切替">
+        <button id="btn-view-mode" class="active" role="tab" aria-selected="true">
+          <span class="icon">📇</span><span>表示</span>
+        </button>
+        <button id="btn-edit-mode" role="tab" aria-selected="false">
+          <span class="icon">⚙️</span><span>編集</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card" aria-label="デジタル名刺">
+        <div class="card-header">
+          <div class="id-block">
+            <div class="name-main" id="displayName">あなたの名前</div>
+            <div class="name-sub" id="displayOrgRole">組織 / 役職</div>
+          </div>
+          <div class="meta-chips">
+            <span class="chip chip-strong">vCard 3.0</span>
+            <span class="chip">LOCAL ONLY</span>
+          </div>
+        </div>
+
+        <div class="qr-shell" aria-label="連絡先QRコード">
+          <div class="qr-inner">
+            <div id="qrcode"></div>
+          </div>
+          <div class="brightness-tip">
+            <span class="icon">🔆</span>
+            <span>QRスキャン時は画面輝度を最大にすると読み取り精度が上がります。</span>
+          </div>
+        </div>
+
+        <div class="contact-meta">
+          <div class="contact-meta-left">
+            <strong id="displayPhoneEmail">電話 / メール</strong>
+            <span id="displayUrl" class="hint">URL（ポートフォリオ・SNSなど）</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+            <div class="sync-indicator">
+              <span class="sync-dot"></span>
+              <span id="syncStatusLabel">ローカル保存済み</span>
+            </div>
+            <button id="btn-preview-vcard" class="btn-ghost" type="button">
+              <span class="icon">🔎</span>
+              <span>vCard を確認</span>
+            </button>
+          </div>
+        </div>
+
+        <section class="form-root" id="editFormSection" aria-label="連絡先編集フォーム">
+          <div class="field-group">
+            <div class="field-row">
+              <div>
+                <div class="field-label">姓 / LAST NAME</div>
+                <div class="input-shell">
+                  <input id="lastName" type="text" autocomplete="family-name" placeholder="山田">
+                </div>
+              </div>
+              <div>
+                <div class="field-label">名 / FIRST NAME</div>
+                <div class="input-shell">
+                  <input id="firstName" type="text" autocomplete="given-name" placeholder="太郎">
+                </div>
+              </div>
+            </div>
+            <!-- フリガナ（削除済） -->
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">連絡先 / CONTACT</div>
+            <div class="input-shell">
+              <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="090-1234-5678">
+            </div>
+            <div class="hint">携帯番号（ハイフンありでも可）</div>
+          </div>
+
+          <!-- 所属情報（削除: ORG は QR に含めません） -->
+
+          <div class="footer-actions">
+            <button id="btn-clear" type="button" class="btn-secondary">
+              <span class="icon">🧹</span>
+              <span>ローカル情報を削除</span>
+            </button>
+            <button id="btn-save" type="button" class="btn-primary">
+              <span class="icon">💾</span>
+              <span>保存してQRを更新</span>
+            </button>
+          </div>
+
+          <div class="small-print">
+            このアプリはサーバーに一切データを送信せず、<strong>ブラウザの localStorage のみ</strong>に保存します。
+          </div>
+        </section>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+          <div class="badge-offline" id="offlineBadge">
+            <span class="dot dot-offline" id="offlineDot"></span>
+            <span id="offlineText">オフライン未対応（初回読み込み中）</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- QRコード生成ライブラリ（qrcode-generator） -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"
+    referrerpolicy="no-referrer">
+  </script>
+  <script>
+    (function () {
+      "use strict";
+
+      const STORAGE_KEY = "selfHostedVcardContact_v1";
+
+      /** @type {ReturnType<typeof createQRCodeInstance> | null} */
+      let qrInstance = null;
+
+      function createQRCodeInstance() {
+        const qrContainer = document.getElementById("qrcode");
+        qrContainer.innerHTML = "";
+        // Ensure UTF-8 encoding for non-ASCII names.
+        if (globalThis.qrcode && globalThis.qrcode.stringToBytesFuncs && globalThis.qrcode.stringToBytesFuncs["UTF-8"]) {
+          globalThis.qrcode.stringToBytes = globalThis.qrcode.stringToBytesFuncs["UTF-8"];
+        }
+
+        const DARK = "#020617";
+        const LIGHT = "#f9fafb";
+
+        return {
+          clear() {
+            qrContainer.innerHTML = "";
+          },
+          makeCode(text) {
+            if (typeof globalThis.qrcode !== "function") {
+              throw new Error("QR library (qrcode-generator) is not loaded.");
+            }
+
+            const qr = globalThis.qrcode(0, "L");
+            qr.addData(String(text || ""), "Byte");
+            qr.make();
+
+            let svg = qr.createSvgTag({ cellSize: 4, margin: 1, scalable: true });
+            // Replace default black/white colors to match UI.
+            svg = svg
+              .replace(/fill=\"white\"/g, `fill=\"${LIGHT}\"`)
+              .replace(/fill=\"black\"/g, `fill=\"${DARK}\"`);
+
+            qrContainer.innerHTML = svg;
+            const svgEl = qrContainer.querySelector("svg");
+            if (svgEl) {
+              svgEl.setAttribute("width", "100%");
+              svgEl.setAttribute("height", "100%");
+              svgEl.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            }
+          }
+        };
+      }
+
+      function normalizePhone(phone) {
+        if (!phone) return "";
+        return phone.replace(/[^\d+]/g, "");
+      }
+
+      function escapeVCardValue(value) {
+        if (!value) return "";
+        return String(value)
+          .replace(/\\/g, "\\\\")
+          .replace(/\n/g, "\\n")
+          .replace(/,/g, "\\,")
+          .replace(/;/g, "\\;");
+      }
+
+      // ORG removed to minimize QR payload.
+
+      function buildVCard(data) {
+        const ln = (line) => line + "\r\n";
+        const lastName = data.lastName || "";
+        const firstName = data.firstName || "";
+        const phone = normalizePhone(data.phone || "");
+
+        const fullName = (lastName + " " + firstName).trim() || "My Contact";
+
+        let v = "";
+        v += ln("BEGIN:VCARD");
+        v += ln("VERSION:3.0");
+        v += ln("N:" + escapeVCardValue(lastName) + ";" + escapeVCardValue(firstName) + ";;;");
+        v += ln("FN:" + escapeVCardValue(fullName));
+
+        if (phone) {
+          v += ln("TEL;TYPE=CELL,VOICE:" + escapeVCardValue(phone));
+        }
+
+        v += ln("END:VCARD");
+        return v;
+      }
+
+      function saveToLocalStorage(data) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          setSyncStatus("saved");
+        } catch (e) {
+          console.error("Failed to save to localStorage", e);
+          setSyncStatus("error");
+          alert("localStorage への保存に失敗しました。ブラウザの容量制限をご確認ください。");
+        }
+      }
+
+      function loadFromLocalStorage() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            return null;
+          }
+            const parsed = JSON.parse(raw);
+            // Sanitize stored data: only keep supported fields to avoid oversized vCard
+            const sanitized = {
+              lastName: parsed.lastName || "",
+              firstName: parsed.firstName || "",
+              phone: parsed.phone || ""
+            };
+          setSyncStatus("saved");
+          return sanitized;
+        } catch (e) {
+          console.warn("No or invalid local data", e);
+          setSyncStatus("empty");
+          return null;
+        }
+      }
+
+      function setSyncStatus(state) {
+        const label = document.getElementById("syncStatusLabel");
+        if (!label) return;
+        switch (state) {
+          case "saved":
+            label.textContent = "ローカル保存済み";
+            break;
+          case "empty":
+            label.textContent = "未設定（編集から登録）";
+            break;
+          case "error":
+            label.textContent = "保存エラー";
+            break;
+          default:
+            label.textContent = "";
+        }
+      }
+
+      function fillDisplay(data) {
+        const displayName = document.getElementById("displayName");
+        const displayOrgRole = document.getElementById("displayOrgRole");
+        const displayPhoneEmail = document.getElementById("displayPhoneEmail");
+        const displayUrl = document.getElementById("displayUrl");
+        const lastName = data.lastName || "";
+        const firstName = data.firstName || "";
+        const phone = data.phone || "";
+
+        displayName.textContent = (lastName + " " + firstName).trim() || "あなたの名前";
+
+        displayOrgRole.textContent = "";
+
+        displayPhoneEmail.textContent = phone || "電話番号";
+
+        displayUrl.textContent = "";
+      }
+
+      function fillForm(data) {
+        document.getElementById("lastName").value = data.lastName || "";
+        document.getElementById("firstName").value = data.firstName || "";
+        document.getElementById("phone").value = data.phone || "";
+      }
+
+      function readForm() {
+        return {
+          lastName: document.getElementById("lastName").value.trim(),
+          firstName: document.getElementById("firstName").value.trim(),
+          phone: document.getElementById("phone").value.trim()
+        };
+      }
+
+      function regenerateQR(data) {
+        if (!qrInstance) {
+          qrInstance = createQRCodeInstance();
+        }
+        const vcardText = buildVCard(data);
+        qrInstance.clear();
+        try {
+          // Primary: try vCard
+          qrInstance.makeCode(vcardText);
+        } catch (err) {
+          console.warn("vCard QR generation failed, attempting MECARD fallback:", err);
+          // Fallback: use MECARD (shorter) to reduce data size
+          try {
+              const mecard = buildMECARD(data);
+              qrInstance.makeCode(mecard);
+            alert("vCard が大きすぎたため、短縮形式（MECARD）で QR を生成しました。表示やインポート時に一部情報が異なる場合があります。");
+          } catch (err2) {
+            console.error("MECARD fallback also failed:", err2);
+            alert("QR を生成できませんでした。入力内容を短くしてください。");
+          }
+        }
+      }
+
+      function buildMECARD(data) {
+        // MECARD is more compact than full vCard and widely supported by scanners
+        const escape = (s) => (s || "").replace(/[:;\\,]/g, "\\$&");
+        const fullName = ((data.lastName || "") + " " + (data.firstName || "")).trim();
+        const parts = [];
+        if (fullName) parts.push("N:" + escape(fullName));
+        // ORG removed for QR size constraints
+        if (data.phone) parts.push("TEL:" + escape(normalizePhone(data.phone)));
+        // MECARD format: MECARD:...;;
+        return "MECARD:" + parts.join(";") + ";;";
+      }
+
+      function switchMode(mode) {
+        const isView = mode === "view";
+        const viewBtn = document.getElementById("btn-view-mode");
+        const editBtn = document.getElementById("btn-edit-mode");
+        const formSection = document.getElementById("editFormSection");
+
+        if (isView) {
+          viewBtn.classList.add("active");
+          viewBtn.setAttribute("aria-selected", "true");
+          editBtn.classList.remove("active");
+          editBtn.setAttribute("aria-selected", "false");
+          formSection.classList.remove("active");
+        } else {
+          viewBtn.classList.remove("active");
+          viewBtn.setAttribute("aria-selected", "false");
+          editBtn.classList.add("active");
+          editBtn.setAttribute("aria-selected", "true");
+          formSection.classList.add("active");
+        }
+      }
+
+      function setupOfflineBadge() {
+        const offlineBadge = document.getElementById("offlineBadge");
+        const offlineDot = document.getElementById("offlineDot");
+        const offlineText = document.getElementById("offlineText");
+
+        function setStatus(ready) {
+          if (ready) {
+            offlineDot.classList.remove("dot-offline");
+            offlineDot.classList.add("dot-online");
+            offlineText.textContent = "オフライン起動対応済み";
+          } else {
+            offlineDot.classList.remove("dot-online");
+            offlineDot.classList.add("dot-offline");
+            offlineText.textContent = "オフライン未対応（初回読み込み中）";
+          }
+        }
+
+        if (!("serviceWorker" in navigator)) {
+          offlineText.textContent = "このブラウザはオフライン PWA に未対応です";
+          return;
+        }
+
+        setStatus(false);
+
+        navigator.serviceWorker.ready
+          .then(() => setStatus(true))
+          .catch(() => setStatus(false));
+      }
+
+      function previewVCard(data) {
+        const vcard = buildVCard(data);
+        const pretty = vcard.replace(/\r\n/g, "\n");
+        alert("現在の vCard 文字列（UTF-8）:\n\n" + pretty);
+      }
+
+      function onDOMContentLoaded() {
+        qrInstance = createQRCodeInstance();
+
+        const saved = loadFromLocalStorage();
+        const initialData = saved || {
+          lastName: "",
+          firstName: "",
+          phone: ""
+        };
+
+        fillDisplay(initialData);
+        fillForm(initialData);
+        regenerateQR(initialData);
+
+        document.getElementById("btn-view-mode").addEventListener("click", () => {
+          switchMode("view");
+        });
+        document.getElementById("btn-edit-mode").addEventListener("click", () => {
+          switchMode("edit");
+        });
+
+        (function attachSaveHandler(){
+          const btnSave = document.getElementById("btn-save");
+          if (!btnSave) {
+            console.error("btn-save element not found. Save handler not attached.");
+            return;
+          }
+          console.log("btn-save found, attaching click handler.");
+          btnSave.addEventListener("click", () => {
+            console.log("btn-save clicked");
+            const data = readForm();
+            console.log("form data:", data);
+            if (!data.lastName && !data.firstName) {
+              if (!confirm("姓・名が未入力です。このまま QR を更新しますか？")) {
+                return;
+              }
+            }
+            saveToLocalStorage(data);
+            fillDisplay(data);
+            regenerateQR(data);
+            switchMode("view");
+          });
+        })();
+
+        document.getElementById("btn-clear").addEventListener("click", () => {
+          const ok = confirm("ブラウザに保存されている名刺情報（localStorage）をすべて削除します。よろしいですか？");
+          if (!ok) return;
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+            setSyncStatus("empty");
+          } catch (e) {
+            console.error("Failed to clear storage", e);
+            setSyncStatus("error");
+          }
+          const emptyData = {
+            lastName: "",
+            firstName: "",
+            phone: ""
+          };
+          fillDisplay(emptyData);
+          fillForm(emptyData);
+          regenerateQR(emptyData);
+        });
+
+        document.getElementById("btn-preview-vcard").addEventListener("click", () => {
+          const data = readForm();
+          previewVCard(data);
+        });
+
+        if ("serviceWorker" in navigator) {
+          // sw.js の挙動を変更したので、URLにバージョンを付けて更新を確実化する。
+          navigator.serviceWorker.register("sw.js?v=2")
+            .then(reg => {
+              console.log("ServiceWorker registered", reg);
+              try {
+                reg.update();
+              } catch (_) {
+                // ignore
+              }
+              setupOfflineBadge();
+            })
+            .catch(err => {
+              console.warn("ServiceWorker registration failed", err);
+              setupOfflineBadge();
+            });
+        } else {
+          console.log("ServiceWorker not supported");
+          setupOfflineBadge();
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", onDOMContentLoaded);
+    })();
+  </script>
+</body>
+</html>
+
