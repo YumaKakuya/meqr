@@ -786,12 +786,20 @@
               <span class="sync-dot"></span>
               <span id="syncStatusLabel">ローカル保存済み</span>
             </div>
-            <div style="display:flex; gap:8px;">
-              <button id="btn-export-vcard" class="btn-ghost" type="button">
-                <span class="icon">💾</span>
-                <span>エクスポート</span>
+            <div style="display:flex; gap:8px; flex-wrap: wrap;">
+              <button id="btn-share-vcard" class="btn-ghost" type="button" title="連絡先を共有">
+                <span class="icon">📤</span>
+                <span>共有</span>
               </button>
-              <button id="btn-preview-vcard" class="btn-ghost" type="button">
+              <button id="btn-download-qr" class="btn-ghost" type="button" title="QRコードをダウンロード">
+                <span class="icon">⬇️</span>
+                <span>QR保存</span>
+              </button>
+              <button id="btn-export-vcard" class="btn-ghost" type="button" title="vCardファイルをダウンロード">
+                <span class="icon">💾</span>
+                <span>.vcf</span>
+              </button>
+              <button id="btn-preview-vcard" class="btn-ghost" type="button" title="vCard内容を確認">
                 <span class="icon">🔎</span>
                 <span>確認</span>
               </button>
@@ -1242,6 +1250,133 @@
         URL.revokeObjectURL(url);
       }
 
+      async function shareVCard(data) {
+        const vcard = buildVCard(data);
+        const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+        
+        const lastName = data.lastName || "contact";
+        const firstName = data.firstName || "";
+        const filename = `${lastName}_${firstName}`.trim().replace(/\s+/g, "_") + ".vcf";
+        
+        const file = new File([blob], filename, { type: "text/vcard" });
+
+        // Check if Web Share API is supported
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: '連絡先を共有',
+              text: `${lastName} ${firstName}の連絡先`,
+              files: [file]
+            });
+          } catch (err) {
+            if (err.name !== 'AbortError') {
+              console.error('Share failed:', err);
+              alert('共有に失敗しました。代わりにダウンロードします。');
+              exportVCard(data);
+            }
+          }
+        } else {
+          // Fallback: download the file
+          alert('お使いのブラウザは共有機能に対応していません。ファイルをダウンロードします。');
+          exportVCard(data);
+        }
+      }
+
+      function downloadQRCodeAsSVG(data) {
+        const qrSvg = document.querySelector('#qrcode svg');
+        if (!qrSvg) {
+          alert('QRコードが生成されていません。');
+          return;
+        }
+
+        // Clone SVG to avoid modifying the displayed one
+        const svgClone = qrSvg.cloneNode(true);
+        
+        // Set explicit dimensions for better compatibility
+        svgClone.setAttribute('width', '512');
+        svgClone.setAttribute('height', '512');
+        
+        const svgData = new XMLSerializer().serializeToString(svgClone);
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        
+        const lastName = data.lastName || "contact";
+        const firstName = data.firstName || "";
+        const filename = `${lastName}_${firstName}_QR`.trim().replace(/\s+/g, "_") + ".svg";
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function downloadQRCodeAsPNG(data) {
+        const qrSvg = document.querySelector('#qrcode svg');
+        if (!qrSvg) {
+          alert('QRコードが生成されていません。');
+          return;
+        }
+
+        // Create a canvas to convert SVG to PNG
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = 1024; // High resolution for printing
+        canvas.width = size;
+        canvas.height = size;
+
+        // Create an image from SVG
+        const svgClone = qrSvg.cloneNode(true);
+        svgClone.setAttribute('width', size);
+        svgClone.setAttribute('height', size);
+        
+        const svgData = new XMLSerializer().serializeToString(svgClone);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        
+        const img = new Image();
+        img.onload = function() {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, size, size);
+          ctx.drawImage(img, 0, 0, size, size);
+          
+          canvas.toBlob(function(blob) {
+            const pngUrl = URL.createObjectURL(blob);
+            
+            const lastName = data.lastName || "contact";
+            const firstName = data.firstName || "";
+            const filename = `${lastName}_${firstName}_QR`.trim().replace(/\s+/g, "_") + ".png";
+            
+            const a = document.createElement('a');
+            a.href = pngUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(pngUrl);
+            URL.revokeObjectURL(url);
+          }, 'image/png');
+        };
+        img.onerror = function() {
+          alert('QRコードの画像変換に失敗しました。');
+          URL.revokeObjectURL(url);
+        };
+        img.src = url;
+      }
+
+      function downloadQRCode(data) {
+        // Show format selection
+        const format = confirm('QRコードを保存します。\n\nOK = PNG形式（印刷用・高解像度）\nキャンセル = SVG形式（編集可能・軽量）');
+        
+        if (format) {
+          downloadQRCodeAsPNG(data);
+        } else {
+          downloadQRCodeAsSVG(data);
+        }
+      }
+
       function initTheme() {
         const savedTheme = localStorage.getItem(THEME_KEY) || "light";
         applyTheme(savedTheme);
@@ -1369,6 +1504,24 @@
             return;
           }
           exportVCard(data);
+        });
+
+        document.getElementById("btn-share-vcard").addEventListener("click", async () => {
+          const data = loadFromLocalStorage();
+          if (!data || (!data.lastName && !data.firstName)) {
+            alert("共有する連絡先情報がありません。先に名前を入力して保存してください。");
+            return;
+          }
+          await shareVCard(data);
+        });
+
+        document.getElementById("btn-download-qr").addEventListener("click", () => {
+          const data = loadFromLocalStorage();
+          if (!data || (!data.lastName && !data.firstName)) {
+            alert("QRコードを保存する前に、連絡先情報を入力して保存してください。");
+            return;
+          }
+          downloadQRCode(data);
         });
 
         // Photo upload handler
