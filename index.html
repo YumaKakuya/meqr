@@ -968,9 +968,9 @@
       <div style="display: flex; gap: 8px; align-items: center;">
         <div class="profile-selector">
           <div class="profile-dropdown">
-            <button id="btn-profile-toggle" class="profile-btn" type="button" title="プロファイル切り替え">
-              <span>📋</span>
-              <span id="current-profile-name">メインプロファイル</span>
+            <button id="btn-profile-toggle" class="profile-btn" type="button" title="名刺を選ぶ">
+              <span>📇</span>
+              <span id="current-profile-name">メイン名刺</span>
               <span>▾</span>
             </button>
             <div id="profile-menu" class="profile-menu">
@@ -1172,8 +1172,8 @@
         <div class="onboarding-step">
           <div class="onboarding-step-number">3</div>
           <div class="onboarding-step-content">
-            <h3>複数のプロファイル</h3>
-            <p>ビジネス用・プライベート用など、用途に応じて使い分け可能</p>
+            <h3>複数の名刺を使い分け</h3>
+            <p>ビジネス用・プライベート用など、用途に応じて切り替え可能</p>
           </div>
         </div>
         <div class="onboarding-step">
@@ -1340,7 +1340,7 @@
         localStorage.setItem(CURRENT_PROFILE_KEY, id);
       }
 
-      function createNewProfile(name = "新しいプロファイル") {
+      function createNewProfile(name = "新しい名刺") {
         const profiles = getAllProfiles();
         const newProfile = {
           id: Date.now().toString(),
@@ -1367,7 +1367,7 @@
         const profiles = getAllProfiles();
         if (profiles.length === 0) {
           // Create default profile
-          const defaultProfile = createNewProfile("メインプロファイル");
+          const defaultProfile = createNewProfile("メイン名刺");
           setCurrentProfileId(defaultProfile.id);
           setSyncStatus("empty");
           return defaultProfile.data;
@@ -1405,7 +1405,7 @@
         const profiles = getAllProfiles();
         const profile = profiles.find(p => p.id === profileId);
         if (!profile) {
-          alert("プロファイルが見つかりません。");
+          alert("名刺が見つかりません。");
           return;
         }
 
@@ -1419,14 +1419,14 @@
       function deleteProfile(profileId) {
         const profiles = getAllProfiles();
         if (profiles.length <= 1) {
-          alert("最後のプロファイルは削除できません。");
+          alert("最後の名刺は削除できません。");
           return;
         }
 
         const index = profiles.findIndex(p => p.id === profileId);
         if (index === -1) return;
 
-        const confirmDelete = confirm(`プロファイル「${profiles[index].name}」を削除しますか？この操作は取り消せません。`);
+        const confirmDelete = confirm(`「${profiles[index].name}」を削除しますか？この操作は取り消せません。`);
         if (!confirmDelete) return;
 
         profiles.splice(index, 1);
@@ -1870,7 +1870,7 @@
           renameBtn.title = '名前を変更';
           renameBtn.onclick = (e) => {
             e.stopPropagation();
-            const newName = prompt('新しいプロファイル名を入力:', profile.name);
+            const newName = prompt('名刺の名前を変更:', profile.name);
             if (newName && newName.trim()) {
               renameProfile(profile.id, newName.trim());
             }
@@ -1901,10 +1901,10 @@
         // Add "New Profile" button
         const newItem = document.createElement('div');
         newItem.className = 'profile-menu-item';
-        newItem.innerHTML = '<span class="profile-name">➕ 新しいプロファイル</span>';
+        newItem.innerHTML = '<span class="profile-name">➕ 新しい名刺を作成</span>';
         newItem.onclick = (e) => {
           e.stopPropagation();
-          const name = prompt('プロファイル名を入力:', '新しいプロファイル');
+          const name = prompt('名刺の名前を入力してください:', '新しい名刺');
           if (name && name.trim()) {
             const newProfile = createNewProfile(name.trim());
             switchProfile(newProfile.id);
@@ -2054,7 +2054,7 @@
         })();
 
         document.getElementById("btn-clear").addEventListener("click", () => {
-          const ok = confirm("現在のプロファイルの情報をクリアします。よろしいですか？");
+          const ok = confirm("現在の名刺の情報をクリアします。よろしいですか？");
           if (!ok) return;
           
           const emptyData = {
