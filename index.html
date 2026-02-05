@@ -978,6 +978,9 @@
             </div>
           </div>
         </div>
+        <button id="btn-help" class="btn-ghost" type="button" title="ヘルプ・ガイドを表示">
+          <span class="icon">❓</span>
+        </button>
         <button id="btn-theme-toggle" class="btn-ghost" type="button" title="テーマ切り替え">
           <span class="icon" id="themeIcon">🌙</span>
         </button>
@@ -1943,6 +1946,11 @@
         return !localStorage.getItem(ONBOARDING_KEY);
       }
 
+      function resetOnboarding() {
+        localStorage.removeItem(ONBOARDING_KEY);
+        showOnboarding();
+      }
+
       function onDOMContentLoaded() {
         console.log("MeQR: DOM loaded, initializing...");
         
@@ -2003,6 +2011,11 @@
           if (menu && dropdown && !dropdown.contains(e.target)) {
             toggleProfileMenu(false);
           }
+        });
+
+        // Help button - show onboarding again
+        document.getElementById("btn-help").addEventListener("click", () => {
+          showOnboarding();
         });
 
         // Theme toggle
