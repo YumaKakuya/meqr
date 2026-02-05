@@ -2365,6 +2365,10 @@
         let html = '<div class="menu-header"><div class="menu-title">データの保存・削除</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
         
         html += `
+          <div class="menu-item" onclick="loadTestData()">
+            <span class="menu-item-icon">🧪</span>
+            <span class="menu-item-text">テストデータを読み込む</span>
+          </div>
           <div class="menu-item" onclick="showStorageInfo()">
             <span class="menu-item-icon">📊</span>
             <span class="menu-item-text">保存容量を確認</span>
@@ -2498,6 +2502,77 @@
         const bytes = new Blob([dataStr]).size;
         const kb = (bytes / 1024).toFixed(2);
         alert(`保存データ容量:\n\n${kb} KB\n名刺数: ${profiles.length}個\n\n※ ブラウザの制限: 約5-10MB`);
+      };
+
+      // テスト用サンプルデータ
+      function getTestProfiles() {
+        const now = new Date().toISOString();
+        return [
+          {
+            id: "test-business-" + Date.now(),
+            name: "ビジネス名刺（テスト）",
+            data: {
+              lastName: "山田",
+              firstName: "太郎",
+              phone: "090-1234-5678",
+              email: "yamada.taro@example.co.jp",
+              org: "株式会社サンプル",
+              title: "営業部長",
+              url: "https://example.co.jp",
+              photo: "",
+              linkedin: "https://linkedin.com/in/yamada-taro",
+              twitter: "https://x.com/yamada_taro",
+              instagram: "https://instagram.com/yamada.taro",
+              facebook: "https://facebook.com/yamada.taro",
+              github: "https://github.com/yamada-taro",
+              youtube: "https://youtube.com/@yamadataro",
+              customUrl: "https://portfolio.example.com"
+            },
+            createdAt: now,
+            updatedAt: now
+          },
+          {
+            id: "test-private-" + (Date.now() + 1),
+            name: "プライベート名刺（テスト）",
+            data: {
+              lastName: "山田",
+              firstName: "太郎",
+              phone: "080-9876-5432",
+              email: "taro.yamada@gmail.com",
+              org: "",
+              title: "",
+              url: "https://taro-yamada.blog",
+              photo: "",
+              linkedin: "",
+              twitter: "https://x.com/taro_private",
+              instagram: "https://instagram.com/taro_private",
+              facebook: "",
+              github: "https://github.com/taro-yamada",
+              youtube: "",
+              customUrl: ""
+            },
+            createdAt: now,
+            updatedAt: now
+          }
+        ];
+      }
+
+      window.loadTestData = function() {
+        const ok = confirm("テスト用のサンプルデータを読み込みます。\n\n現在のデータは上書きされます。よろしいですか？");
+        if (!ok) return;
+
+        const testProfiles = getTestProfiles();
+        saveAllProfiles(testProfiles);
+        setCurrentProfileId(testProfiles[0].id);
+
+        fillDisplay(testProfiles[0].data);
+        fillForm(testProfiles[0].data);
+        regenerateQR(testProfiles[0].data);
+        showMainMenu();
+        closeMenu();
+        setSyncStatus("saved");
+
+        alert("テストデータを読み込みました。\n\n・ビジネス名刺（テスト）\n・プライベート名刺（テスト）\n\nメニュー「名刺を選ぶ」で切り替えられます。");
       };
 
       window.deleteAllData = function() {
@@ -2708,6 +2783,13 @@
         } else {
           console.log("ServiceWorker not supported");
           setupOfflineBadge();
+        }
+
+        // テスト用: URL に ?demo=1 がある場合はテストデータを読み込む（確認ダイアログあり）
+        if (location.search.includes("demo=1")) {
+          setTimeout(function() {
+            if (typeof loadTestData === "function") loadTestData();
+          }, 800);
         }
       }
 
