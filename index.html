@@ -1432,15 +1432,16 @@
         let v = "";
         v += ln("BEGIN:VCARD");
         v += ln("VERSION:3.0");
-        v += ln("N:" + escapeVCardValue(lastName) + ";" + escapeVCardValue(firstName) + ";;;");
-        v += ln("FN:" + escapeVCardValue(fullName));
+        // Outlook など一部クライアントでの文字化け対策として、UTF-8 を明示
+        v += ln("N;CHARSET=UTF-8:" + escapeVCardValue(lastName) + ";" + escapeVCardValue(firstName) + ";;;");
+        v += ln("FN;CHARSET=UTF-8:" + escapeVCardValue(fullName));
 
         if (org) {
-          v += ln("ORG:" + escapeVCardValue(org));
+          v += ln("ORG;CHARSET=UTF-8:" + escapeVCardValue(org));
         }
 
         if (title) {
-          v += ln("TITLE:" + escapeVCardValue(title));
+          v += ln("TITLE;CHARSET=UTF-8:" + escapeVCardValue(title));
         }
 
         if (phone) {
