@@ -709,6 +709,237 @@
       display: none;
     }
 
+    /* Profile Selector */
+    .profile-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .profile-dropdown {
+      position: relative;
+    }
+
+    .profile-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-medium);
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .profile-btn:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    .profile-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 4px;
+      min-width: 220px;
+      max-height: 300px;
+      overflow-y: auto;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-medium);
+      border-radius: 10px;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      display: none;
+    }
+
+    .profile-menu.active {
+      display: block;
+    }
+
+    .profile-menu-item {
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .profile-menu-item:last-child {
+      border-bottom: none;
+    }
+
+    .profile-menu-item:hover {
+      background: var(--accent-soft);
+    }
+
+    .profile-menu-item.active {
+      background: var(--accent-soft);
+      font-weight: 600;
+    }
+
+    .profile-menu-item .profile-name {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    .profile-menu-item .profile-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .profile-action-btn {
+      padding: 2px 6px;
+      font-size: 11px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+
+    .profile-action-btn:hover {
+      background: var(--border-medium);
+    }
+
+    .profile-menu-divider {
+      height: 1px;
+      background: var(--border-medium);
+      margin: 4px 0;
+    }
+
+    /* Onboarding */
+    .onboarding-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    .onboarding-overlay.active {
+      display: flex;
+    }
+
+    .onboarding-card {
+      background: var(--bg-elevated);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-medium);
+    }
+
+    .onboarding-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .onboarding-header h2 {
+      font-size: 24px;
+      margin: 0 0 8px 0;
+      color: var(--text-main);
+    }
+
+    .onboarding-header p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .onboarding-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .onboarding-step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .onboarding-step-number {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .onboarding-step-content h3 {
+      margin: 0 0 4px 0;
+      font-size: 15px;
+      color: var(--text-main);
+    }
+
+    .onboarding-step-content p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .onboarding-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .onboarding-btn {
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .onboarding-btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .onboarding-btn-primary:hover {
+      background: var(--accent-strong);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .onboarding-btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-medium);
+    }
+
+    .onboarding-btn-secondary:hover {
+      background: var(--accent-soft);
+      color: var(--text-main);
+    }
+
     @media (min-width: 768px) {
       .app-root {
         padding-top: 32px;
@@ -735,6 +966,18 @@
         </div>
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
+        <div class="profile-selector">
+          <div class="profile-dropdown">
+            <button id="btn-profile-toggle" class="profile-btn" type="button" title="プロファイル切り替え">
+              <span>📋</span>
+              <span id="current-profile-name">メインプロファイル</span>
+              <span>▾</span>
+            </button>
+            <div id="profile-menu" class="profile-menu">
+              <!-- Profiles will be dynamically inserted here -->
+            </div>
+          </div>
+        </div>
         <button id="btn-theme-toggle" class="btn-ghost" type="button" title="テーマ切り替え">
           <span class="icon" id="themeIcon">🌙</span>
         </button>
@@ -901,6 +1144,50 @@
     </main>
   </div>
 
+  <!-- Onboarding Overlay -->
+  <div id="onboarding-overlay" class="onboarding-overlay">
+    <div class="onboarding-card">
+      <div class="onboarding-header">
+        <h2>MeQRへようこそ！👋</h2>
+        <p>プライバシー重視のシンプルなデジタル名刺アプリ</p>
+      </div>
+      <div class="onboarding-steps">
+        <div class="onboarding-step">
+          <div class="onboarding-step-number">1</div>
+          <div class="onboarding-step-content">
+            <h3>連絡先を入力</h3>
+            <p>「編集」タブで名前・電話・メールなどを入力して保存</p>
+          </div>
+        </div>
+        <div class="onboarding-step">
+          <div class="onboarding-step-number">2</div>
+          <div class="onboarding-step-content">
+            <h3>QRコードで共有</h3>
+            <p>相手にQRコードを見せてスキャンしてもらうだけ！</p>
+          </div>
+        </div>
+        <div class="onboarding-step">
+          <div class="onboarding-step-number">3</div>
+          <div class="onboarding-step-content">
+            <h3>複数のプロファイル</h3>
+            <p>ビジネス用・プライベート用など、用途に応じて使い分け可能</p>
+          </div>
+        </div>
+        <div class="onboarding-step">
+          <div class="onboarding-step-number">4</div>
+          <div class="onboarding-step-content">
+            <h3>完全プライバシー保護</h3>
+            <p>データは全てローカル保存。サーバーには一切送信されません</p>
+          </div>
+        </div>
+      </div>
+      <div class="onboarding-footer">
+        <button id="btn-onboarding-skip" class="onboarding-btn onboarding-btn-secondary">スキップ</button>
+        <button id="btn-onboarding-start" class="onboarding-btn onboarding-btn-primary">使ってみる</button>
+      </div>
+    </div>
+  </div>
+
   <!-- QRコード生成ライブラリ（qrcode-generator） -->
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"
@@ -910,11 +1197,14 @@
     (function () {
       "use strict";
 
-      const STORAGE_KEY = "meqr_contact_v2";
+      const PROFILES_KEY = "meqr_profiles_v3";
+      const CURRENT_PROFILE_KEY = "meqr_current_profile";
       const THEME_KEY = "meqr_theme";
+      const ONBOARDING_KEY = "meqr_onboarding_completed";
 
       /** @type {ReturnType<typeof createQRCodeInstance> | null} */
       let qrInstance = null;
+      let currentProfileId = null;
 
       function createQRCodeInstance() {
         const qrContainer = document.getElementById("qrcode");
@@ -1014,41 +1304,168 @@
         return v;
       }
 
-      function saveToLocalStorage(data) {
+      // === Profile Management Functions ===
+      
+      function getAllProfiles() {
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-          setSyncStatus("saved");
+          const raw = localStorage.getItem(PROFILES_KEY);
+          if (!raw) return [];
+          return JSON.parse(raw);
         } catch (e) {
-          console.error("Failed to save to localStorage", e);
-          setSyncStatus("error");
-          alert("localStorage への保存に失敗しました。ブラウザの容量制限をご確認ください。");
+          console.error("Failed to load profiles", e);
+          return [];
         }
       }
 
-      function loadFromLocalStorage() {
+      function saveAllProfiles(profiles) {
         try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (!raw) {
-            return null;
-          }
-            const parsed = JSON.parse(raw);
-            // Sanitize stored data: only keep supported fields
-            const sanitized = {
-              lastName: parsed.lastName || "",
-              firstName: parsed.firstName || "",
-              phone: parsed.phone || "",
-              email: parsed.email || "",
-              org: parsed.org || "",
-              title: parsed.title || "",
-              url: parsed.url || "",
-              photo: parsed.photo || ""
-            };
-          setSyncStatus("saved");
-          return sanitized;
+          localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
         } catch (e) {
-          console.warn("No or invalid local data", e);
+          console.error("Failed to save profiles", e);
+          alert("プロファイルの保存に失敗しました。");
+        }
+      }
+
+      function getCurrentProfileId() {
+        if (currentProfileId) return currentProfileId;
+        const saved = localStorage.getItem(CURRENT_PROFILE_KEY);
+        return saved || null;
+      }
+
+      function setCurrentProfileId(id) {
+        currentProfileId = id;
+        localStorage.setItem(CURRENT_PROFILE_KEY, id);
+      }
+
+      function createNewProfile(name = "新しいプロファイル") {
+        const profiles = getAllProfiles();
+        const newProfile = {
+          id: Date.now().toString(),
+          name: name,
+          data: {
+            lastName: "",
+            firstName: "",
+            phone: "",
+            email: "",
+            org: "",
+            title: "",
+            url: "",
+            photo: ""
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        profiles.push(newProfile);
+        saveAllProfiles(profiles);
+        return newProfile;
+      }
+
+      function loadCurrentProfile() {
+        const profiles = getAllProfiles();
+        if (profiles.length === 0) {
+          // Create default profile
+          const defaultProfile = createNewProfile("メインプロファイル");
+          setCurrentProfileId(defaultProfile.id);
           setSyncStatus("empty");
-          return null;
+          return defaultProfile.data;
+        }
+
+        let profileId = getCurrentProfileId();
+        let profile = profiles.find(p => p.id === profileId);
+        
+        if (!profile) {
+          profile = profiles[0];
+          setCurrentProfileId(profile.id);
+        }
+
+        setSyncStatus("saved");
+        return profile.data;
+      }
+
+      function saveCurrentProfile(data) {
+        const profiles = getAllProfiles();
+        const profileId = getCurrentProfileId();
+        
+        const profileIndex = profiles.findIndex(p => p.id === profileId);
+        if (profileIndex === -1) {
+          console.error("Current profile not found");
+          return;
+        }
+
+        profiles[profileIndex].data = data;
+        profiles[profileIndex].updatedAt = new Date().toISOString();
+        saveAllProfiles(profiles);
+        setSyncStatus("saved");
+      }
+
+      function switchProfile(profileId) {
+        const profiles = getAllProfiles();
+        const profile = profiles.find(p => p.id === profileId);
+        if (!profile) {
+          alert("プロファイルが見つかりません。");
+          return;
+        }
+
+        setCurrentProfileId(profileId);
+        fillDisplay(profile.data);
+        fillForm(profile.data);
+        regenerateQR(profile.data);
+        updateProfileSelector();
+      }
+
+      function deleteProfile(profileId) {
+        const profiles = getAllProfiles();
+        if (profiles.length <= 1) {
+          alert("最後のプロファイルは削除できません。");
+          return;
+        }
+
+        const index = profiles.findIndex(p => p.id === profileId);
+        if (index === -1) return;
+
+        const confirmDelete = confirm(`プロファイル「${profiles[index].name}」を削除しますか？この操作は取り消せません。`);
+        if (!confirmDelete) return;
+
+        profiles.splice(index, 1);
+        saveAllProfiles(profiles);
+
+        // Switch to first profile if current was deleted
+        if (profileId === getCurrentProfileId()) {
+          switchProfile(profiles[0].id);
+        }
+
+        updateProfileSelector();
+      }
+
+      function renameProfile(profileId, newName) {
+        const profiles = getAllProfiles();
+        const profile = profiles.find(p => p.id === profileId);
+        if (!profile) return;
+
+        profile.name = newName;
+        profile.updatedAt = new Date().toISOString();
+        saveAllProfiles(profiles);
+        updateProfileSelector();
+      }
+
+      // Legacy compatibility: migrate old data
+      function migrateOldData() {
+        const OLD_KEY = "meqr_contact_v2";
+        const oldData = localStorage.getItem(OLD_KEY);
+        if (!oldData) return;
+
+        try {
+          const parsed = JSON.parse(oldData);
+          const profiles = getAllProfiles();
+          if (profiles.length === 0) {
+            const migratedProfile = createNewProfile("メインプロファイル");
+            migratedProfile.data = parsed;
+            saveAllProfiles([migratedProfile]);
+            setCurrentProfileId(migratedProfile.id);
+          }
+          localStorage.removeItem(OLD_KEY);
+        } catch (e) {
+          console.error("Migration failed", e);
         }
       }
 
@@ -1410,27 +1827,165 @@
         applyTheme(newTheme);
       }
 
+      // === Profile UI Functions ===
+
+      function updateProfileSelector() {
+        const profiles = getAllProfiles();
+        const currentId = getCurrentProfileId();
+        const currentProfile = profiles.find(p => p.id === currentId);
+        
+        // Update button text
+        const profileNameElement = document.getElementById("current-profile-name");
+        if (profileNameElement && currentProfile) {
+          profileNameElement.textContent = currentProfile.name;
+        }
+
+        // Update dropdown menu
+        const menu = document.getElementById("profile-menu");
+        if (!menu) return;
+
+        menu.innerHTML = '';
+
+        profiles.forEach(profile => {
+          const item = document.createElement('div');
+          item.className = 'profile-menu-item' + (profile.id === currentId ? ' active' : '');
+          
+          const name = document.createElement('span');
+          name.className = 'profile-name';
+          name.textContent = profile.name;
+          name.onclick = () => {
+            switchProfile(profile.id);
+            toggleProfileMenu(false);
+          };
+          
+          const actions = document.createElement('div');
+          actions.className = 'profile-actions';
+          
+          const renameBtn = document.createElement('button');
+          renameBtn.className = 'profile-action-btn';
+          renameBtn.textContent = '✏️';
+          renameBtn.title = '名前を変更';
+          renameBtn.onclick = (e) => {
+            e.stopPropagation();
+            const newName = prompt('新しいプロファイル名を入力:', profile.name);
+            if (newName && newName.trim()) {
+              renameProfile(profile.id, newName.trim());
+            }
+          };
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'profile-action-btn';
+          deleteBtn.textContent = '🗑️';
+          deleteBtn.title = '削除';
+          deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteProfile(profile.id);
+          };
+          
+          actions.appendChild(renameBtn);
+          actions.appendChild(deleteBtn);
+          
+          item.appendChild(name);
+          item.appendChild(actions);
+          menu.appendChild(item);
+        });
+
+        // Add divider
+        const divider = document.createElement('div');
+        divider.className = 'profile-menu-divider';
+        menu.appendChild(divider);
+
+        // Add "New Profile" button
+        const newItem = document.createElement('div');
+        newItem.className = 'profile-menu-item';
+        newItem.innerHTML = '<span class="profile-name">➕ 新しいプロファイル</span>';
+        newItem.onclick = () => {
+          const name = prompt('プロファイル名を入力:', '新しいプロファイル');
+          if (name && name.trim()) {
+            const newProfile = createNewProfile(name.trim());
+            switchProfile(newProfile.id);
+          }
+          toggleProfileMenu(false);
+        };
+        menu.appendChild(newItem);
+      }
+
+      function toggleProfileMenu(show) {
+        const menu = document.getElementById("profile-menu");
+        if (!menu) return;
+        
+        if (show === undefined) {
+          menu.classList.toggle('active');
+        } else {
+          menu.classList.toggle('active', show);
+        }
+      }
+
+      // === Onboarding Functions ===
+
+      function showOnboarding() {
+        const overlay = document.getElementById("onboarding-overlay");
+        if (overlay) {
+          overlay.classList.add('active');
+        }
+      }
+
+      function hideOnboarding() {
+        const overlay = document.getElementById("onboarding-overlay");
+        if (overlay) {
+          overlay.classList.remove('active');
+        }
+        localStorage.setItem(ONBOARDING_KEY, 'true');
+      }
+
+      function shouldShowOnboarding() {
+        return !localStorage.getItem(ONBOARDING_KEY);
+      }
+
       function onDOMContentLoaded() {
         // Initialize theme first
         initTheme();
         
+        // Migrate old data if exists
+        migrateOldData();
+        
         qrInstance = createQRCodeInstance();
 
-        const saved = loadFromLocalStorage();
-        const initialData = saved || {
-          lastName: "",
-          firstName: "",
-          phone: "",
-          email: "",
-          org: "",
-          title: "",
-          url: "",
-          photo: ""
-        };
+        // Load current profile
+        const initialData = loadCurrentProfile();
 
         fillDisplay(initialData);
         fillForm(initialData);
         regenerateQR(initialData);
+        updateProfileSelector();
+
+        // Show onboarding if first time
+        if (shouldShowOnboarding()) {
+          showOnboarding();
+        }
+
+        // Onboarding handlers
+        document.getElementById("btn-onboarding-start").addEventListener("click", () => {
+          hideOnboarding();
+          switchMode("edit");
+        });
+
+        document.getElementById("btn-onboarding-skip").addEventListener("click", () => {
+          hideOnboarding();
+        });
+
+        // Profile selector
+        document.getElementById("btn-profile-toggle").addEventListener("click", () => {
+          toggleProfileMenu();
+        });
+
+        // Close profile menu when clicking outside
+        document.addEventListener("click", (e) => {
+          const dropdown = document.querySelector(".profile-dropdown");
+          if (dropdown && !dropdown.contains(e.target)) {
+            toggleProfileMenu(false);
+          }
+        });
 
         // Theme toggle
         document.getElementById("btn-theme-toggle").addEventListener("click", () => {
@@ -1460,7 +2015,7 @@
                 return;
               }
             }
-            saveToLocalStorage(data);
+            saveCurrentProfile(data);
             fillDisplay(data);
             regenerateQR(data);
             switchMode("view");
@@ -1468,15 +2023,9 @@
         })();
 
         document.getElementById("btn-clear").addEventListener("click", () => {
-          const ok = confirm("ブラウザに保存されている名刺情報（localStorage）をすべて削除します。よろしいですか？");
+          const ok = confirm("現在のプロファイルの情報をクリアします。よろしいですか？");
           if (!ok) return;
-          try {
-            localStorage.removeItem(STORAGE_KEY);
-            setSyncStatus("empty");
-          } catch (e) {
-            console.error("Failed to clear storage", e);
-            setSyncStatus("error");
-          }
+          
           const emptyData = {
             lastName: "",
             firstName: "",
@@ -1487,18 +2036,21 @@
             url: "",
             photo: ""
           };
+          
+          saveCurrentProfile(emptyData);
           fillDisplay(emptyData);
           fillForm(emptyData);
           regenerateQR(emptyData);
+          setSyncStatus("empty");
         });
 
         document.getElementById("btn-preview-vcard").addEventListener("click", () => {
-          const data = loadFromLocalStorage() || readForm();
+          const data = loadCurrentProfile() || readForm();
           previewVCard(data);
         });
 
         document.getElementById("btn-export-vcard").addEventListener("click", () => {
-          const data = loadFromLocalStorage();
+          const data = loadCurrentProfile();
           if (!data || (!data.lastName && !data.firstName)) {
             alert("エクスポートする連絡先情報がありません。先に名前を入力して保存してください。");
             return;
@@ -1507,7 +2059,7 @@
         });
 
         document.getElementById("btn-share-vcard").addEventListener("click", async () => {
-          const data = loadFromLocalStorage();
+          const data = loadCurrentProfile();
           if (!data || (!data.lastName && !data.firstName)) {
             alert("共有する連絡先情報がありません。先に名前を入力して保存してください。");
             return;
@@ -1516,7 +2068,7 @@
         });
 
         document.getElementById("btn-download-qr").addEventListener("click", () => {
-          const data = loadFromLocalStorage();
+          const data = loadCurrentProfile();
           if (!data || (!data.lastName && !data.firstName)) {
             alert("QRコードを保存する前に、連絡先情報を入力して保存してください。");
             return;
@@ -1545,9 +2097,9 @@
 
           const reader = new FileReader();
           reader.onload = function(event) {
-            const currentData = loadFromLocalStorage() || readForm();
+            const currentData = loadCurrentProfile() || readForm();
             currentData.photo = event.target.result;
-            saveToLocalStorage(currentData);
+            saveCurrentProfile(currentData);
             fillDisplay(currentData);
           };
           reader.onerror = function() {
