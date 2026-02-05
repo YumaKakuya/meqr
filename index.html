@@ -2173,6 +2173,7 @@
       // === Hamburger Menu Functions ===
 
       function openMenu() {
+        showMainMenu();
         document.getElementById("menu-overlay").classList.add("active");
         document.getElementById("menu-drawer").classList.add("active");
       }
@@ -2182,11 +2183,99 @@
         document.getElementById("menu-drawer").classList.remove("active");
       }
 
+      function showMainMenu() {
+        const drawer = document.getElementById("menu-drawer");
+        let html = `
+          <div class="menu-header">
+            <div class="menu-title">メニュー</div>
+            <button id="menu-close-btn-main" class="menu-close-btn">✕</button>
+          </div>
+          <div class="menu-content">
+            <div class="menu-item" id="menu-profiles-main">
+              <span class="menu-item-icon">📇</span>
+              <span class="menu-item-text">名刺を選ぶ</span>
+              <span class="menu-item-arrow">›</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item" id="menu-share-main">
+              <span class="menu-item-icon">📤</span>
+              <span class="menu-item-text">共有する</span>
+              <span class="menu-item-arrow">›</span>
+            </div>
+            <div class="menu-item" id="menu-sns-main">
+              <span class="menu-item-icon">🔗</span>
+              <span class="menu-item-text">SNS・リンク設定</span>
+              <span class="menu-item-arrow">›</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item" id="menu-settings-main">
+              <span class="menu-item-icon">⚙️</span>
+              <span class="menu-item-text">設定</span>
+              <span class="menu-item-arrow">›</span>
+            </div>
+            <div class="menu-item" id="menu-data-main">
+              <span class="menu-item-icon">💾</span>
+              <span class="menu-item-text">データの保存・削除</span>
+              <span class="menu-item-arrow">›</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item" id="menu-help-main">
+              <span class="menu-item-icon">❓</span>
+              <span class="menu-item-text">ヘルプ・使い方</span>
+            </div>
+            <div class="menu-item" id="menu-about-main">
+              <span class="menu-item-icon">ℹ️</span>
+              <span class="menu-item-text">このアプリについて</span>
+            </div>
+          </div>
+        `;
+        drawer.innerHTML = html;
+        
+        // Re-attach event listeners
+        attachMainMenuListeners();
+      }
+
+      function attachMainMenuListeners() {
+        const closeBtn = document.getElementById("menu-close-btn-main");
+        if (closeBtn) {
+          closeBtn.addEventListener("click", closeMenu);
+        }
+        
+        const items = {
+          "menu-profiles-main": showProfilesSubmenu,
+          "menu-share-main": showShareSubmenu,
+          "menu-sns-main": () => {
+            closeMenu();
+            switchMode("edit");
+            setTimeout(() => {
+              const linkedinInput = document.getElementById("linkedin");
+              if (linkedinInput) {
+                linkedinInput.scrollIntoView({ behavior: "smooth", block: "center" });
+              }
+            }, 100);
+          },
+          "menu-settings-main": showSettingsSubmenu,
+          "menu-data-main": showDataSubmenu,
+          "menu-help-main": () => {
+            closeMenu();
+            showOnboarding();
+          },
+          "menu-about-main": showAboutSubmenu
+        };
+        
+        Object.keys(items).forEach(id => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.addEventListener("click", items[id]);
+          }
+        });
+      }
+
       function showProfilesSubmenu() {
         const profiles = getAllProfiles();
         const currentId = getCurrentProfileId();
         
-        let html = '<div class="menu-header"><div class="menu-title">名刺を選ぶ</div><button class="menu-close-btn" onclick="history.back()">←</button></div><div class="menu-content">';
+        let html = '<div class="menu-header"><div class="menu-title">名刺を選ぶ</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
         
         profiles.forEach(profile => {
           const active = profile.id === currentId ? ' (使用中)' : '';
@@ -2214,7 +2303,7 @@
       function showShareSubmenu() {
         const data = loadCurrentProfile();
         
-        let html = '<div class="menu-header"><div class="menu-title">共有する</div><button class="menu-close-btn" onclick="history.back()">←</button></div><div class="menu-content">';
+        let html = '<div class="menu-header"><div class="menu-title">共有する</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
         
         html += `
           <div class="menu-item" onclick="closeMenuOnly()">
@@ -2242,7 +2331,7 @@
       }
 
       function showSettingsSubmenu() {
-        let html = '<div class="menu-header"><div class="menu-title">設定</div><button class="menu-close-btn" onclick="history.back()">←</button></div><div class="menu-content">';
+        let html = '<div class="menu-header"><div class="menu-title">設定</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
         
         html += `
           <div class="menu-section-title">QRコードサイズ</div>
@@ -2273,7 +2362,7 @@
       }
 
       function showDataSubmenu() {
-        let html = '<div class="menu-header"><div class="menu-title">データの保存・削除</div><button class="menu-close-btn" onclick="history.back()">←</button></div><div class="menu-content">';
+        let html = '<div class="menu-header"><div class="menu-title">データの保存・削除</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
         
         html += `
           <div class="menu-item" onclick="showStorageInfo()">
@@ -2294,7 +2383,7 @@
       }
 
       function showAboutSubmenu() {
-        let html = '<div class="menu-header"><div class="menu-title">このアプリについて</div><button class="menu-close-btn" onclick="history.back()">←</button></div><div class="menu-content" style="padding: 20px;">';
+        let html = '<div class="menu-header"><div class="menu-title">このアプリについて</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content" style="padding: 20px;">';
         
         html += `
           <div style="text-align: center; margin-bottom: 20px;">
@@ -2330,6 +2419,9 @@
       }
 
       // Menu helper functions (called from onclick)
+      // Menu helper functions (called from onclick in dynamic HTML)
+      window.showMainMenu = showMainMenu;
+
       window.switchProfileAndClose = function(profileId) {
         switchProfile(profileId);
         closeMenu();
@@ -2476,44 +2568,8 @@
           openMenu();
         });
 
-        document.getElementById("menu-close-btn").addEventListener("click", () => {
-          closeMenu();
-        });
-
         document.getElementById("menu-overlay").addEventListener("click", () => {
           closeMenu();
-        });
-
-        // Menu items
-        document.getElementById("menu-profiles").addEventListener("click", () => {
-          showProfilesSubmenu();
-        });
-
-        document.getElementById("menu-share").addEventListener("click", () => {
-          showShareSubmenu();
-        });
-
-        document.getElementById("menu-sns").addEventListener("click", () => {
-          closeMenu();
-          switchMode("edit");
-          document.getElementById("linkedin").scrollIntoView({ behavior: "smooth", block: "center" });
-        });
-
-        document.getElementById("menu-settings").addEventListener("click", () => {
-          showSettingsSubmenu();
-        });
-
-        document.getElementById("menu-data").addEventListener("click", () => {
-          showDataSubmenu();
-        });
-
-        document.getElementById("menu-help").addEventListener("click", () => {
-          closeMenu();
-          showOnboarding();
-        });
-
-        document.getElementById("menu-about").addEventListener("click", () => {
-          showAboutSubmenu();
         });
 
         document.getElementById("btn-view-mode").addEventListener("click", () => {
