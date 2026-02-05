@@ -1853,7 +1853,8 @@
           const name = document.createElement('span');
           name.className = 'profile-name';
           name.textContent = profile.name;
-          name.onclick = () => {
+          name.onclick = (e) => {
+            e.stopPropagation();
             switchProfile(profile.id);
             toggleProfileMenu(false);
           };
@@ -1899,7 +1900,8 @@
         const newItem = document.createElement('div');
         newItem.className = 'profile-menu-item';
         newItem.innerHTML = '<span class="profile-name">➕ 新しいプロファイル</span>';
-        newItem.onclick = () => {
+        newItem.onclick = (e) => {
+          e.stopPropagation();
           const name = prompt('プロファイル名を入力:', '新しいプロファイル');
           if (name && name.trim()) {
             const newProfile = createNewProfile(name.trim());
@@ -1943,21 +1945,29 @@
       }
 
       function onDOMContentLoaded() {
-        // Initialize theme first
-        initTheme();
+        console.log("MeQR: DOM loaded, initializing...");
         
-        // Migrate old data if exists
-        migrateOldData();
-        
-        qrInstance = createQRCodeInstance();
+        try {
+          // Initialize theme first
+          initTheme();
+          
+          // Migrate old data if exists
+          migrateOldData();
+          
+          qrInstance = createQRCodeInstance();
 
-        // Load current profile
-        const initialData = loadCurrentProfile();
+          // Load current profile
+          const initialData = loadCurrentProfile();
+          console.log("MeQR: Initial data loaded", initialData);
 
-        fillDisplay(initialData);
-        fillForm(initialData);
-        regenerateQR(initialData);
-        updateProfileSelector();
+          fillDisplay(initialData);
+          fillForm(initialData);
+          regenerateQR(initialData);
+          updateProfileSelector();
+        } catch (err) {
+          console.error("MeQR: Initialization error", err);
+          alert("初期化エラーが発生しました: " + err.message);
+        }
 
         // Show onboarding if first time
         if (shouldShowOnboarding()) {
@@ -1965,24 +1975,33 @@
         }
 
         // Onboarding handlers
-        document.getElementById("btn-onboarding-start").addEventListener("click", () => {
-          hideOnboarding();
-          switchMode("edit");
-        });
+        const btnOnboardingStart = document.getElementById("btn-onboarding-start");
+        const btnOnboardingSkip = document.getElementById("btn-onboarding-skip");
+        
+        if (btnOnboardingStart) {
+          btnOnboardingStart.addEventListener("click", () => {
+            hideOnboarding();
+            switchMode("edit");
+          });
+        }
 
-        document.getElementById("btn-onboarding-skip").addEventListener("click", () => {
-          hideOnboarding();
-        });
+        if (btnOnboardingSkip) {
+          btnOnboardingSkip.addEventListener("click", () => {
+            hideOnboarding();
+          });
+        }
 
         // Profile selector
-        document.getElementById("btn-profile-toggle").addEventListener("click", () => {
+        document.getElementById("btn-profile-toggle").addEventListener("click", (e) => {
+          e.stopPropagation();
           toggleProfileMenu();
         });
 
         // Close profile menu when clicking outside
         document.addEventListener("click", (e) => {
           const dropdown = document.querySelector(".profile-dropdown");
-          if (dropdown && !dropdown.contains(e.target)) {
+          const menu = document.getElementById("profile-menu");
+          if (menu && dropdown && !dropdown.contains(e.target)) {
             toggleProfileMenu(false);
           }
         });
