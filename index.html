@@ -1541,8 +1541,7 @@
       }
 
       function readForm() {
-        const photoFile = document.getElementById("photoUpload").files[0];
-        const currentData = loadFromLocalStorage() || {};
+        const currentData = loadCurrentProfile() || {};
         
         return {
           lastName: document.getElementById("lastName").value.trim(),
@@ -1815,7 +1814,7 @@
         }
         
         // Regenerate QR code with new colors
-        const saved = loadFromLocalStorage();
+        const saved = loadCurrentProfile();
         if (saved && qrInstance) {
           regenerateQR(saved);
         }
