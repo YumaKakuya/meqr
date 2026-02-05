@@ -1,4 +1,4 @@
-const CACHE_NAME = "self-hosted-vcard-pwa-v2";
+const CACHE_NAME = "meqr-pwa-v3";
 
 const ASSETS = [
   "./",
