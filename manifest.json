@@ -1,7 +1,7 @@
 {
-  "name": "MeQR～めくる",
+  "name": "MeQR - デジタル名刺",
   "short_name": "MeQR",
-  "description": "サーバーにデータを保存せず、端末ローカルのみで完結するプライバシー・ファーストなデジタル名刺 PWA。",
+  "description": "ローカル完結型のプライバシー重視デジタル名刺アプリ。QRコードで簡単に連絡先を共有。",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

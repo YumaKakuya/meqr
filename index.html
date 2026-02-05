@@ -3,19 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#2563eb">
-  <title>分散型・自己完結型デジタル名刺</title>
+  <meta name="theme-color" content="#2563eb" id="themeColorMeta">
+  <title>MeQR - デジタル名刺</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="デジタル名刺">
+  <meta name="apple-mobile-web-app-title" content="MeQR">
   <link rel="apple-touch-icon" href="icons/icon-192.svg">
 
   <style>
     :root {
       color-scheme: light;
+    }
+
+    /* Light theme (default) */
+    :root,
+    [data-theme="light"] {
       --bg: #f8f9fa;
       --bg-elevated: #ffffff;
       --accent: #2563eb;
@@ -30,6 +35,41 @@
       --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --qr-dark: #020617;
+      --qr-light: #f9fafb;
+    }
+
+    /* Dark theme */
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0f172a;
+      --bg-elevated: #1e293b;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.15);
+      --accent-strong: rgba(59, 130, 246, 0.9);
+      --border-subtle: #334155;
+      --border-medium: #475569;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+      --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.5), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+      --qr-dark: #020617;
+      --qr-light: #f9fafb;
+    }
+
+    [data-theme="dark"] body {
+      background: linear-gradient(to bottom, #0f172a 0%, #020617 100%);
+    }
+
+    [data-theme="dark"] .photo-placeholder {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    }
+
+    [data-theme="dark"] .qr-shell {
+      background: #0f172a;
     }
 
     * {
@@ -587,20 +627,25 @@
     <header>
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">
-          <span>VC</span>
+          <span>Me</span>
         </div>
         <div>
-          <div class="brand-text-main">Self-Hosted vCard</div>
-          <div class="brand-text-sub">PRIVACY-FIRST DIGITAL BUSINESS CARD</div>
+          <div class="brand-text-main">MeQR</div>
+          <div class="brand-text-sub">DIGITAL BUSINESS CARD</div>
         </div>
       </div>
-      <div class="mode-toggle" role="tablist" aria-label="モード切替">
-        <button id="btn-view-mode" class="active" role="tab" aria-selected="true">
-          <span class="icon">📇</span><span>表示</span>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button id="btn-theme-toggle" class="btn-ghost" type="button" title="テーマ切り替え">
+          <span class="icon" id="themeIcon">🌙</span>
         </button>
-        <button id="btn-edit-mode" role="tab" aria-selected="false">
-          <span class="icon">⚙️</span><span>編集</span>
-        </button>
+        <div class="mode-toggle" role="tablist" aria-label="モード切替">
+          <button id="btn-view-mode" class="active" role="tab" aria-selected="true">
+            <span class="icon">📇</span><span>表示</span>
+          </button>
+          <button id="btn-edit-mode" role="tab" aria-selected="false">
+            <span class="icon">⚙️</span><span>編集</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -636,15 +681,21 @@
             <strong id="displayPhoneEmail">電話 / メール</strong>
             <span id="displayUrl" class="hint">URL（ポートフォリオ・SNSなど）</span>
           </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap: wrap;">
             <div class="sync-indicator">
               <span class="sync-dot"></span>
               <span id="syncStatusLabel">ローカル保存済み</span>
             </div>
-            <button id="btn-preview-vcard" class="btn-ghost" type="button">
-              <span class="icon">🔎</span>
-              <span>vCard を確認</span>
-            </button>
+            <div style="display:flex; gap:8px;">
+              <button id="btn-export-vcard" class="btn-ghost" type="button">
+                <span class="icon">💾</span>
+                <span>エクスポート</span>
+              </button>
+              <button id="btn-preview-vcard" class="btn-ghost" type="button">
+                <span class="icon">🔎</span>
+                <span>確認</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -751,7 +802,8 @@
     (function () {
       "use strict";
 
-      const STORAGE_KEY = "selfHostedVcardContact_v1";
+      const STORAGE_KEY = "meqr_contact_v2";
+      const THEME_KEY = "meqr_theme";
 
       /** @type {ReturnType<typeof createQRCodeInstance> | null} */
       let qrInstance = null;
@@ -763,9 +815,6 @@
         if (globalThis.qrcode && globalThis.qrcode.stringToBytesFuncs && globalThis.qrcode.stringToBytesFuncs["UTF-8"]) {
           globalThis.qrcode.stringToBytes = globalThis.qrcode.stringToBytesFuncs["UTF-8"];
         }
-
-        const DARK = "#020617";
-        const LIGHT = "#f9fafb";
 
         return {
           clear() {
@@ -779,6 +828,10 @@
             const qr = globalThis.qrcode(0, "L");
             qr.addData(String(text || ""), "Byte");
             qr.make();
+
+            // Use CSS variables for QR colors
+            const DARK = getComputedStyle(document.documentElement).getPropertyValue('--qr-dark').trim();
+            const LIGHT = getComputedStyle(document.documentElement).getPropertyValue('--qr-light').trim();
 
             let svg = qr.createSvgTag({ cellSize: 4, margin: 1, scalable: true });
             // Replace default black/white colors to match UI.
@@ -1071,7 +1124,61 @@
         alert("現在の vCard 文字列（UTF-8）:\n\n" + pretty);
       }
 
+      function exportVCard(data) {
+        const vcard = buildVCard(data);
+        const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        
+        const lastName = data.lastName || "contact";
+        const firstName = data.firstName || "";
+        const filename = `${lastName}_${firstName}`.trim().replace(/\s+/g, "_") + ".vcf";
+        
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function initTheme() {
+        const savedTheme = localStorage.getItem(THEME_KEY) || "light";
+        applyTheme(savedTheme);
+      }
+
+      function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem(THEME_KEY, theme);
+        
+        const themeIcon = document.getElementById("themeIcon");
+        const themeColorMeta = document.getElementById("themeColorMeta");
+        
+        if (themeIcon) {
+          themeIcon.textContent = theme === "dark" ? "☀️" : "🌙";
+        }
+        
+        if (themeColorMeta) {
+          themeColorMeta.setAttribute("content", theme === "dark" ? "#1e293b" : "#2563eb");
+        }
+        
+        // Regenerate QR code with new colors
+        const saved = loadFromLocalStorage();
+        if (saved && qrInstance) {
+          regenerateQR(saved);
+        }
+      }
+
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        applyTheme(newTheme);
+      }
+
       function onDOMContentLoaded() {
+        // Initialize theme first
+        initTheme();
+        
         qrInstance = createQRCodeInstance();
 
         const saved = loadFromLocalStorage();
@@ -1089,6 +1196,11 @@
         fillDisplay(initialData);
         fillForm(initialData);
         regenerateQR(initialData);
+
+        // Theme toggle
+        document.getElementById("btn-theme-toggle").addEventListener("click", () => {
+          toggleTheme();
+        });
 
         document.getElementById("btn-view-mode").addEventListener("click", () => {
           switchMode("view");
@@ -1148,6 +1260,15 @@
         document.getElementById("btn-preview-vcard").addEventListener("click", () => {
           const data = loadFromLocalStorage() || readForm();
           previewVCard(data);
+        });
+
+        document.getElementById("btn-export-vcard").addEventListener("click", () => {
+          const data = loadFromLocalStorage();
+          if (!data || (!data.lastName && !data.firstName)) {
+            alert("エクスポートする連絡先情報がありません。先に名前を入力して保存してください。");
+            return;
+          }
+          exportVCard(data);
         });
 
         // Photo upload handler
