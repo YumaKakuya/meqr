@@ -2111,7 +2111,7 @@
 
         if ("serviceWorker" in navigator) {
           // sw.js の挙動を変更したので、URLにバージョンを付けて更新を確実化する。
-          navigator.serviceWorker.register("sw.js?v=3")
+          navigator.serviceWorker.register("sw.js?v=4")
             .then(reg => {
               console.log("ServiceWorker registered", reg);
               try {
