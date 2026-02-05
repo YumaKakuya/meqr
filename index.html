@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="theme-color" content="#2563eb" id="themeColorMeta">
+  <meta name="theme-color" content="#1e293b" id="themeColorMeta">
   <title>MeQR - デジタル名刺</title>
 
   <!-- PWA -->
@@ -407,6 +407,19 @@
       justify-content: center;
       padding: 16px;
       box-shadow: var(--shadow);
+      transition: max-width 0.3s ease;
+    }
+
+    .qr-inner.size-small {
+      max-width: 200px;
+    }
+
+    .qr-inner.size-medium {
+      max-width: 280px;
+    }
+
+    .qr-inner.size-large {
+      max-width: 340px;
     }
 
     #qrcode {
@@ -709,110 +722,182 @@
       display: none;
     }
 
-    /* Profile Selector */
-    .profile-selector {
+    /* Hamburger Menu */
+    .hamburger-btn {
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .profile-dropdown {
-      position: relative;
-    }
-
-    .profile-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border-medium);
-      background: var(--bg-elevated);
+      justify-content: center;
+      border: none;
+      background: transparent;
       color: var(--text-main);
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 24px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: var(--shadow-sm);
+      border-radius: 8px;
+      transition: background 0.2s ease;
     }
 
-    .profile-btn:hover {
+    .hamburger-btn:hover {
       background: var(--accent-soft);
-      border-color: var(--accent);
     }
 
-    .profile-menu {
-      position: absolute;
-      top: 100%;
+    .menu-overlay {
+      position: fixed;
+      top: 0;
       left: 0;
-      margin-top: 4px;
-      min-width: 220px;
-      max-height: 300px;
-      overflow-y: auto;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-medium);
-      border-radius: 10px;
-      box-shadow: var(--shadow-lg);
-      z-index: 1000;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 2000;
       display: none;
+      backdrop-filter: blur(4px);
     }
 
-    .profile-menu.active {
+    .menu-overlay.active {
       display: block;
     }
 
-    .profile-menu-item {
-      padding: 10px 14px;
+    .menu-drawer {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 320px;
+      max-width: 85vw;
+      height: 100%;
+      background: var(--bg-elevated);
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+      z-index: 2001;
+      transition: right 0.3s ease;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-drawer.active {
+      right: 0;
+    }
+
+    .menu-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-subtle);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      cursor: pointer;
-      transition: background 0.2s ease;
-      border-bottom: 1px solid var(--border-subtle);
     }
 
-    .profile-menu-item:last-child {
-      border-bottom: none;
+    .menu-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
     }
 
-    .profile-menu-item:hover {
-      background: var(--accent-soft);
-    }
-
-    .profile-menu-item.active {
-      background: var(--accent-soft);
-      font-weight: 600;
-    }
-
-    .profile-menu-item .profile-name {
-      flex: 1;
-      font-size: 13px;
-    }
-
-    .profile-menu-item .profile-actions {
-      display: flex;
-      gap: 4px;
-    }
-
-    .profile-action-btn {
-      padding: 2px 6px;
-      font-size: 11px;
+    .menu-close-btn {
+      width: 32px;
+      height: 32px;
       border: none;
       background: transparent;
+      color: var(--text-muted);
+      font-size: 24px;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .menu-close-btn:hover {
+      background: var(--accent-soft);
+      color: var(--text-main);
+    }
+
+    .menu-content {
+      flex: 1;
+      padding: 12px 0;
+    }
+
+    .menu-item {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
       transition: background 0.2s ease;
+      border-left: 3px solid transparent;
     }
 
-    .profile-action-btn:hover {
-      background: var(--border-medium);
+    .menu-item:hover {
+      background: var(--accent-soft);
+      border-left-color: var(--accent);
     }
 
-    .profile-menu-divider {
+    .menu-item-icon {
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .menu-item-text {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .menu-item-arrow {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .menu-divider {
       height: 1px;
-      background: var(--border-medium);
-      margin: 4px 0;
+      background: var(--border-subtle);
+      margin: 8px 0;
+    }
+
+    .menu-section-title {
+      padding: 12px 20px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Mode Toggle (Improved) */
+    .mode-toggle-large {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      background: var(--bg-elevated);
+      border-radius: 12px;
+      border: 1px solid var(--border-medium);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mode-toggle-large button {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .mode-toggle-large button.active {
+      background: var(--accent);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .mode-toggle-large button .icon {
+      font-size: 18px;
     }
 
     /* Onboarding */
@@ -965,35 +1050,20 @@
           <div class="brand-text-sub">DIGITAL BUSINESS CARD</div>
         </div>
       </div>
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <div class="profile-selector">
-          <div class="profile-dropdown">
-            <button id="btn-profile-toggle" class="profile-btn" type="button" title="名刺を選ぶ">
-              <span>📇</span>
-              <span id="current-profile-name">メイン名刺</span>
-              <span>▾</span>
-            </button>
-            <div id="profile-menu" class="profile-menu">
-              <!-- Profiles will be dynamically inserted here -->
-            </div>
-          </div>
-        </div>
-        <button id="btn-help" class="btn-ghost" type="button" title="ヘルプ・ガイドを表示">
-          <span class="icon">❓</span>
-        </button>
-        <button id="btn-theme-toggle" class="btn-ghost" type="button" title="テーマ切り替え">
-          <span class="icon" id="themeIcon">🌙</span>
-        </button>
-        <div class="mode-toggle" role="tablist" aria-label="モード切替">
-          <button id="btn-view-mode" class="active" role="tab" aria-selected="true">
-            <span class="icon">📇</span><span>表示</span>
-          </button>
-          <button id="btn-edit-mode" role="tab" aria-selected="false">
-            <span class="icon">⚙️</span><span>編集</span>
-          </button>
-        </div>
-      </div>
+      <button id="btn-hamburger" class="hamburger-btn" type="button" title="メニューを開く">
+        ☰
+      </button>
     </header>
+
+    <!-- Mode Toggle (Large, Improved) -->
+    <div class="mode-toggle-large" role="tablist" aria-label="モード切替">
+      <button id="btn-view-mode" class="active" role="tab" aria-selected="true">
+        <span class="icon">👁️</span><span>表示モード</span>
+      </button>
+      <button id="btn-edit-mode" role="tab" aria-selected="false">
+        <span class="icon">✏️</span><span>編集モード</span>
+      </button>
+    </div>
 
     <main>
       <section class="card" aria-label="デジタル名刺">
@@ -1116,9 +1186,37 @@
           <div class="field-group">
             <div class="field-label">URL / WEBSITE</div>
             <div class="input-shell">
-              <input id="url" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com" maxlength="80">
+              <input id="url" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com" maxlength="100">
             </div>
-            <div class="hint">ウェブサイト、SNS、ポートフォリオなど</div>
+            <div class="hint">個人サイト、ポートフォリオなど</div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">🔗 SNS・ソーシャルメディア</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="input-shell">
+                <input id="linkedin" type="url" inputmode="url" placeholder="LinkedIn: https://linkedin.com/in/yourname" maxlength="100">
+              </div>
+              <div class="input-shell">
+                <input id="twitter" type="url" inputmode="url" placeholder="X (Twitter): https://x.com/yourname" maxlength="100">
+              </div>
+              <div class="input-shell">
+                <input id="instagram" type="url" inputmode="url" placeholder="Instagram: https://instagram.com/yourname" maxlength="100">
+              </div>
+              <div class="input-shell">
+                <input id="facebook" type="url" inputmode="url" placeholder="Facebook: https://facebook.com/yourname" maxlength="100">
+              </div>
+              <div class="input-shell">
+                <input id="github" type="url" inputmode="url" placeholder="GitHub: https://github.com/yourname" maxlength="100">
+              </div>
+              <div class="input-shell">
+                <input id="youtube" type="url" inputmode="url" placeholder="YouTube: https://youtube.com/@yourname" maxlength="100">
+              </div>
+              <div class="input-shell">
+                <input id="customUrl" type="url" inputmode="url" placeholder="その他のURL" maxlength="100">
+              </div>
+            </div>
+            <div class="hint">QRコードに含める場合は入力してください（任意）</div>
           </div>
 
           <div class="footer-actions">
@@ -1145,6 +1243,53 @@
         </div>
       </section>
     </main>
+  </div>
+
+  <!-- Hamburger Menu -->
+  <div id="menu-overlay" class="menu-overlay"></div>
+  <div id="menu-drawer" class="menu-drawer">
+    <div class="menu-header">
+      <div class="menu-title">メニュー</div>
+      <button id="menu-close-btn" class="menu-close-btn">✕</button>
+    </div>
+    <div class="menu-content">
+      <div class="menu-item" id="menu-profiles">
+        <span class="menu-item-icon">📇</span>
+        <span class="menu-item-text">名刺を選ぶ</span>
+        <span class="menu-item-arrow">›</span>
+      </div>
+      <div class="menu-divider"></div>
+      <div class="menu-item" id="menu-share">
+        <span class="menu-item-icon">📤</span>
+        <span class="menu-item-text">共有する</span>
+        <span class="menu-item-arrow">›</span>
+      </div>
+      <div class="menu-item" id="menu-sns">
+        <span class="menu-item-icon">🔗</span>
+        <span class="menu-item-text">SNS・リンク設定</span>
+        <span class="menu-item-arrow">›</span>
+      </div>
+      <div class="menu-divider"></div>
+      <div class="menu-item" id="menu-settings">
+        <span class="menu-item-icon">⚙️</span>
+        <span class="menu-item-text">設定</span>
+        <span class="menu-item-arrow">›</span>
+      </div>
+      <div class="menu-item" id="menu-data">
+        <span class="menu-item-icon">💾</span>
+        <span class="menu-item-text">データの保存・削除</span>
+        <span class="menu-item-arrow">›</span>
+      </div>
+      <div class="menu-divider"></div>
+      <div class="menu-item" id="menu-help">
+        <span class="menu-item-icon">❓</span>
+        <span class="menu-item-text">ヘルプ・使い方</span>
+      </div>
+      <div class="menu-item" id="menu-about">
+        <span class="menu-item-icon">ℹ️</span>
+        <span class="menu-item-text">このアプリについて</span>
+      </div>
+    </div>
   </div>
 
   <!-- Onboarding Overlay -->
@@ -1274,6 +1419,13 @@
         const org = data.org || "";
         const title = data.title || "";
         const url = data.url || "";
+        const linkedin = data.linkedin || "";
+        const twitter = data.twitter || "";
+        const instagram = data.instagram || "";
+        const facebook = data.facebook || "";
+        const github = data.github || "";
+        const youtube = data.youtube || "";
+        const customUrl = data.customUrl || "";
 
         const fullName = (lastName + " " + firstName).trim() || "My Contact";
 
@@ -1300,7 +1452,35 @@
         }
 
         if (url) {
-          v += ln("URL:" + escapeVCardValue(url));
+          v += ln("URL;TYPE=HOME:" + escapeVCardValue(url));
+        }
+
+        if (linkedin) {
+          v += ln("URL;TYPE=LINKEDIN:" + escapeVCardValue(linkedin));
+        }
+
+        if (twitter) {
+          v += ln("URL;TYPE=TWITTER:" + escapeVCardValue(twitter));
+        }
+
+        if (instagram) {
+          v += ln("URL;TYPE=INSTAGRAM:" + escapeVCardValue(instagram));
+        }
+
+        if (facebook) {
+          v += ln("URL;TYPE=FACEBOOK:" + escapeVCardValue(facebook));
+        }
+
+        if (github) {
+          v += ln("URL;TYPE=GITHUB:" + escapeVCardValue(github));
+        }
+
+        if (youtube) {
+          v += ln("URL;TYPE=YOUTUBE:" + escapeVCardValue(youtube));
+        }
+
+        if (customUrl) {
+          v += ln("URL;TYPE=OTHER:" + escapeVCardValue(customUrl));
         }
 
         v += ln("END:VCARD");
@@ -1353,7 +1533,14 @@
             org: "",
             title: "",
             url: "",
-            photo: ""
+            photo: "",
+            linkedin: "",
+            twitter: "",
+            instagram: "",
+            facebook: "",
+            github: "",
+            youtube: "",
+            customUrl: ""
           },
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
@@ -1541,10 +1728,35 @@
         document.getElementById("org").value = data.org || "";
         document.getElementById("title").value = data.title || "";
         document.getElementById("url").value = data.url || "";
+        
+        // SNS fields (if they exist in DOM)
+        const linkedinInput = document.getElementById("linkedin");
+        const twitterInput = document.getElementById("twitter");
+        const instagramInput = document.getElementById("instagram");
+        const facebookInput = document.getElementById("facebook");
+        const githubInput = document.getElementById("github");
+        const youtubeInput = document.getElementById("youtube");
+        const customUrlInput = document.getElementById("customUrl");
+        
+        if (linkedinInput) linkedinInput.value = data.linkedin || "";
+        if (twitterInput) twitterInput.value = data.twitter || "";
+        if (instagramInput) instagramInput.value = data.instagram || "";
+        if (facebookInput) facebookInput.value = data.facebook || "";
+        if (githubInput) githubInput.value = data.github || "";
+        if (youtubeInput) youtubeInput.value = data.youtube || "";
+        if (customUrlInput) customUrlInput.value = data.customUrl || "";
       }
 
       function readForm() {
         const currentData = loadCurrentProfile() || {};
+        
+        const linkedinInput = document.getElementById("linkedin");
+        const twitterInput = document.getElementById("twitter");
+        const instagramInput = document.getElementById("instagram");
+        const facebookInput = document.getElementById("facebook");
+        const githubInput = document.getElementById("github");
+        const youtubeInput = document.getElementById("youtube");
+        const customUrlInput = document.getElementById("customUrl");
         
         return {
           lastName: document.getElementById("lastName").value.trim(),
@@ -1554,7 +1766,14 @@
           org: document.getElementById("org").value.trim(),
           title: document.getElementById("title").value.trim(),
           url: document.getElementById("url").value.trim(),
-          photo: currentData.photo || ""
+          photo: currentData.photo || "",
+          linkedin: linkedinInput ? linkedinInput.value.trim() : "",
+          twitter: twitterInput ? twitterInput.value.trim() : "",
+          instagram: instagramInput ? instagramInput.value.trim() : "",
+          facebook: facebookInput ? facebookInput.value.trim() : "",
+          github: githubInput ? githubInput.value.trim() : "",
+          youtube: youtubeInput ? youtubeInput.value.trim() : "",
+          customUrl: customUrlInput ? customUrlInput.value.trim() : ""
         };
       }
 
@@ -1797,7 +2016,7 @@
       }
 
       function initTheme() {
-        const savedTheme = localStorage.getItem(THEME_KEY) || "light";
+        const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
         applyTheme(savedTheme);
       }
 
@@ -1951,6 +2170,259 @@
         showOnboarding();
       }
 
+      // === Hamburger Menu Functions ===
+
+      function openMenu() {
+        document.getElementById("menu-overlay").classList.add("active");
+        document.getElementById("menu-drawer").classList.add("active");
+      }
+
+      function closeMenu() {
+        document.getElementById("menu-overlay").classList.remove("active");
+        document.getElementById("menu-drawer").classList.remove("active");
+      }
+
+      function showProfilesSubmenu() {
+        const profiles = getAllProfiles();
+        const currentId = getCurrentProfileId();
+        
+        let html = '<div class="menu-header"><div class="menu-title">名刺を選ぶ</div><button class="menu-close-btn" onclick="history.back()">←</button></div><div class="menu-content">';
+        
+        profiles.forEach(profile => {
+          const active = profile.id === currentId ? ' (使用中)' : '';
+          html += `
+            <div class="menu-item" onclick="switchProfileAndClose('${profile.id}')">
+              <span class="menu-item-icon">${profile.id === currentId ? '✓' : '📇'}</span>
+              <span class="menu-item-text">${profile.name}${active}</span>
+            </div>
+          `;
+        });
+        
+        html += '<div class="menu-divider"></div>';
+        html += `
+          <div class="menu-item" onclick="createNewProfilePrompt()">
+            <span class="menu-item-icon">➕</span>
+            <span class="menu-item-text">新しい名刺を作成</span>
+          </div>
+        `;
+        html += '</div>';
+        
+        const drawer = document.getElementById("menu-drawer");
+        drawer.innerHTML = html;
+      }
+
+      function showShareSubmenu() {
+        const data = loadCurrentProfile();
+        
+        let html = '<div class="menu-header"><div class="menu-title">共有する</div><button class="menu-close-btn" onclick="history.back()">←</button></div><div class="menu-content">';
+        
+        html += `
+          <div class="menu-item" onclick="closeMenuOnly()">
+            <span class="menu-item-icon">📱</span>
+            <span class="menu-item-text">QRコードを見せる</span>
+          </div>
+          <div class="menu-item" onclick="shareVCardFromMenu()">
+            <span class="menu-item-icon">💬</span>
+            <span class="menu-item-text">LINEなどで送る</span>
+          </div>
+          <div class="menu-item" onclick="downloadQRFromMenu()">
+            <span class="menu-item-icon">🖼️</span>
+            <span class="menu-item-text">QR画像を保存</span>
+          </div>
+          <div class="menu-item" onclick="exportVCardFromMenu()">
+            <span class="menu-item-icon">📄</span>
+            <span class="menu-item-text">ファイルで保存 (.vcf)</span>
+          </div>
+        `;
+        
+        html += '</div>';
+        
+        const drawer = document.getElementById("menu-drawer");
+        drawer.innerHTML = html;
+      }
+
+      function showSettingsSubmenu() {
+        let html = '<div class="menu-header"><div class="menu-title">設定</div><button class="menu-close-btn" onclick="history.back()">←</button></div><div class="menu-content">';
+        
+        html += `
+          <div class="menu-section-title">QRコードサイズ</div>
+          <div class="menu-item" onclick="setQRSize('large')">
+            <span class="menu-item-icon">📐</span>
+            <span class="menu-item-text">大（読み取りやすい）</span>
+          </div>
+          <div class="menu-item" onclick="setQRSize('medium')">
+            <span class="menu-item-icon">📐</span>
+            <span class="menu-item-text">中（標準・推奨）</span>
+          </div>
+          <div class="menu-item" onclick="setQRSize('small')">
+            <span class="menu-item-icon">📐</span>
+            <span class="menu-item-text">小（コンパクト）</span>
+          </div>
+          <div class="menu-divider"></div>
+          <div class="menu-section-title">プライバシー</div>
+          <div class="menu-item">
+            <span class="menu-item-icon">🔐</span>
+            <span class="menu-item-text">パスワード保護（準備中）</span>
+          </div>
+        `;
+        
+        html += '</div>';
+        
+        const drawer = document.getElementById("menu-drawer");
+        drawer.innerHTML = html;
+      }
+
+      function showDataSubmenu() {
+        let html = '<div class="menu-header"><div class="menu-title">データの保存・削除</div><button class="menu-close-btn" onclick="history.back()">←</button></div><div class="menu-content">';
+        
+        html += `
+          <div class="menu-item" onclick="showStorageInfo()">
+            <span class="menu-item-icon">📊</span>
+            <span class="menu-item-text">保存容量を確認</span>
+          </div>
+          <div class="menu-divider"></div>
+          <div class="menu-item" onclick="deleteAllData()">
+            <span class="menu-item-icon">🗑️</span>
+            <span class="menu-item-text" style="color: var(--danger);">すべて削除</span>
+          </div>
+        `;
+        
+        html += '</div>';
+        
+        const drawer = document.getElementById("menu-drawer");
+        drawer.innerHTML = html;
+      }
+
+      function showAboutSubmenu() {
+        let html = '<div class="menu-header"><div class="menu-title">このアプリについて</div><button class="menu-close-btn" onclick="history.back()">←</button></div><div class="menu-content" style="padding: 20px;">';
+        
+        html += `
+          <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 48px; margin-bottom: 8px;">📇</div>
+            <div style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">MeQR</div>
+            <div style="font-size: 13px; color: var(--text-muted);">バージョン 1.0.0</div>
+          </div>
+          <div style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 16px;">
+            ローカル完結型のプライバシー重視デジタル名刺アプリ。サーバーにデータを一切送信せず、ブラウザのみで動作します。
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="padding: 8px; background: var(--accent-soft); border-radius: 8px; font-size: 12px;">
+              ✅ 完全プライバシー保護
+            </div>
+            <div style="padding: 8px; background: var(--accent-soft); border-radius: 8px; font-size: 12px;">
+              ✅ 完全無料・広告なし
+            </div>
+            <div style="padding: 8px; background: var(--accent-soft); border-radius: 8px; font-size: 12px;">
+              ✅ オープンソース
+            </div>
+          </div>
+          <div style="margin-top: 20px; text-align: center;">
+            <a href="https://github.com/YumaKakuya/meqr" target="_blank" style="color: var(--accent); text-decoration: none; font-size: 13px;">
+              📂 GitHubリポジトリ
+            </a>
+          </div>
+        `;
+        
+        html += '</div>';
+        
+        const drawer = document.getElementById("menu-drawer");
+        drawer.innerHTML = html;
+      }
+
+      // Menu helper functions (called from onclick)
+      window.switchProfileAndClose = function(profileId) {
+        switchProfile(profileId);
+        closeMenu();
+      };
+
+      window.createNewProfilePrompt = function() {
+        const name = prompt('名刺の名前を入力してください:', '新しい名刺');
+        if (name && name.trim()) {
+          const newProfile = createNewProfile(name.trim());
+          switchProfile(newProfile.id);
+        }
+        closeMenu();
+      };
+
+      window.closeMenuOnly = function() {
+        closeMenu();
+      };
+
+      window.shareVCardFromMenu = async function() {
+        const data = loadCurrentProfile();
+        if (!data || (!data.lastName && !data.firstName)) {
+          alert("共有する連絡先情報がありません。");
+          return;
+        }
+        closeMenu();
+        await shareVCard(data);
+      };
+
+      window.downloadQRFromMenu = function() {
+        const data = loadCurrentProfile();
+        if (!data || (!data.lastName && !data.firstName)) {
+          alert("QRコードを保存する前に、連絡先情報を入力してください。");
+          return;
+        }
+        closeMenu();
+        downloadQRCode(data);
+      };
+
+      window.exportVCardFromMenu = function() {
+        const data = loadCurrentProfile();
+        if (!data || (!data.lastName && !data.firstName)) {
+          alert("エクスポートする連絡先情報がありません。");
+          return;
+        }
+        closeMenu();
+        exportVCard(data);
+      };
+
+      window.setQRSize = function(size) {
+        localStorage.setItem('meqr_qr_size', size);
+        
+        const qrInner = document.querySelector('.qr-inner');
+        if (qrInner) {
+          qrInner.classList.remove('size-small', 'size-medium', 'size-large');
+          qrInner.classList.add('size-' + size);
+        }
+        
+        const sizeText = size === 'large' ? '大' : size === 'medium' ? '中' : '小';
+        alert(`QRコードサイズを「${sizeText}」に設定しました。`);
+        closeMenu();
+      };
+
+      function applyQRSize() {
+        const size = localStorage.getItem('meqr_qr_size') || 'medium';
+        const qrInner = document.querySelector('.qr-inner');
+        if (qrInner) {
+          qrInner.classList.add('size-' + size);
+        }
+      }
+
+      window.showStorageInfo = function() {
+        const profiles = getAllProfiles();
+        const dataStr = JSON.stringify(profiles);
+        const bytes = new Blob([dataStr]).size;
+        const kb = (bytes / 1024).toFixed(2);
+        alert(`保存データ容量:\n\n${kb} KB\n名刺数: ${profiles.length}個\n\n※ ブラウザの制限: 約5-10MB`);
+      };
+
+      window.deleteAllData = function() {
+        const confirm1 = confirm("⚠️ すべての名刺データを削除します。\n\nこの操作は取り消せません。本当に削除しますか？");
+        if (!confirm1) return;
+        
+        const confirm2 = confirm("最終確認:\n\n本当にすべてのデータを削除しますか？");
+        if (!confirm2) return;
+        
+        localStorage.removeItem(PROFILES_KEY);
+        localStorage.removeItem(CURRENT_PROFILE_KEY);
+        localStorage.removeItem(ONBOARDING_KEY);
+        
+        alert("すべてのデータを削除しました。ページをリロードします。");
+        location.reload();
+      };
+
       function onDOMContentLoaded() {
         console.log("MeQR: DOM loaded, initializing...");
         
@@ -1967,10 +2439,11 @@
           const initialData = loadCurrentProfile();
           console.log("MeQR: Initial data loaded", initialData);
 
-          fillDisplay(initialData);
-          fillForm(initialData);
-          regenerateQR(initialData);
-          updateProfileSelector();
+        fillDisplay(initialData);
+        fillForm(initialData);
+        regenerateQR(initialData);
+        updateProfileSelector();
+        applyQRSize();
         } catch (err) {
           console.error("MeQR: Initialization error", err);
           alert("初期化エラーが発生しました: " + err.message);
@@ -1998,29 +2471,49 @@
           });
         }
 
-        // Profile selector
-        document.getElementById("btn-profile-toggle").addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleProfileMenu();
+        // Hamburger menu
+        document.getElementById("btn-hamburger").addEventListener("click", () => {
+          openMenu();
         });
 
-        // Close profile menu when clicking outside
-        document.addEventListener("click", (e) => {
-          const dropdown = document.querySelector(".profile-dropdown");
-          const menu = document.getElementById("profile-menu");
-          if (menu && dropdown && !dropdown.contains(e.target)) {
-            toggleProfileMenu(false);
-          }
+        document.getElementById("menu-close-btn").addEventListener("click", () => {
+          closeMenu();
         });
 
-        // Help button - show onboarding again
-        document.getElementById("btn-help").addEventListener("click", () => {
+        document.getElementById("menu-overlay").addEventListener("click", () => {
+          closeMenu();
+        });
+
+        // Menu items
+        document.getElementById("menu-profiles").addEventListener("click", () => {
+          showProfilesSubmenu();
+        });
+
+        document.getElementById("menu-share").addEventListener("click", () => {
+          showShareSubmenu();
+        });
+
+        document.getElementById("menu-sns").addEventListener("click", () => {
+          closeMenu();
+          switchMode("edit");
+          document.getElementById("linkedin").scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+
+        document.getElementById("menu-settings").addEventListener("click", () => {
+          showSettingsSubmenu();
+        });
+
+        document.getElementById("menu-data").addEventListener("click", () => {
+          showDataSubmenu();
+        });
+
+        document.getElementById("menu-help").addEventListener("click", () => {
+          closeMenu();
           showOnboarding();
         });
 
-        // Theme toggle
-        document.getElementById("btn-theme-toggle").addEventListener("click", () => {
-          toggleTheme();
+        document.getElementById("menu-about").addEventListener("click", () => {
+          showAboutSubmenu();
         });
 
         document.getElementById("btn-view-mode").addEventListener("click", () => {
