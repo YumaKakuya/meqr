@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#050816">
+  <meta name="theme-color" content="#2563eb">
   <title>分散型・自己完結型デジタル名刺</title>
 
   <!-- PWA -->
@@ -15,16 +15,21 @@
 
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #02010a;
-      --bg-elevated: #050816;
-      --accent: #4f46e5;
-      --accent-soft: rgba(79, 70, 229, 0.1);
-      --accent-strong: rgba(129, 140, 248, 0.35);
-      --border-subtle: rgba(148, 163, 184, 0.35);
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --danger: #f97373;
+      color-scheme: light;
+      --bg: #f8f9fa;
+      --bg-elevated: #ffffff;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.1);
+      --accent-strong: rgba(37, 99, 235, 0.85);
+      --border-subtle: #e5e7eb;
+      --border-medium: #d1d5db;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --danger: #dc2626;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     }
 
     * {
@@ -35,7 +40,7 @@
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Noto Sans JP", sans-serif;
-      background: radial-gradient(circle at top, #111827 0, #02010a 55%, #000 100%);
+      background: linear-gradient(to bottom, #f0f4f8 0%, #e6ecf1 100%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -45,99 +50,93 @@
 
     .app-root {
       width: 100%;
-      max-width: 480px;
+      max-width: 520px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding: env(safe-area-inset-top, 16px) 16px env(safe-area-inset-bottom, 24px);
-      gap: 16px;
+      padding: env(safe-area-inset-top, 20px) 20px env(safe-area-inset-bottom, 24px);
+      gap: 20px;
     }
 
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 2px;
+      padding: 8px 4px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .brand-mark {
-      width: 30px;
-      height: 30px;
-      border-radius: 12px;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(248, 250, 252, 0.35), transparent 55%),
-        radial-gradient(circle at 70% 80%, rgba(94, 234, 212, 0.45), transparent 65%),
-        radial-gradient(circle at 15% 80%, rgba(129, 140, 248, 0.5), transparent 60%),
-        linear-gradient(145deg, #020617, #111827);
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      border: 2px solid #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow:
-        0 16px 40px rgba(15, 23, 42, 0.9),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
+      box-shadow: var(--shadow-md);
     }
 
     .brand-mark span {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: #ffffff;
     }
 
     .brand-text-main {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-main);
     }
 
     .brand-text-sub {
       font-size: 11px;
       color: var(--text-muted);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
     }
 
     .mode-toggle {
       display: inline-flex;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.85);
-      padding: 3px;
-      gap: 2px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.9);
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 4px;
+      gap: 4px;
+      border: 1px solid var(--border-medium);
+      box-shadow: var(--shadow-sm);
     }
 
     .mode-toggle button {
       border: none;
       background: transparent;
       color: var(--text-muted);
-      font-size: 11px;
-      padding: 6px 12px;
-      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 14px;
+      border-radius: 7px;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       cursor: pointer;
-      transition: all 0.14s ease-out;
+      transition: all 0.2s ease;
     }
 
     .mode-toggle button.active {
-      background: linear-gradient(135deg, #4f46e5, #22d3ee);
+      background: var(--accent);
       color: white;
-      box-shadow:
-        0 0 0 1px rgba(191, 219, 254, 0.6),
-        0 10px 26px rgba(56, 189, 248, 0.55);
+      box-shadow: var(--shadow-sm);
     }
 
     .mode-toggle button span.icon {
-      font-size: 12px;
+      font-size: 14px;
     }
 
     main {
@@ -148,106 +147,126 @@
     .card {
       position: relative;
       flex: 1;
-      border-radius: 26px;
-      padding: 16px 16px 18px;
-      background:
-        radial-gradient(circle at top left, rgba(79, 70, 229, 0.45), transparent 50%),
-        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.35), transparent 55%),
-        linear-gradient(145deg, #020617, #020617 10%, #030712 50%, #020617 100%);
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      box-shadow:
-        0 24px 70px rgba(15, 23, 42, 0.95),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
+      border-radius: 16px;
+      padding: 24px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-lg);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 20px;
       overflow: hidden;
     }
 
     .card-header {
       display: flex;
-      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border-subtle);
+    }
+
+    .photo-area {
+      flex-shrink: 0;
+    }
+
+    .photo-placeholder {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+      display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      font-size: 32px;
+      border: 2px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+    }
+
+    #displayPhoto {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+      display: none;
     }
 
     .id-block {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
     .name-main {
-      font-size: 18px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-main);
+      line-height: 1.3;
     }
 
     .name-sub {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-muted);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.01em;
+      line-height: 1.4;
     }
 
     .meta-chips {
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
+      margin-top: 4px;
     }
 
     .chip {
       font-size: 10px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(148, 163, 184, 0.65);
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #f3f4f6;
+      border: 1px solid var(--border-medium);
       color: var(--text-muted);
-      letter-spacing: 0.09em;
+      letter-spacing: 0.03em;
       text-transform: uppercase;
     }
 
     .chip-strong {
-      border-color: rgba(129, 140, 248, 0.8);
-      color: #c7d2fe;
-      background: radial-gradient(circle at top left, rgba(129, 140, 248, 0.5), transparent 70%);
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
     }
 
     .qr-shell {
       position: relative;
-      margin-top: 6px;
       flex: 1;
-      min-height: 260px;
-      max-height: 340px;
-      border-radius: 22px;
-      background:
-        radial-gradient(circle at top, rgba(15, 23, 42, 0.8), transparent 55%),
-        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.9), transparent 60%),
-        linear-gradient(145deg, #020617, #020617 20%, #020617 80%);
-      border: 1px solid rgba(148, 163, 184, 0.45);
+      min-height: 280px;
+      max-height: 360px;
+      border-radius: 12px;
+      background: #f9fafb;
+      border: 2px dashed var(--border-medium);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 18px;
-      box-shadow:
-        inset 0 0 0 1px rgba(15, 23, 42, 0.9),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
+      padding: 20px;
       overflow: hidden;
     }
 
     .qr-inner {
       position: relative;
       width: 100%;
-      max-width: 260px;
+      max-width: 280px;
       aspect-ratio: 1 / 1;
-      border-radius: 18px;
-      background: radial-gradient(circle at top left, rgba(129, 140, 248, 0.25), transparent 65%);
+      border-radius: 8px;
+      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 14px;
-      box-shadow:
-        0 26px 40px rgba(15, 23, 42, 0.9),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
+      padding: 16px;
+      box-shadow: var(--shadow);
     }
 
     #qrcode {
@@ -260,86 +279,101 @@
 
     .brightness-tip {
       position: absolute;
-      bottom: 10px;
+      bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
       font-size: 10px;
       color: var(--text-muted);
-      background: rgba(15, 23, 42, 0.92);
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-medium);
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-sm);
+      max-width: 90%;
+      text-align: center;
     }
 
     .brightness-tip span.icon {
-      font-size: 12px;
+      font-size: 13px;
     }
 
     .contact-meta {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
-      gap: 8px;
-      font-size: 11px;
-      color: var(--text-muted);
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-subtle);
     }
 
     .contact-meta-left {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 8px;
     }
 
     .contact-meta-left strong {
-      font-size: 11px;
-      letter-spacing: 0.06em;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: 0.01em;
+    }
+
+    .contact-meta-left .hint {
+      font-size: 12px;
+      color: var(--text-muted);
     }
 
     .sync-indicator {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      font-size: 10px;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
     }
 
     .sync-dot {
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
       border-radius: 999px;
       background: #22c55e;
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
     }
 
     .btn-ghost {
-      border-radius: 999px;
-      padding: 5px 10px;
-      border: 1px solid rgba(148, 163, 184, 0.65);
-      background: rgba(15, 23, 42, 0.85);
+      border-radius: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--border-medium);
+      background: #ffffff;
       color: var(--text-main);
-      font-size: 10px;
+      font-size: 12px;
+      font-weight: 500;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       cursor: pointer;
-      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-ghost:hover {
+      background: #f9fafb;
+      border-color: var(--accent);
     }
 
     .btn-ghost span.icon {
-      font-size: 12px;
+      font-size: 14px;
     }
 
     /* 編集フォーム */
     .form-root {
       display: none;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 6px;
+      gap: 16px;
+      margin-top: 8px;
     }
 
     .form-root.active {
@@ -349,19 +383,19 @@
     .field-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
     .field-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: 0.01em;
     }
 
     .field-row {
       display: flex;
-      gap: 8px;
+      gap: 12px;
     }
 
     .field-row > div {
@@ -375,29 +409,25 @@
     .input-shell input,
     .input-shell textarea {
       width: 100%;
-      padding: 9px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.88);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-medium);
+      background: #ffffff;
       color: var(--text-main);
-      font-size: 13px;
+      font-size: 14px;
       outline: none;
-      transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out, background 0.12s ease-out;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .input-shell input::placeholder,
     .input-shell textarea::placeholder {
-      color: rgba(148, 163, 184, 0.7);
+      color: #9ca3af;
     }
 
     .input-shell input:focus,
     .input-shell textarea:focus {
-      border-color: rgba(129, 140, 248, 0.95);
-      box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 1),
-        0 0 0 1px rgba(129, 140, 248, 0.85),
-        0 15px 30px rgba(30, 64, 175, 0.9);
-      background: rgba(15, 23, 42, 0.97);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
     textarea {
@@ -406,7 +436,7 @@
     }
 
     .hint {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--text-muted);
     }
 
@@ -414,46 +444,58 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
-      gap: 10px;
+      margin-top: 8px;
+      gap: 12px;
     }
 
     .btn-primary {
       flex: 1;
-      border-radius: 999px;
-      padding: 10px 14px;
+      border-radius: 10px;
+      padding: 12px 16px;
       border: none;
-      background: linear-gradient(135deg, #4f46e5, #22d3ee);
+      background: var(--accent);
       color: white;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
+      letter-spacing: 0.01em;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       cursor: pointer;
-      box-shadow:
-        0 0 0 1px rgba(191, 219, 254, 0.4),
-        0 18px 38px rgba(59, 130, 246, 0.7);
+      box-shadow: var(--shadow-md);
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      box-shadow: var(--shadow-lg);
     }
 
     .btn-primary span.icon {
-      font-size: 14px;
+      font-size: 16px;
     }
 
     .btn-secondary {
-      border-radius: 999px;
-      padding: 8px 12px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.88);
+      border-radius: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--border-medium);
+      background: #ffffff;
       color: var(--text-main);
-      font-size: 11px;
+      font-size: 13px;
+      font-weight: 500;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+      background: #fef2f2;
+      border-color: var(--danger);
+      color: var(--danger);
     }
 
     .danger-text {
@@ -463,35 +505,68 @@
     .badge-offline {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 10px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.92);
-      border: 1px solid rgba(148, 163, 184, 0.6);
+      gap: 8px;
+      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: #ffffff;
+      border: 1px solid var(--border-medium);
+      box-shadow: var(--shadow-sm);
     }
 
     .badge-offline .dot {
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       border-radius: 999px;
     }
 
     .dot-online {
       background: #22c55e;
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.95);
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
     }
 
     .dot-offline {
       background: #f97373;
-      box-shadow: 0 0 10px rgba(248, 113, 113, 0.95);
+      box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
     }
 
     .small-print {
-      margin-top: 6px;
-      font-size: 10px;
+      margin-top: 8px;
+      font-size: 11px;
       color: var(--text-muted);
-      text-align: right;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .photo-upload-area {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .photo-upload-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-medium);
+      background: #ffffff;
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .photo-upload-label:hover {
+      background: #f9fafb;
+      border-color: var(--accent);
+    }
+
+    .photo-upload-label input[type="file"] {
+      display: none;
     }
 
     @media (min-width: 768px) {
@@ -532,13 +607,17 @@
     <main>
       <section class="card" aria-label="デジタル名刺">
         <div class="card-header">
+          <div class="photo-area">
+            <img id="displayPhoto" alt="プロフィール写真" />
+            <div class="photo-placeholder" id="photoPlaceholder">👤</div>
+          </div>
           <div class="id-block">
             <div class="name-main" id="displayName">あなたの名前</div>
             <div class="name-sub" id="displayOrgRole">組織 / 役職</div>
-          </div>
-          <div class="meta-chips">
-            <span class="chip chip-strong">vCard 3.0</span>
-            <span class="chip">LOCAL ONLY</span>
+            <div class="meta-chips">
+              <span class="chip chip-strong">vCard 3.0</span>
+              <span class="chip">LOCAL ONLY</span>
+            </div>
           </div>
         </div>
 
@@ -557,7 +636,7 @@
             <strong id="displayPhoneEmail">電話 / メール</strong>
             <span id="displayUrl" class="hint">URL（ポートフォリオ・SNSなど）</span>
           </div>
-          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
             <div class="sync-indicator">
               <span class="sync-dot"></span>
               <span id="syncStatusLabel">ローカル保存済み</span>
@@ -570,33 +649,72 @@
         </div>
 
         <section class="form-root" id="editFormSection" aria-label="連絡先編集フォーム">
+          <div class="field-group photo-upload-area">
+            <div class="field-label">プロフィール写真</div>
+            <label class="photo-upload-label">
+              <span class="icon">📷</span>
+              <span>写真を選択（任意）</span>
+              <input id="photoUpload" type="file" accept="image/jpeg,image/png,image/webp">
+            </label>
+            <div class="hint">写真のサイズは200KB以下を推奨（大きいとQRコード生成に影響する場合があります）</div>
+          </div>
+
           <div class="field-group">
             <div class="field-row">
               <div>
                 <div class="field-label">姓 / LAST NAME</div>
                 <div class="input-shell">
-                  <input id="lastName" type="text" autocomplete="family-name" placeholder="山田">
+                  <input id="lastName" type="text" autocomplete="family-name" placeholder="山田" maxlength="20">
                 </div>
               </div>
               <div>
                 <div class="field-label">名 / FIRST NAME</div>
                 <div class="input-shell">
-                  <input id="firstName" type="text" autocomplete="given-name" placeholder="太郎">
+                  <input id="firstName" type="text" autocomplete="given-name" placeholder="太郎" maxlength="20">
                 </div>
               </div>
             </div>
-            <!-- フリガナ（削除済） -->
           </div>
 
           <div class="field-group">
             <div class="field-label">連絡先 / CONTACT</div>
             <div class="input-shell">
-              <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="090-1234-5678">
+              <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="090-1234-5678" maxlength="20">
             </div>
             <div class="hint">携帯番号（ハイフンありでも可）</div>
           </div>
 
-          <!-- 所属情報（削除: ORG は QR に含めません） -->
+          <div class="field-group">
+            <div class="field-label">メールアドレス / EMAIL</div>
+            <div class="input-shell">
+              <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="example@example.com" maxlength="60">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-row">
+              <div>
+                <div class="field-label">会社名 / ORGANIZATION</div>
+                <div class="input-shell">
+                  <input id="org" type="text" autocomplete="organization" placeholder="株式会社〇〇" maxlength="40">
+                </div>
+              </div>
+              <div>
+                <div class="field-label">役職 / TITLE</div>
+                <div class="input-shell">
+                  <input id="title" type="text" autocomplete="organization-title" placeholder="営業部長" maxlength="30">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">URL / WEBSITE</div>
+            <div class="input-shell">
+              <input id="url" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com" maxlength="80">
+            </div>
+            <div class="hint">ウェブサイト、SNS、ポートフォリオなど</div>
+          </div>
 
           <div class="footer-actions">
             <button id="btn-clear" type="button" class="btn-secondary">
@@ -693,13 +811,15 @@
           .replace(/;/g, "\\;");
       }
 
-      // ORG removed to minimize QR payload.
-
       function buildVCard(data) {
         const ln = (line) => line + "\r\n";
         const lastName = data.lastName || "";
         const firstName = data.firstName || "";
         const phone = normalizePhone(data.phone || "");
+        const email = data.email || "";
+        const org = data.org || "";
+        const title = data.title || "";
+        const url = data.url || "";
 
         const fullName = (lastName + " " + firstName).trim() || "My Contact";
 
@@ -709,8 +829,24 @@
         v += ln("N:" + escapeVCardValue(lastName) + ";" + escapeVCardValue(firstName) + ";;;");
         v += ln("FN:" + escapeVCardValue(fullName));
 
+        if (org) {
+          v += ln("ORG:" + escapeVCardValue(org));
+        }
+
+        if (title) {
+          v += ln("TITLE:" + escapeVCardValue(title));
+        }
+
         if (phone) {
           v += ln("TEL;TYPE=CELL,VOICE:" + escapeVCardValue(phone));
+        }
+
+        if (email) {
+          v += ln("EMAIL;TYPE=INTERNET:" + escapeVCardValue(email));
+        }
+
+        if (url) {
+          v += ln("URL:" + escapeVCardValue(url));
         }
 
         v += ln("END:VCARD");
@@ -735,11 +871,16 @@
             return null;
           }
             const parsed = JSON.parse(raw);
-            // Sanitize stored data: only keep supported fields to avoid oversized vCard
+            // Sanitize stored data: only keep supported fields
             const sanitized = {
               lastName: parsed.lastName || "",
               firstName: parsed.firstName || "",
-              phone: parsed.phone || ""
+              phone: parsed.phone || "",
+              email: parsed.email || "",
+              org: parsed.org || "",
+              title: parsed.title || "",
+              url: parsed.url || "",
+              photo: parsed.photo || ""
             };
           setSyncStatus("saved");
           return sanitized;
@@ -773,30 +914,67 @@
         const displayOrgRole = document.getElementById("displayOrgRole");
         const displayPhoneEmail = document.getElementById("displayPhoneEmail");
         const displayUrl = document.getElementById("displayUrl");
+        const displayPhoto = document.getElementById("displayPhoto");
+        const photoPlaceholder = document.getElementById("photoPlaceholder");
+        
         const lastName = data.lastName || "";
         const firstName = data.firstName || "";
         const phone = data.phone || "";
+        const email = data.email || "";
+        const org = data.org || "";
+        const title = data.title || "";
+        const url = data.url || "";
+        const photo = data.photo || "";
 
         displayName.textContent = (lastName + " " + firstName).trim() || "あなたの名前";
 
-        displayOrgRole.textContent = "";
+        const orgRoleParts = [];
+        if (org) orgRoleParts.push(org);
+        if (title) orgRoleParts.push(title);
+        displayOrgRole.textContent = orgRoleParts.join(" / ") || "組織 / 役職";
 
-        displayPhoneEmail.textContent = phone || "電話番号";
+        const contactParts = [];
+        if (phone) contactParts.push(phone);
+        if (email) contactParts.push(email);
+        displayPhoneEmail.textContent = contactParts.join(" / ") || "電話 / メール";
 
-        displayUrl.textContent = "";
+        displayUrl.textContent = url || "URL（ポートフォリオ・SNSなど）";
+
+        // Display photo
+        if (photo && displayPhoto && photoPlaceholder) {
+          displayPhoto.src = photo;
+          displayPhoto.style.display = "block";
+          photoPlaceholder.style.display = "none";
+        } else if (displayPhoto && photoPlaceholder) {
+          displayPhoto.src = "";
+          displayPhoto.style.display = "none";
+          photoPlaceholder.style.display = "flex";
+        }
       }
 
       function fillForm(data) {
         document.getElementById("lastName").value = data.lastName || "";
         document.getElementById("firstName").value = data.firstName || "";
         document.getElementById("phone").value = data.phone || "";
+        document.getElementById("email").value = data.email || "";
+        document.getElementById("org").value = data.org || "";
+        document.getElementById("title").value = data.title || "";
+        document.getElementById("url").value = data.url || "";
       }
 
       function readForm() {
+        const photoFile = document.getElementById("photoUpload").files[0];
+        const currentData = loadFromLocalStorage() || {};
+        
         return {
           lastName: document.getElementById("lastName").value.trim(),
           firstName: document.getElementById("firstName").value.trim(),
-          phone: document.getElementById("phone").value.trim()
+          phone: document.getElementById("phone").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          org: document.getElementById("org").value.trim(),
+          title: document.getElementById("title").value.trim(),
+          url: document.getElementById("url").value.trim(),
+          photo: currentData.photo || ""
         };
       }
 
@@ -829,8 +1007,10 @@
         const fullName = ((data.lastName || "") + " " + (data.firstName || "")).trim();
         const parts = [];
         if (fullName) parts.push("N:" + escape(fullName));
-        // ORG removed for QR size constraints
+        if (data.org) parts.push("ORG:" + escape(data.org));
         if (data.phone) parts.push("TEL:" + escape(normalizePhone(data.phone)));
+        if (data.email) parts.push("EMAIL:" + escape(data.email));
+        if (data.url) parts.push("URL:" + escape(data.url));
         // MECARD format: MECARD:...;;
         return "MECARD:" + parts.join(";") + ";;";
       }
@@ -898,7 +1078,12 @@
         const initialData = saved || {
           lastName: "",
           firstName: "",
-          phone: ""
+          phone: "",
+          email: "",
+          org: "",
+          title: "",
+          url: "",
+          photo: ""
         };
 
         fillDisplay(initialData);
@@ -948,7 +1133,12 @@
           const emptyData = {
             lastName: "",
             firstName: "",
-            phone: ""
+            phone: "",
+            email: "",
+            org: "",
+            title: "",
+            url: "",
+            photo: ""
           };
           fillDisplay(emptyData);
           fillForm(emptyData);
@@ -956,8 +1146,41 @@
         });
 
         document.getElementById("btn-preview-vcard").addEventListener("click", () => {
-          const data = readForm();
+          const data = loadFromLocalStorage() || readForm();
           previewVCard(data);
+        });
+
+        // Photo upload handler
+        document.getElementById("photoUpload").addEventListener("change", function(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          // Validate file size (max 500KB)
+          if (file.size > 500 * 1024) {
+            alert("写真のサイズが大きすぎます。500KB以下の画像を選択してください。");
+            e.target.value = "";
+            return;
+          }
+
+          // Validate file type
+          if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
+            alert("対応している画像形式はJPEG、PNG、WebPです。");
+            e.target.value = "";
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const currentData = loadFromLocalStorage() || readForm();
+            currentData.photo = event.target.result;
+            saveToLocalStorage(currentData);
+            fillDisplay(currentData);
+          };
+          reader.onerror = function() {
+            alert("画像の読み込みに失敗しました。");
+            e.target.value = "";
+          };
+          reader.readAsDataURL(file);
         });
 
         if ("serviceWorker" in navigator) {
