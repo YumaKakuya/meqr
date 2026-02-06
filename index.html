@@ -1892,32 +1892,38 @@
       async function shareVCard(data) {
         const vcard = buildVCard(data);
         const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
-        
         const lastName = data.lastName || "contact";
         const firstName = data.firstName || "";
-        const filename = `${lastName}_${firstName}`.trim().replace(/\s+/g, "_") + ".vcf";
-        
+        const fullName = (lastName + " " + firstName).trim() || "連絡先";
+        const filename = fullName.replace(/\s+/g, "_") + ".vcf";
         const file = new File([blob], filename, { type: "text/vcard" });
 
-        // Check if Web Share API is supported
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
+        if (!navigator.share) {
+          exportVCard(data);
+          alert('この環境では共有ダイアログが出ません。vCardファイルをダウンロードしました。メールやチャットに添付して送れます。');
+          return;
+        }
+
+        try {
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
               title: '連絡先を共有',
-              text: `${lastName} ${firstName}の連絡先`,
+              text: fullName + 'の連絡先',
               files: [file]
             });
-          } catch (err) {
-            if (err.name !== 'AbortError') {
-              console.error('Share failed:', err);
-              alert('共有に失敗しました。代わりにダウンロードします。');
-              exportVCard(data);
-            }
+          } else {
+            await navigator.share({
+              title: '連絡先を共有',
+              text: fullName + 'の連絡先です。vCardファイルはアプリ内「💾 .vcf」またはメニュー「ファイルで保存」からダウンロードできます。'
+            });
+            exportVCard(data);
           }
-        } else {
-          // Fallback: download the file
-          alert('お使いのブラウザは共有機能に対応していません。ファイルをダウンロードします。');
-          exportVCard(data);
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            console.error('Share failed:', err);
+            alert('共有に失敗しました。代わりにダウンロードします。');
+            exportVCard(data);
+          }
         }
       }
 
