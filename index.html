@@ -102,6 +102,12 @@
       color: #93c5fd;
     }
 
+    [data-theme="dark"] .badge-premium {
+      background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+      color: #0f172a;
+      border-color: rgba(251, 191, 36, 0.5);
+    }
+
     [data-theme="dark"] .mode-toggle {
       background: #1e293b;
       border-color: #475569;
@@ -378,6 +384,20 @@
       border-color: var(--accent);
       color: var(--accent);
       background: var(--accent-soft);
+    }
+
+    .badge-premium {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1f2937;
+      border: 1px solid rgba(251, 191, 36, 0.6);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
     .qr-shell {
@@ -1025,6 +1045,49 @@
       color: var(--text-main);
     }
 
+    .bc-preview {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bc-preview-header {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .bc-preview-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .bc-preview-note {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .bc-preview-canvas-wrapper {
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 91 / 55;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: #f9fafb;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    #businessCardCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
     @media (min-width: 768px) {
       .app-root {
         padding-top: 32px;
@@ -1120,6 +1183,16 @@
                 <span>確認</span>
               </button>
             </div>
+          </div>
+        </div>
+
+        <div class="bc-preview" aria-label="名刺デザインプレビュー">
+          <div class="bc-preview-header">
+            <span class="bc-preview-title">名刺デザインプレビュー（Minimal）</span>
+            <span class="bc-preview-note">※ 印刷用レイアウトの縮小イメージです</span>
+          </div>
+          <div class="bc-preview-canvas-wrapper">
+            <canvas id="businessCardCanvas" aria-label="Business card preview"></canvas>
           </div>
         </div>
 
@@ -1487,6 +1560,253 @@
 
         v += ln("END:VCARD");
         return v;
+      }
+
+      // === Business Card Templates (Canvas) ===
+
+      const PREMIUM_KEY = "meqr_premium";
+      const DEV_SHOW_PREMIUM_TOGGLE = true;
+
+      function getPremiumState() {
+        try {
+          const raw = localStorage.getItem(PREMIUM_KEY);
+          if (!raw) return { status: "free", expireAt: null };
+          const v = JSON.parse(raw);
+          if (v && (v.status === "free" || v.status === "premium")) {
+            return { status: v.status, expireAt: v.expireAt || null };
+          }
+          if (raw === "true") return { status: "premium", expireAt: null };
+          if (raw === "false") return { status: "free", expireAt: null };
+        } catch (e) {}
+        return { status: "free", expireAt: null };
+      }
+
+      function setPremiumState(status, expireAt) {
+        const payload = { status: status === "premium" ? "premium" : "free", expireAt: expireAt || null };
+        try {
+          localStorage.setItem(PREMIUM_KEY, JSON.stringify(payload));
+        } catch (e) {
+          console.warn("MeQR: failed to save premium state", e);
+        }
+      }
+
+      function isPremiumUser() {
+        const state = getPremiumState();
+        if (state.status !== "premium") return false;
+        if (!state.expireAt) return true;
+        const today = new Date().toISOString().slice(0, 10);
+        if (state.expireAt >= today) return true;
+        setPremiumState("free", null);
+        return false;
+      }
+
+      function checkAndApplyPremiumExpiry() {
+        isPremiumUser();
+      }
+
+      function togglePremiumForDev() {
+        const premium = isPremiumUser();
+        setPremiumState(premium ? "free" : "premium", null);
+        showSettingsSubmenu();
+        const canvas = document.getElementById("businessCardCanvas");
+        if (canvas) {
+          const data = loadCurrentProfile() || {};
+          const cardData = buildBusinessCardDataFromProfile(data);
+          renderMinimalTemplate(canvas, cardData, isPremiumUser());
+        }
+      }
+
+      function drawWatermark(ctx, width, height, isPremium) {
+        if (isPremium) return;
+        const text = "MeQR";
+        const fontSize = Math.max(24, Math.min(width, height) * 0.10);
+        ctx.save();
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = "#6b7280";
+        ctx.font = `600 ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, width / 2, height - fontSize * 1.2);
+        ctx.restore();
+      }
+
+      function getBusinessCardPixelSize(dpi = 300) {
+        const mmToInch = 1 / 25.4;
+        const widthMm = 91;
+        const heightMm = 55;
+        const widthPx = Math.round(widthMm * mmToInch * dpi);
+        const heightPx = Math.round(heightMm * mmToInch * dpi);
+        return { width: widthPx, height: heightPx };
+      }
+
+      function buildBusinessCardDataFromProfile(data) {
+        const lastName = data.lastName || "";
+        const firstName = data.firstName || "";
+        const fullName = (lastName + " " + firstName).trim() || "My Contact";
+
+        return {
+          name: fullName,
+          nameKana: "",
+          company: data.org || "",
+          position: data.title || "",
+          phone: data.phone || "",
+          email: data.email || "",
+          website: data.url || "",
+          address: "",
+          sns: {
+            twitter: data.twitter || "",
+            linkedin: data.linkedin || "",
+            instagram: data.instagram || ""
+          },
+          qrCode: null
+        };
+      }
+
+      function renderMinimalTemplate(canvas, cardData, isPremium) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
+
+        const { width, height } = getBusinessCardPixelSize(300);
+        canvas.width = width;
+        canvas.height = height;
+
+        // Background
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+
+        // Border
+        ctx.strokeStyle = "#e5e7eb";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(8, 8, width - 16, height - 16);
+
+        const marginX = 48;
+        const marginY = 40;
+        const textWidth = width * 0.6;
+
+        ctx.fillStyle = "#111827";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+
+        const name = cardData.name || "";
+        const nameKana = cardData.nameKana || "";
+        const company = cardData.company || "";
+        const position = cardData.position || "";
+        const phone = cardData.phone || "";
+        const email = cardData.email || "";
+        const website = cardData.website || "";
+
+        let y = marginY;
+
+        // Company
+        if (company) {
+          ctx.font = '500 26px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.fillText(company, marginX, y);
+          y += 34;
+        }
+
+        // Name
+        if (name) {
+          ctx.font = '600 32px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.fillText(name, marginX, y);
+          y += 40;
+        }
+
+        // Name kana (sub)
+        if (nameKana) {
+          ctx.font = '400 18px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.fillStyle = "#6b7280";
+          ctx.fillText(nameKana, marginX, y);
+          ctx.fillStyle = "#111827";
+          y += 26;
+        }
+
+        // Position
+        if (position) {
+          ctx.font = '400 20px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.fillStyle = "#374151";
+          ctx.fillText(position, marginX, y);
+          ctx.fillStyle = "#111827";
+          y += 32;
+        }
+
+        // Contact block
+        ctx.font = '400 18px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+        ctx.fillStyle = "#374151";
+
+        const lineGap = 24;
+        if (phone) {
+          ctx.fillText(`TEL  ${phone}`, marginX, y);
+          y += lineGap;
+        }
+        if (email) {
+          ctx.fillText(email, marginX, y);
+          y += lineGap;
+        }
+        if (website) {
+          ctx.fillText(website, marginX, y);
+          y += lineGap;
+        }
+
+        // Right side subtle divider
+        ctx.strokeStyle = "#e5e7eb";
+        ctx.lineWidth = 2;
+        const dividerX = marginX + textWidth + 16;
+        ctx.beginPath();
+        ctx.moveTo(dividerX, marginY);
+        ctx.lineTo(dividerX, height - marginY);
+        ctx.stroke();
+
+        // QR code area
+        const qrSize = Math.min(width * 0.26, height * 0.45);
+        const qrX = width - marginX - qrSize;
+        const qrY = height - marginY - qrSize;
+
+        ctx.fillStyle = "#f3f4f6";
+        ctx.fillRect(qrX, qrY, qrSize, qrSize);
+        ctx.strokeStyle = "#d1d5db";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(qrX, qrY, qrSize, qrSize);
+
+        if (cardData.qrCode) {
+          const img = new Image();
+          img.onload = () => {
+            ctx.drawImage(img, qrX + 6, qrY + 6, qrSize - 12, qrSize - 12);
+          };
+          img.src = cardData.qrCode;
+        }
+
+        // SNS (icons as text labels) above QR
+        const sns = cardData.sns || {};
+        const snsStartY = qrY - 8;
+        let snsY = snsStartY;
+        const snsEntries = [
+          ["Twitter", sns.twitter],
+          ["LinkedIn", sns.linkedin],
+          ["Instagram", sns.instagram]
+        ].filter(([, url]) => !!url);
+
+        if (snsEntries.length > 0) {
+          ctx.font = '500 16px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.fillStyle = "#6b7280";
+          for (let i = snsEntries.length - 1; i >= 0; i--) {
+            const [label, url] = snsEntries[i];
+            snsY -= 22;
+            const text = `${label}: ${url}`;
+            const maxWidth = width - dividerX - marginX;
+            let display = text;
+            while (display.length > 0 && ctx.measureText(display).width > maxWidth) {
+              display = display.slice(0, -1);
+            }
+            if (display !== text) {
+              display = display.slice(0, -1) + "…";
+            }
+            ctx.fillText(display, dividerX + 16, snsY);
+          }
+        }
+
+        drawWatermark(ctx, width, height, isPremium);
       }
 
       // === Profile Management Functions ===
@@ -2339,8 +2659,16 @@
       }
 
       function showSettingsSubmenu() {
+        checkAndApplyPremiumExpiry();
+        const premium = isPremiumUser();
+        const planLabel = premium ? '<span class="badge-premium">★ Premium</span>' : '<span style="font-size:13px; color: var(--text-muted);">無料版</span>';
         let html = '<div class="menu-header"><div class="menu-title" data-i18n="menu.settingsTitle">設定</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
-        
+        html += '<div class="menu-section-title">現在のプラン</div>';
+        html += '<div class="menu-item" style="padding-top:8px; padding-bottom:8px;">' + planLabel + '</div>';
+        if (DEV_SHOW_PREMIUM_TOGGLE) {
+          html += '<div class="menu-item" onclick="togglePremiumForDev()" style="cursor:pointer;"><span class="menu-item-icon">🔄</span><span class="menu-item-text" style="font-size:12px; color: var(--text-muted);">Premium状態を切り替え（開発用）</span></div>';
+        }
+        html += '<div class="menu-divider"></div>';
         html += `
           <div class="menu-section-title" data-i18n="menu.settingsQrSizeSection">QRコードサイズ</div>
           <div class="menu-item" onclick="setQRSize('large')">
@@ -2459,6 +2787,7 @@
       // Menu helper functions (called from onclick)
       // Menu helper functions (called from onclick in dynamic HTML)
       window.showMainMenu = showMainMenu;
+      window.togglePremiumForDev = togglePremiumForDev;
 
       window.switchProfileAndClose = function(profileId) {
         switchProfile(profileId);
@@ -2635,6 +2964,9 @@
 
           // Initialize theme first
           initTheme();
+
+          // Check Premium expiry and downgrade if needed
+          checkAndApplyPremiumExpiry();
           
           // Migrate old data if exists
           migrateOldData();
@@ -2650,6 +2982,17 @@
         regenerateQR(initialData);
         updateProfileSelector();
         applyQRSize();
+
+        // Render initial business card preview (Minimal template)
+        try {
+          const canvas = document.getElementById("businessCardCanvas");
+          if (canvas) {
+            const cardData = buildBusinessCardDataFromProfile(initialData || {});
+            renderMinimalTemplate(canvas, cardData, isPremiumUser());
+          }
+        } catch (e) {
+          console.warn("MeQR: failed to render minimal business card preview", e);
+        }
         } catch (err) {
           console.error("MeQR: Initialization error", err);
           alert("初期化エラーが発生しました: " + err.message);
