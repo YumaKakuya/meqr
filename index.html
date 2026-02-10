@@ -967,6 +967,110 @@
       margin: 0;
     }
 
+    /* Export modal */
+    .export-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9000;
+      backdrop-filter: blur(4px);
+    }
+
+    .export-modal-overlay.active {
+      display: flex;
+    }
+
+    .export-modal {
+      width: 100%;
+      max-width: 360px;
+      background: var(--bg-elevated);
+      border-radius: 16px;
+      padding: 20px 20px 16px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-medium);
+    }
+
+    .export-modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .export-modal-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .export-modal-options {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .export-modal-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .export-modal-preview-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .export-modal-preview-box {
+      width: 100%;
+      max-width: 260px;
+      aspect-ratio: 91 / 55;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: #f9fafb;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    #exportPreviewCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .export-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.9);
+      color: #f9fafb;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      z-index: 9500;
+      box-shadow: var(--shadow-md);
+    }
+
+    .toast.active {
+      display: inline-flex;
+    }
+
     .onboarding-steps {
       display: flex;
       flex-direction: column;
@@ -1182,6 +1286,10 @@
                 <span class="icon">🔎</span>
                 <span>確認</span>
               </button>
+              <button id="btn-export-card" class="btn-ghost" type="button" title="名刺をPDF/PNGでダウンロード">
+                <span class="icon">📥</span>
+                <span>ダウンロード</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1365,6 +1473,40 @@
     </div>
   </div>
 
+  <!-- Export modal -->
+  <div id="exportModalOverlay" class="export-modal-overlay" aria-hidden="true">
+    <div class="export-modal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
+      <div class="export-modal-title" id="exportModalTitle">名刺をダウンロード</div>
+      <div class="export-modal-desc">形式を選んで、印刷用の名刺データを書き出します。</div>
+      <div class="export-modal-options">
+        <label>
+          <input type="radio" name="export-format" value="pdf" checked> PDF（推奨・印刷用）
+        </label>
+        <label>
+          <input type="radio" name="export-format" value="png"> PNG（画像ファイル）
+        </label>
+      </div>
+      <div class="export-modal-preview">
+        <div class="export-modal-preview-label">プレビュー（Minimal）</div>
+        <div class="export-modal-preview-box">
+          <canvas id="exportPreviewCanvas" aria-label="Export preview"></canvas>
+        </div>
+      </div>
+      <div class="export-modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeExportModal()">キャンセル</button>
+        <button type="button" class="btn-primary" onclick="handleExportDownload()">
+          <span class="icon">📥</span>
+          <span>ダウンロード</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <span class="icon">✅</span>
+    <span id="toastText">ダウンロードが完了しました。</span>
+  </div>
+
   <!-- Onboarding Overlay -->
   <div id="onboarding-overlay" class="onboarding-overlay">
     <div class="onboarding-card">
@@ -1414,6 +1556,7 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"
     referrerpolicy="no-referrer">
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="js/i18n.js"></script>
   <script>
     (function () {
@@ -1604,6 +1747,132 @@
         isPremiumUser();
       }
 
+      async function initBilling() {
+        if (!window.CdvPurchase || !window.CdvPurchase.store) {
+          console.log("MeQR: Billing plugin not available (web/PWA mode).");
+          return;
+        }
+        const store = window.CdvPurchase.store;
+        const PRODUCT_ID = "meqr_premium_monthly";
+        try {
+          await store.initialize([
+            {
+              id: PRODUCT_ID,
+              type: window.CdvPurchase.ProductType.PAID_SUBSCRIPTION
+            }
+          ]);
+
+          store.when().approved(purchase => {
+            if (purchase && purchase.id === PRODUCT_ID) {
+              setPremiumState("premium", null);
+              showToast("Premiumが有効になりました。");
+              try {
+                showSettingsSubmenu();
+                const canvas = document.getElementById("businessCardCanvas");
+                if (canvas) {
+                  const data = loadCurrentProfile() || {};
+                  const cardData = buildBusinessCardDataFromProfile(data);
+                  renderMinimalTemplate(canvas, cardData, true);
+                }
+              } catch (e) {
+                console.warn("MeQR: failed to refresh UI after premium purchase", e);
+              }
+            }
+            try {
+              purchase.finish();
+            } catch (e) {
+              console.warn("MeQR: failed to finish purchase", e);
+            }
+          });
+
+          await store.refresh();
+          const restored = await restorePurchasesInternal(false);
+          if (restored) {
+            showToast("Premiumを復元しました");
+          }
+        } catch (e) {
+          console.warn("MeQR: billing initialization failed", e);
+        }
+      }
+
+      async function restorePurchasesInternal(silent) {
+        if (!window.CdvPurchase || !window.CdvPurchase.store) {
+          if (!silent) console.log("MeQR: Billing plugin not available, skip restore.");
+          return false;
+        }
+        const store = window.CdvPurchase.store;
+        const PRODUCT_ID = "meqr_premium_monthly";
+        try {
+          await store.refresh();
+          let owned = false;
+          if (typeof store.get === "function") {
+            const product = store.get(PRODUCT_ID);
+            owned = product && (product.owned === true || (product.purchases && product.purchases.length > 0));
+          }
+          if (!owned && store.products && Array.isArray(store.products)) {
+            const product = store.products.find(function (p) { return p.id === PRODUCT_ID; });
+            owned = product && (product.owned === true || (product.purchases && product.purchases.length > 0));
+          }
+          if (owned) {
+            setPremiumState("premium", null);
+            return true;
+          }
+          return false;
+        } catch (e) {
+          if (!silent) console.warn("MeQR: restore purchases failed (will retry on next launch)", e);
+          return false;
+        }
+      }
+
+      async function restorePurchases() {
+        const restored = await restorePurchasesInternal(false);
+        if (restored) {
+          showToast("Premiumを復元しました");
+          showSettingsSubmenu();
+          const canvas = document.getElementById("businessCardCanvas");
+          if (canvas) {
+            const data = loadCurrentProfile() || {};
+            const cardData = buildBusinessCardDataFromProfile(data);
+            renderMinimalTemplate(canvas, cardData, true);
+          }
+        } else {
+          const store = window.CdvPurchase && window.CdvPurchase.store;
+          if (store) {
+            showToast("復元する購入がありません。");
+          } else {
+            showToast("この環境では購入の復元はできません。");
+          }
+        }
+      }
+
+      async function startPremiumPurchase() {
+        const PRODUCT_ID = "meqr_premium_monthly";
+        if (window.CdvPurchase && window.CdvPurchase.store) {
+          const store = window.CdvPurchase.store;
+          try {
+            await store.order(PRODUCT_ID);
+            return;
+          } catch (e) {
+            console.warn("MeQR: purchase failed", e);
+            alert("購入処理中にエラーが発生しました。しばらくしてから再度お試しください。");
+            return;
+          }
+        }
+
+        // Cordova/Play Billing がない環境（開発用・Web版）: テスト用に手動で有効化
+        const ok = confirm("この環境では Google Play 課金を利用できません。\n\n開発テスト用として Premium を一時的に有効にしますか？");
+        if (!ok) return;
+        setPremiumState("premium", null);
+        showSettingsSubmenu();
+        const canvas = document.getElementById("businessCardCanvas");
+        if (canvas) {
+          const data = loadCurrentProfile() || {};
+          const cardData = buildBusinessCardDataFromProfile(data);
+          renderMinimalTemplate(canvas, cardData, true);
+        }
+        showToast("Premiumを有効化しました（テスト用）。");
+      }
+
       function togglePremiumForDev() {
         const premium = isPremiumUser();
         setPremiumState(premium ? "free" : "premium", null);
@@ -1637,6 +1906,14 @@
         const widthPx = Math.round(widthMm * mmToInch * dpi);
         const heightPx = Math.round(heightMm * mmToInch * dpi);
         return { width: widthPx, height: heightPx };
+      }
+
+      function buildBusinessCardFilename(ext) {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, "0");
+        const d = String(now.getDate()).padStart(2, "0");
+        return `meqr_card_${y}${m}${d}.${ext}`;
       }
 
       function buildBusinessCardDataFromProfile(data) {
@@ -1807,6 +2084,132 @@
         }
 
         drawWatermark(ctx, width, height, isPremium);
+      }
+
+      async function exportBusinessCardAsPDF() {
+        try {
+          if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert("PDFライブラリの読み込みに失敗しました。ネットワーク接続を確認してください。");
+            return;
+          }
+
+          const canvas = document.createElement("canvas");
+          const data = loadCurrentProfile() || {};
+          const cardData = buildBusinessCardDataFromProfile(data);
+          renderMinimalTemplate(canvas, cardData, isPremiumUser());
+
+          const img = canvas.toDataURL("image/png", 1.0);
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF({
+            unit: "mm",
+            format: [91, 55],
+            compress: true
+          });
+
+          doc.addImage(img, "PNG", 0, 0, 91, 55);
+          const filename = buildBusinessCardFilename("pdf");
+          doc.save(filename);
+        } catch (e) {
+          console.error("MeQR: failed to export business card PDF", e);
+          alert("名刺PDFの書き出し中にエラーが発生しました。");
+        }
+      }
+
+      async function exportBusinessCardAsPNG() {
+        try {
+          const canvas = document.createElement("canvas");
+          const data = loadCurrentProfile() || {};
+          const cardData = buildBusinessCardDataFromProfile(data);
+          renderMinimalTemplate(canvas, cardData, isPremiumUser());
+
+          const filename = buildBusinessCardFilename("png");
+
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                alert("名刺PNGの書き出しに失敗しました。");
+                return;
+              }
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            },
+            "image/png",
+            0.9
+          );
+        } catch (e) {
+          console.error("MeQR: failed to export business card PNG", e);
+          alert("名刺PNGの書き出し中にエラーが発生しました。");
+        }
+      }
+
+      function openExportModal() {
+        const overlay = document.getElementById("exportModalOverlay");
+        if (!overlay) return;
+
+        // 初期選択をPDFに
+        const radios = overlay.querySelectorAll('input[name="export-format"]');
+        radios.forEach(r => { r.checked = r.value === "pdf"; });
+
+        // プレビュー描画
+        const previewCanvas = document.getElementById("exportPreviewCanvas");
+        if (previewCanvas) {
+          const data = loadCurrentProfile() || {};
+          const cardData = buildBusinessCardDataFromProfile(data);
+          // 小さめプレビューなので dpi を落として描画
+          const ctx = previewCanvas.getContext("2d");
+          if (ctx) {
+            const { width, height } = getBusinessCardPixelSize(150);
+            previewCanvas.width = width;
+            previewCanvas.height = height;
+          }
+          renderMinimalTemplate(previewCanvas, cardData, isPremiumUser());
+        }
+
+        overlay.classList.add("active");
+        overlay.setAttribute("aria-hidden", "false");
+      }
+
+      function closeExportModal() {
+        const overlay = document.getElementById("exportModalOverlay");
+        if (!overlay) return;
+        overlay.classList.remove("active");
+        overlay.setAttribute("aria-hidden", "true");
+      }
+
+      async function handleExportDownload() {
+        const overlay = document.getElementById("exportModalOverlay");
+        if (!overlay) return;
+        const radios = overlay.querySelectorAll('input[name="export-format"]');
+        let format = "pdf";
+        radios.forEach(r => {
+          if (r.checked) format = r.value;
+        });
+
+        if (format === "png") {
+          await exportBusinessCardAsPNG();
+        } else {
+          await exportBusinessCardAsPDF();
+        }
+
+        closeExportModal();
+        showToast("名刺のダウンロードを開始しました。");
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        const text = document.getElementById("toastText");
+        if (!toast || !text) return;
+        text.textContent = message;
+        toast.classList.add("active");
+        setTimeout(() => {
+          toast.classList.remove("active");
+        }, 2500);
       }
 
       // === Profile Management Functions ===
@@ -2665,6 +3068,10 @@
         let html = '<div class="menu-header"><div class="menu-title" data-i18n="menu.settingsTitle">設定</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
         html += '<div class="menu-section-title">現在のプラン</div>';
         html += '<div class="menu-item" style="padding-top:8px; padding-bottom:8px;">' + planLabel + '</div>';
+        if (!premium) {
+          html += '<div class="menu-item" onclick="startPremiumPurchase()" style="cursor:pointer;"><span class="menu-item-icon">👑</span><span class="menu-item-text" style="font-size:13px;">Premiumにアップグレード（ウォーターマークなし・全テンプレート）</span></div>';
+          html += '<div class="menu-item" onclick="restorePurchases()" style="cursor:pointer;"><span class="menu-item-icon">🔄</span><span class="menu-item-text" style="font-size:13px;">購入を復元</span></div>';
+        }
         if (DEV_SHOW_PREMIUM_TOGGLE) {
           html += '<div class="menu-item" onclick="togglePremiumForDev()" style="cursor:pointer;"><span class="menu-item-icon">🔄</span><span class="menu-item-text" style="font-size:12px; color: var(--text-muted);">Premium状態を切り替え（開発用）</span></div>';
         }
@@ -2788,6 +3195,13 @@
       // Menu helper functions (called from onclick in dynamic HTML)
       window.showMainMenu = showMainMenu;
       window.togglePremiumForDev = togglePremiumForDev;
+      window.exportBusinessCardAsPDF = exportBusinessCardAsPDF;
+      window.exportBusinessCardAsPNG = exportBusinessCardAsPNG;
+      window.openExportModal = openExportModal;
+      window.closeExportModal = closeExportModal;
+      window.handleExportDownload = handleExportDownload;
+      window.startPremiumPurchase = startPremiumPurchase;
+      window.restorePurchases = restorePurchases;
 
       window.switchProfileAndClose = function(profileId) {
         switchProfile(profileId);
@@ -2967,6 +3381,8 @@
 
           // Check Premium expiry and downgrade if needed
           checkAndApplyPremiumExpiry();
+          // Initialize billing (if running under Cordova/Android)
+          initBilling();
           
           // Migrate old data if exists
           migrateOldData();
@@ -3093,6 +3509,15 @@
             return;
           }
           exportVCard(data);
+        });
+
+        document.getElementById("btn-export-card").addEventListener("click", () => {
+          const data = loadCurrentProfile();
+          if (!data || (!data.lastName && !data.firstName)) {
+            alert("ダウンロードする名刺情報がありません。先に名前を入力して保存してください。");
+            return;
+          }
+          openExportModal();
         });
 
         document.getElementById("btn-share-vcard").addEventListener("click", async () => {
