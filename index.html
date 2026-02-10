@@ -920,20 +920,17 @@
       font-size: 18px;
     }
 
-    /* Onboarding */
+    /* Onboarding (swipeable 3 pages) */
     .onboarding-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
       z-index: 9999;
       display: none;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
     }
 
     .onboarding-overlay.active {
@@ -941,30 +938,107 @@
     }
 
     .onboarding-card {
+      position: relative;
       background: var(--bg-elevated);
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 500px;
+      border-radius: 20px;
+      padding: 0;
+      max-width: 400px;
       width: 100%;
+      max-height: 90vh;
       box-shadow: var(--shadow-lg);
       border: 1px solid var(--border-medium);
+      overflow: hidden;
     }
 
-    .onboarding-header {
-      text-align: center;
-      margin-bottom: 24px;
+    .onboarding-skip {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      padding: 8px 14px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 8px;
     }
 
-    .onboarding-header h2 {
-      font-size: 24px;
-      margin: 0 0 8px 0;
+    .onboarding-skip:hover {
+      background: var(--accent-soft);
       color: var(--text-main);
     }
 
-    .onboarding-header p {
+    .onboarding-slides-wrap {
+      overflow: hidden;
+      touch-action: pan-y pinch-zoom;
+    }
+
+    .onboarding-slides {
+      display: flex;
+      width: 300%;
+      transition: transform 0.3s ease;
+      will-change: transform;
+    }
+
+    .onboarding-slide {
+      flex: 0 0 33.333%;
+      width: 33.333%;
+      padding: 48px 28px 28px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .onboarding-slide-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-soft);
+      border-radius: 20px;
+      color: var(--accent);
+    }
+
+    .onboarding-slide-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0 0 12px 0;
+      line-height: 1.3;
+    }
+
+    .onboarding-slide-desc {
       font-size: 14px;
       color: var(--text-muted);
-      margin: 0;
+      margin: 0 0 24px 0;
+      line-height: 1.6;
+    }
+
+    .onboarding-slide .onboarding-btn-primary {
+      margin-top: 8px;
+    }
+
+    .onboarding-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 0 20px;
+    }
+
+    .onboarding-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-medium);
+      transition: background 0.2s ease;
+    }
+
+    .onboarding-dot.active {
+      background: var(--accent);
+      transform: scale(1.2);
     }
 
     /* Export modal */
@@ -1071,52 +1145,6 @@
       display: inline-flex;
     }
 
-    .onboarding-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .onboarding-step {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .onboarding-step-number {
-      flex-shrink: 0;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    .onboarding-step-content h3 {
-      margin: 0 0 4px 0;
-      font-size: 15px;
-      color: var(--text-main);
-    }
-
-    .onboarding-step-content p {
-      margin: 0;
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    .onboarding-footer {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-    }
-
     .onboarding-btn {
       padding: 12px 24px;
       border-radius: 10px;
@@ -1136,17 +1164,6 @@
     .onboarding-btn-primary:hover {
       background: var(--accent-strong);
       box-shadow: var(--shadow-lg);
-    }
-
-    .onboarding-btn-secondary {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid var(--border-medium);
-    }
-
-    .onboarding-btn-secondary:hover {
-      background: var(--accent-soft);
-      color: var(--text-main);
     }
 
     .bc-preview {
@@ -1507,46 +1524,34 @@
     <span id="toastText">ダウンロードが完了しました。</span>
   </div>
 
-  <!-- Onboarding Overlay -->
-  <div id="onboarding-overlay" class="onboarding-overlay">
+  <!-- Onboarding Overlay (3-page swipeable) -->
+  <div id="onboarding-overlay" class="onboarding-overlay" aria-modal="true" aria-label="ウェルカム">
     <div class="onboarding-card">
-      <div class="onboarding-header">
-        <h2>MeQRへようこそ！👋</h2>
-        <p>プライバシー重視のシンプルなデジタル名刺アプリ</p>
-      </div>
-      <div class="onboarding-steps">
-        <div class="onboarding-step">
-          <div class="onboarding-step-number">1</div>
-          <div class="onboarding-step-content">
-            <h3>連絡先を入力</h3>
-            <p>「編集」タブで名前・電話・メールなどを入力して保存</p>
+      <button type="button" id="btn-onboarding-skip" class="onboarding-skip" aria-label="スキップ">スキップ</button>
+      <div id="onboarding-slides-wrap" class="onboarding-slides-wrap">
+        <div id="onboarding-slides" class="onboarding-slides">
+          <div class="onboarding-slide" data-page="0">
+            <div class="onboarding-slide-icon" aria-hidden="true">📇</div>
+            <h2 class="onboarding-slide-title">MeQR へようこそ</h2>
+            <p class="onboarding-slide-desc">シンプルで安全なデジタル名刺アプリ</p>
           </div>
-        </div>
-        <div class="onboarding-step">
-          <div class="onboarding-step-number">2</div>
-          <div class="onboarding-step-content">
-            <h3>QRコードで共有</h3>
-            <p>相手にQRコードを見せてスキャンしてもらうだけ！</p>
+          <div class="onboarding-slide" data-page="1">
+            <div class="onboarding-slide-icon" aria-hidden="true">🔐</div>
+            <h2 class="onboarding-slide-title">プライバシー第一</h2>
+            <p class="onboarding-slide-desc">あなたのデータは端末内にのみ保存。外部送信は一切なし。</p>
           </div>
-        </div>
-        <div class="onboarding-step">
-          <div class="onboarding-step-number">3</div>
-          <div class="onboarding-step-content">
-            <h3>複数の名刺を使い分け</h3>
-            <p>ビジネス用・プライベート用など、用途に応じて切り替え可能</p>
-          </div>
-        </div>
-        <div class="onboarding-step">
-          <div class="onboarding-step-number">4</div>
-          <div class="onboarding-step-content">
-            <h3>完全プライバシー保護</h3>
-            <p>データは全てローカル保存。サーバーには一切送信されません</p>
+          <div class="onboarding-slide" data-page="2">
+            <div class="onboarding-slide-icon" aria-hidden="true">📱</div>
+            <h2 class="onboarding-slide-title">さあ、始めましょう</h2>
+            <p class="onboarding-slide-desc">名前とメールアドレスを入力するだけで、QRコード付き名刺が完成！</p>
+            <button type="button" id="btn-onboarding-start" class="onboarding-btn onboarding-btn-primary">使ってみる</button>
           </div>
         </div>
       </div>
-      <div class="onboarding-footer">
-        <button id="btn-onboarding-skip" class="onboarding-btn onboarding-btn-secondary">スキップ</button>
-        <button id="btn-onboarding-start" class="onboarding-btn onboarding-btn-primary">使ってみる</button>
+      <div id="onboarding-indicators" class="onboarding-indicators" role="tablist" aria-label="ページ">
+        <span class="onboarding-dot active" role="tab" aria-selected="true" data-index="0"></span>
+        <span class="onboarding-dot" role="tab" aria-selected="false" data-index="1"></span>
+        <span class="onboarding-dot" role="tab" aria-selected="false" data-index="2"></span>
       </div>
     </div>
   </div>
@@ -2877,19 +2882,84 @@
 
       // === Onboarding Functions ===
 
+      let onboardingCurrentPage = 0;
+      const ONBOARDING_PAGE_COUNT = 3;
+
+      function updateOnboardingSlide(page) {
+        page = Math.max(0, Math.min(page, ONBOARDING_PAGE_COUNT - 1));
+        onboardingCurrentPage = page;
+        const slidesEl = document.getElementById("onboarding-slides");
+        if (slidesEl) {
+          const pct = (page / ONBOARDING_PAGE_COUNT) * 100;
+          slidesEl.style.transform = "translateX(-" + pct + "%)";
+        }
+        const dots = document.querySelectorAll("#onboarding-indicators .onboarding-dot");
+        dots.forEach(function (dot, i) {
+          const isActive = i === page;
+          dot.classList.toggle("active", isActive);
+          dot.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
+      }
+
+      function setupOnboardingSwipe() {
+        const wrap = document.getElementById("onboarding-slides-wrap");
+        if (!wrap) return;
+        let startX = 0;
+        let currentX = 0;
+        function onStart(e) {
+          startX = ("touches" in e ? e.touches[0] : e).clientX;
+          currentX = startX;
+        }
+        function onMove(e) {
+          currentX = ("touches" in e ? e.touches[0] : e).clientX;
+        }
+        function onEnd() {
+          const delta = startX - currentX;
+          if (Math.abs(delta) > 50) {
+            if (delta > 0) {
+              updateOnboardingSlide(onboardingCurrentPage + 1);
+            } else {
+              updateOnboardingSlide(onboardingCurrentPage - 1);
+            }
+          }
+        }
+        wrap.addEventListener("touchstart", onStart, { passive: true });
+        wrap.addEventListener("touchmove", onMove, { passive: true });
+        wrap.addEventListener("touchend", onEnd);
+        wrap.addEventListener("mousedown", function (e) {
+          if (e.button !== 0) return;
+          onStart(e);
+          const up = function (e2) {
+            onEnd();
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", up);
+          };
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", up);
+        });
+        document.querySelectorAll("#onboarding-indicators .onboarding-dot").forEach(function (dot) {
+          dot.addEventListener("click", function () {
+            const i = parseInt(dot.getAttribute("data-index"), 10);
+            if (!isNaN(i)) updateOnboardingSlide(i);
+          });
+        });
+      }
+
       function showOnboarding() {
         const overlay = document.getElementById("onboarding-overlay");
         if (overlay) {
-          overlay.classList.add('active');
+          onboardingCurrentPage = 0;
+          updateOnboardingSlide(0);
+          overlay.classList.add("active");
         }
       }
 
       function hideOnboarding() {
         const overlay = document.getElementById("onboarding-overlay");
         if (overlay) {
-          overlay.classList.remove('active');
+          overlay.classList.remove("active");
         }
-        localStorage.setItem(ONBOARDING_KEY, 'true');
+        localStorage.setItem(ONBOARDING_KEY, "true");
       }
 
       function shouldShowOnboarding() {
@@ -3435,6 +3505,8 @@
             hideOnboarding();
           });
         }
+
+        setupOnboardingSwipe();
 
         // Hamburger menu
         document.getElementById("btn-hamburger").addEventListener("click", () => {
