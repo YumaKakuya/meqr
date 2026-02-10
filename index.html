@@ -7,6 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#1e293b" id="themeColorMeta">
+  <meta name="description" content="MeQRはプライバシー重視のデジタル名刺アプリ。QRコードで連絡先を共有。データは端末内のみ保存。">
   <title>MeQR - デジタル名刺</title>
 
   <!-- PWA -->
@@ -1403,7 +1404,7 @@
       <section class="card" aria-label="デジタル名刺">
         <div class="card-header">
           <div class="photo-area">
-            <img id="displayPhoto" alt="プロフィール写真" />
+            <img id="displayPhoto" alt="プロフィール写真" decoding="async" />
             <div class="photo-placeholder" id="photoPlaceholder">👤</div>
           </div>
           <div class="id-block">
@@ -1713,10 +1714,33 @@
       const CURRENT_PROFILE_KEY = "meqr_current_profile";
       const THEME_KEY = "meqr_theme";
       const ONBOARDING_KEY = "meqr_onboarding_completed";
+      const PREVIEW_DEBOUNCE_MS = 150;
+      const MAX_PHOTO_BASE64_KB = 200;
+
+      var DEMO_PROFILE_DATA = {
+        lastName: "山田",
+        firstName: "太郎",
+        phone: "090-1234-5678",
+        email: "yamada.taro@example.com",
+        org: "株式会社サンプル",
+        title: "営業部 マネージャー",
+        url: "https://example.com",
+        photo: "",
+        linkedin: "https://linkedin.com/in/example",
+        twitter: "https://x.com/example",
+        instagram: "",
+        facebook: "",
+        github: "",
+        youtube: "",
+        customUrl: ""
+      };
 
       /** @type {ReturnType<typeof createQRCodeInstance> | null} */
       let qrInstance = null;
       let currentProfileId = null;
+      let previewRafId = 0;
+      let previewDebounceTimer = null;
+      let qrDeferredDone = false;
 
       function createQRCodeInstance() {
         const qrContainer = document.getElementById("qrcode");
@@ -1758,6 +1782,50 @@
             }
           }
         };
+      }
+
+      function ensureQRReady() {
+        if (qrDeferredDone) return;
+        qrDeferredDone = true;
+        if (!qrInstance) qrInstance = createQRCodeInstance();
+        regenerateQR(loadCurrentProfile() || {});
+      }
+
+      function schedulePreviewDraw() {
+        if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
+        previewDebounceTimer = setTimeout(function () {
+          previewDebounceTimer = null;
+          if (previewRafId) cancelAnimationFrame(previewRafId);
+          previewRafId = requestAnimationFrame(function () {
+            previewRafId = 0;
+            var canvas = document.getElementById("businessCardCanvas");
+            if (!canvas) return;
+            var data = loadCurrentProfile() || {};
+            var cardData = buildBusinessCardDataFromProfile(data);
+            renderMinimalTemplate(canvas, cardData, isPremiumUser());
+          });
+        }, PREVIEW_DEBOUNCE_MS);
+      }
+
+      function setupLazyObservers() {
+        var qrShell = document.querySelector(".qr-shell");
+        if (qrShell && "IntersectionObserver" in window) {
+          var qrObs = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting) ensureQRReady();
+          }, { rootMargin: "100px", threshold: 0.01 });
+          qrObs.observe(qrShell);
+        } else if (qrShell) {
+          ensureQRReady();
+        }
+        var previewWrap = document.querySelector(".bc-preview-canvas-wrapper");
+        if (previewWrap && "IntersectionObserver" in window) {
+          var prevObs = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting) schedulePreviewDraw();
+          }, { rootMargin: "100px", threshold: 0.01 });
+          prevObs.observe(previewWrap);
+        } else if (previewWrap) {
+          schedulePreviewDraw();
+        }
       }
 
       function normalizePhone(phone) {
@@ -2315,27 +2383,26 @@
         const overlay = document.getElementById("exportModalOverlay");
         if (!overlay) return;
 
-        // 初期選択をPDFに
-        const radios = overlay.querySelectorAll('input[name="export-format"]');
-        radios.forEach(r => { r.checked = r.value === "pdf"; });
-
-        // プレビュー描画
-        const previewCanvas = document.getElementById("exportPreviewCanvas");
-        if (previewCanvas) {
-          const data = loadCurrentProfile() || {};
-          const cardData = buildBusinessCardDataFromProfile(data);
-          // 小さめプレビューなので dpi を落として描画
-          const ctx = previewCanvas.getContext("2d");
-          if (ctx) {
-            const { width, height } = getBusinessCardPixelSize(150);
-            previewCanvas.width = width;
-            previewCanvas.height = height;
-          }
-          renderMinimalTemplate(previewCanvas, cardData, isPremiumUser());
-        }
+        var radios = overlay.querySelectorAll('input[name="export-format"]');
+        radios.forEach(function (r) { r.checked = r.value === "pdf"; });
 
         overlay.classList.add("active");
         overlay.setAttribute("aria-hidden", "false");
+
+        var previewCanvas = document.getElementById("exportPreviewCanvas");
+        if (previewCanvas && "requestAnimationFrame" in window) {
+          requestAnimationFrame(function () {
+            var data = loadCurrentProfile() || {};
+            var cardData = buildBusinessCardDataFromProfile(data);
+            var ctx = previewCanvas.getContext("2d");
+            if (ctx) {
+              var size = getBusinessCardPixelSize(150);
+              previewCanvas.width = size.width;
+              previewCanvas.height = size.height;
+            }
+            renderMinimalTemplate(previewCanvas, cardData, isPremiumUser());
+          });
+        }
       }
 
       function closeExportModal() {
@@ -2492,7 +2559,30 @@
         fillDisplay(profile.data);
         fillForm(profile.data);
         regenerateQR(profile.data);
+        schedulePreviewDraw();
         updateProfileSelector();
+      }
+
+      function loadDemoDataForScreenshots() {
+        var profiles = getAllProfiles();
+        var profileId = getCurrentProfileId();
+        var profile = profiles.find(function (p) { return p.id === profileId; });
+        if (!profile) {
+          profile = profiles[0];
+          if (!profile) return;
+        }
+        profile.data = Object.assign({}, profile.data || {}, DEMO_PROFILE_DATA);
+        profile.updatedAt = new Date().toISOString();
+        saveAllProfiles(profiles);
+        fillDisplay(profile.data);
+        fillForm(profile.data);
+        ensureQRReady();
+        regenerateQR(profile.data);
+        schedulePreviewDraw();
+        updateProfileSelector();
+        closeMenu();
+        switchMode("view");
+        if (typeof showToast === "function") showToast("スクリーンショット用のデモデータを読み込みました。");
       }
 
       function deleteProfile(profileId) {
@@ -2549,6 +2639,15 @@
         } catch (e) {
           console.error("Migration failed", e);
         }
+      }
+
+      function cleanupLocalStorage() {
+        try {
+          var obsolete = ["meqr_contact_v2", "meqr_contact_v1"];
+          obsolete.forEach(function (key) {
+            try { localStorage.removeItem(key); } catch (e) {}
+          });
+        } catch (e) {}
       }
 
       function setSyncStatus(state) {
@@ -2819,6 +2918,8 @@
           editBtn.classList.remove("active");
           editBtn.setAttribute("aria-selected", "false");
           formSection.classList.remove("active");
+          ensureQRReady();
+          schedulePreviewDraw();
         } else {
           viewBtn.classList.remove("active");
           viewBtn.setAttribute("aria-selected", "false");
@@ -3450,6 +3551,12 @@
               </div>
             </span>
           </div>
+          <div class="menu-divider"></div>
+          <div class="menu-section-title">ストア公開用</div>
+          <div class="menu-item" onclick="loadDemoDataForScreenshots()" style="cursor:pointer;">
+            <span class="menu-item-icon">📸</span>
+            <span class="menu-item-text" style="font-size:13px;">スクリーンショット用デモを読み込む</span>
+          </div>
         `;
         
         html += '</div>';
@@ -3535,6 +3642,7 @@
       window.handleExportDownload = handleExportDownload;
       window.startPremiumPurchase = startPremiumPurchase;
       window.restorePurchases = restorePurchases;
+      window.loadDemoDataForScreenshots = loadDemoDataForScreenshots;
 
       window.switchProfileAndClose = function(profileId) {
         switchProfile(profileId);
@@ -3701,8 +3809,6 @@
       };
 
       async function onDOMContentLoaded() {
-        console.log("MeQR: DOM loaded, initializing...");
-        
         try {
           // Initialize language first
           if (window.MeQRI18n && typeof window.MeQRI18n.initI18n === "function") {
@@ -3719,29 +3825,16 @@
           
           // Migrate old data if exists
           migrateOldData();
-          
-          qrInstance = createQRCodeInstance();
+          cleanupLocalStorage();
 
-          // Load current profile
+          // Load current profile (QR and canvas are deferred via Intersection Observer)
           const initialData = loadCurrentProfile();
-          console.log("MeQR: Initial data loaded", initialData);
 
         fillDisplay(initialData);
         fillForm(initialData);
-        regenerateQR(initialData);
         updateProfileSelector();
         applyQRSize();
-
-        // Render initial business card preview (Minimal template)
-        try {
-          const canvas = document.getElementById("businessCardCanvas");
-          if (canvas) {
-            const cardData = buildBusinessCardDataFromProfile(initialData || {});
-            renderMinimalTemplate(canvas, cardData, isPremiumUser());
-          }
-        } catch (e) {
-          console.warn("MeQR: failed to render minimal business card preview", e);
-        }
+        setupLazyObservers();
         } catch (err) {
           console.error("MeQR: Initialization error", err);
           alert("初期化エラーが発生しました: " + err.message);
@@ -3789,11 +3882,7 @@
 
         (function attachSaveHandler(){
           const btnSave = document.getElementById("btn-save");
-          if (!btnSave) {
-            console.error("btn-save element not found. Save handler not attached.");
-            return;
-          }
-          console.log("btn-save found, attaching click handler.");
+          if (!btnSave) return;
           btnSave.addEventListener("click", () => {
             const data = readForm();
             clearAllErrors();
@@ -3815,6 +3904,7 @@
             saveCurrentProfile(data);
             fillDisplay(data);
             regenerateQR(data);
+            schedulePreviewDraw();
             switchMode("view");
           });
         })();
