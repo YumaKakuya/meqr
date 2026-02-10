@@ -1341,6 +1341,7 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"
     referrerpolicy="no-referrer">
   </script>
+  <script src="js/i18n.js"></script>
   <script>
     (function () {
       "use strict";
@@ -2338,27 +2339,48 @@
       }
 
       function showSettingsSubmenu() {
-        let html = '<div class="menu-header"><div class="menu-title">設定</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
+        let html = '<div class="menu-header"><div class="menu-title" data-i18n="menu.settingsTitle">設定</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
         
         html += `
-          <div class="menu-section-title">QRコードサイズ</div>
+          <div class="menu-section-title" data-i18n="menu.settingsQrSizeSection">QRコードサイズ</div>
           <div class="menu-item" onclick="setQRSize('large')">
             <span class="menu-item-icon">📐</span>
-            <span class="menu-item-text">大（読み取りやすい）</span>
+            <span class="menu-item-text" data-i18n="menu.settingsQrSizeLarge">大（読み取りやすい）</span>
           </div>
           <div class="menu-item" onclick="setQRSize('medium')">
             <span class="menu-item-icon">📐</span>
-            <span class="menu-item-text">中（標準・推奨）</span>
+            <span class="menu-item-text" data-i18n="menu.settingsQrSizeMedium">中（標準・推奨）</span>
           </div>
           <div class="menu-item" onclick="setQRSize('small')">
             <span class="menu-item-icon">📐</span>
-            <span class="menu-item-text">小（コンパクト）</span>
+            <span class="menu-item-text" data-i18n="menu.settingsQrSizeSmall">小（コンパクト）</span>
           </div>
           <div class="menu-divider"></div>
-          <div class="menu-section-title">プライバシー</div>
+          <div class="menu-section-title" data-i18n="menu.settingsPrivacySection">プライバシー</div>
           <div class="menu-item">
             <span class="menu-item-icon">🔐</span>
-            <span class="menu-item-text">パスワード保護（準備中）</span>
+            <span class="menu-item-text" data-i18n="menu.settingsPasswordComingSoon">パスワード保護（準備中）</span>
+          </div>
+          <div class="menu-divider"></div>
+          <div class="menu-section-title" data-i18n="language.label">言語 / Language</div>
+          <div class="menu-item">
+            <span class="menu-item-icon">🌐</span>
+            <span class="menu-item-text">
+              <div id="meqr-lang-options" style="display:flex; flex-direction:column; gap:4px; font-size:13px;">
+                <label>
+                  <input type="radio" name="meqr-lang" id="meqr-lang-auto" value="auto">
+                  <span data-i18n="language.auto">自動（ブラウザ設定）</span>
+                </label>
+                <label>
+                  <input type="radio" name="meqr-lang" id="meqr-lang-ja" value="ja">
+                  🇯🇵 <span data-i18n="language.ja">日本語</span>
+                </label>
+                <label>
+                  <input type="radio" name="meqr-lang" id="meqr-lang-en" value="en">
+                  🇬🇧 <span data-i18n="language.en">English</span>
+                </label>
+              </div>
+            </span>
           </div>
         `;
         
@@ -2366,6 +2388,11 @@
         
         const drawer = document.getElementById("menu-drawer");
         drawer.innerHTML = html;
+
+        if (window.MeQRI18n && typeof window.MeQRI18n.attachLanguageControlHandlers === "function") {
+          window.MeQRI18n.attachLanguageControlHandlers();
+          window.MeQRI18n.applyTranslations();
+        }
       }
 
       function showDataSubmenu() {
@@ -2597,10 +2624,15 @@
         location.reload();
       };
 
-      function onDOMContentLoaded() {
+      async function onDOMContentLoaded() {
         console.log("MeQR: DOM loaded, initializing...");
         
         try {
+          // Initialize language first
+          if (window.MeQRI18n && typeof window.MeQRI18n.initI18n === "function") {
+            await window.MeQRI18n.initI18n();
+          }
+
           // Initialize theme first
           initTheme();
           

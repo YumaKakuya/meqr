@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "language": "en",
+    "languageName": "English",
+    "appName": "MeQR",
+    "appFullName": "MeQR – Digital Business Card"
+  },
+  "language": {
+    "label": "Language",
+    "auto": "Auto (browser setting)",
+    "ja": "Japanese",
+    "en": "English"
+  }
+}
