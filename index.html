@@ -603,6 +603,30 @@
       box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
+    .input-shell.has-error input,
+    .input-shell.has-error textarea {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+    }
+
+    .input-shell.has-error input:focus,
+    .input-shell.has-error textarea:focus {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+    }
+
+    .field-error {
+      display: block;
+      font-size: 12px;
+      color: #dc2626;
+      margin-top: 4px;
+      min-height: 1.2em;
+    }
+
+    .field-error:empty {
+      display: none;
+    }
+
     textarea {
       min-height: 52px;
       resize: vertical;
@@ -1194,7 +1218,7 @@
 
     .bc-preview-canvas-wrapper {
       width: 100%;
-      max-width: 360px;
+      max-width: 100%;
       aspect-ratio: 91 / 55;
       border-radius: 10px;
       border: 1px solid var(--border-subtle);
@@ -1209,6 +1233,83 @@
       display: block;
     }
 
+    /* タッチ操作: タップ領域 44px 以上 */
+    .btn-ghost,
+    .btn-primary,
+    .btn-secondary,
+    .hamburger-btn,
+    .menu-close-btn,
+    .onboarding-skip,
+    .onboarding-btn {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .btn-ghost {
+      padding: 10px 14px;
+    }
+
+    .menu-item {
+      min-height: 48px;
+      padding: 14px 20px;
+    }
+
+    .mode-toggle-large button {
+      min-height: 44px;
+    }
+
+    .photo-upload-label {
+      min-height: 44px;
+    }
+
+    /* 編集フォーム: モバイルは1カラム */
+    .field-row {
+      flex-direction: column;
+    }
+
+    .field-row > div {
+      width: 100%;
+    }
+
+    /* モーダル: モバイルでフルスクリーン */
+    @media (max-width: 599px) {
+      .export-modal-overlay {
+        padding: 0;
+        align-items: stretch;
+      }
+
+      .export-modal {
+        max-width: none;
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: safe center;
+      }
+
+      .onboarding-card {
+        max-width: none;
+        width: 100%;
+        min-height: 100vh;
+        max-height: none;
+        border-radius: 0;
+        border: none;
+      }
+
+      .onboarding-slide {
+        padding: 56px 24px 32px;
+      }
+    }
+
+    /* タブレット */
+    @media (min-width: 600px) {
+      .export-modal {
+        max-width: 400px;
+      }
+    }
+
     @media (min-width: 768px) {
       .app-root {
         padding-top: 32px;
@@ -1219,6 +1320,55 @@
         min-height: 320px;
         max-height: 380px;
       }
+
+      /* 名刺プレビュー: タブレットで中央・適度なサイズ */
+      .bc-preview-canvas-wrapper {
+        max-width: 380px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* 編集フォーム: 2カラム */
+      .field-row {
+        flex-direction: row;
+      }
+
+      .field-row > div {
+        width: auto;
+      }
+    }
+
+    /* PC・大画面: 名刺プレビュー実寸に近いサイズ */
+    @media (min-width: 1024px) {
+      .bc-preview-canvas-wrapper {
+        max-width: 420px;
+      }
+
+      .app-root {
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    /* テンプレート選択: タブレット/PCで横並び（将来用） */
+    .template-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .template-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    /* 小画面（iPhone SE 等）でボタン群の折り返しを確保 */
+    .contact-meta [style*="flex-wrap"] {
+      gap: 10px;
     }
   </style>
 </head>
@@ -1332,87 +1482,79 @@
             <div class="hint">写真のサイズは200KB以下を推奨（大きいとQRコード生成に影響する場合があります）</div>
           </div>
 
-          <div class="field-group">
+          <div class="field-group" id="field-group-name">
             <div class="field-row">
               <div>
                 <div class="field-label">姓 / LAST NAME</div>
-                <div class="input-shell">
-                  <input id="lastName" type="text" autocomplete="family-name" placeholder="山田" maxlength="20">
+                <div class="input-shell" id="input-shell-lastName">
+                  <input id="lastName" type="text" autocomplete="family-name" placeholder="山田" maxlength="50">
                 </div>
               </div>
               <div>
                 <div class="field-label">名 / FIRST NAME</div>
-                <div class="input-shell">
-                  <input id="firstName" type="text" autocomplete="given-name" placeholder="太郎" maxlength="20">
+                <div class="input-shell" id="input-shell-firstName">
+                  <input id="firstName" type="text" autocomplete="given-name" placeholder="太郎" maxlength="50">
                 </div>
               </div>
             </div>
+            <span class="field-error" id="error-name" role="alert" aria-live="polite"></span>
           </div>
 
           <div class="field-group">
             <div class="field-label">連絡先 / CONTACT</div>
-            <div class="input-shell">
+            <div class="input-shell" id="input-shell-phone">
               <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="090-1234-5678" maxlength="20">
             </div>
+            <span class="field-error" id="error-phone" role="alert" aria-live="polite"></span>
             <div class="hint">携帯番号（ハイフンありでも可）</div>
           </div>
 
           <div class="field-group">
             <div class="field-label">メールアドレス / EMAIL</div>
-            <div class="input-shell">
+            <div class="input-shell" id="input-shell-email">
               <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="example@example.com" maxlength="60">
             </div>
+            <span class="field-error" id="error-email" role="alert" aria-live="polite"></span>
           </div>
 
           <div class="field-group">
             <div class="field-row">
               <div>
                 <div class="field-label">会社名 / ORGANIZATION</div>
-                <div class="input-shell">
-                  <input id="org" type="text" autocomplete="organization" placeholder="株式会社〇〇" maxlength="40">
+                <div class="input-shell" id="input-shell-org">
+                  <input id="org" type="text" autocomplete="organization" placeholder="株式会社〇〇" maxlength="100">
                 </div>
+                <span class="field-error" id="error-org" role="alert" aria-live="polite"></span>
               </div>
               <div>
                 <div class="field-label">役職 / TITLE</div>
-                <div class="input-shell">
-                  <input id="title" type="text" autocomplete="organization-title" placeholder="営業部長" maxlength="30">
+                <div class="input-shell" id="input-shell-title">
+                  <input id="title" type="text" autocomplete="organization-title" placeholder="営業部長" maxlength="100">
                 </div>
+                <span class="field-error" id="error-title" role="alert" aria-live="polite"></span>
               </div>
             </div>
           </div>
 
           <div class="field-group">
             <div class="field-label">URL / WEBSITE</div>
-            <div class="input-shell">
+            <div class="input-shell" id="input-shell-url">
               <input id="url" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com" maxlength="100">
             </div>
+            <span class="field-error" id="error-url" role="alert" aria-live="polite"></span>
             <div class="hint">個人サイト、ポートフォリオなど</div>
           </div>
 
           <div class="field-group">
             <div class="field-label">🔗 SNS・ソーシャルメディア</div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
-              <div class="input-shell">
-                <input id="linkedin" type="url" inputmode="url" placeholder="LinkedIn: https://linkedin.com/in/yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="twitter" type="url" inputmode="url" placeholder="X (Twitter): https://x.com/yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="instagram" type="url" inputmode="url" placeholder="Instagram: https://instagram.com/yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="facebook" type="url" inputmode="url" placeholder="Facebook: https://facebook.com/yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="github" type="url" inputmode="url" placeholder="GitHub: https://github.com/yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="youtube" type="url" inputmode="url" placeholder="YouTube: https://youtube.com/@yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="customUrl" type="url" inputmode="url" placeholder="その他のURL" maxlength="100">
-              </div>
+              <div><div class="input-shell" id="input-shell-linkedin"><input id="linkedin" type="url" inputmode="url" placeholder="LinkedIn: https://linkedin.com/in/yourname" maxlength="100"></div><span class="field-error" id="error-linkedin" role="alert" aria-live="polite"></span></div>
+              <div><div class="input-shell" id="input-shell-twitter"><input id="twitter" type="url" inputmode="url" placeholder="X (Twitter): https://x.com/yourname" maxlength="100"></div><span class="field-error" id="error-twitter" role="alert" aria-live="polite"></span></div>
+              <div><div class="input-shell" id="input-shell-instagram"><input id="instagram" type="url" inputmode="url" placeholder="Instagram: https://instagram.com/yourname" maxlength="100"></div><span class="field-error" id="error-instagram" role="alert" aria-live="polite"></span></div>
+              <div><div class="input-shell" id="input-shell-facebook"><input id="facebook" type="url" inputmode="url" placeholder="Facebook: https://facebook.com/yourname" maxlength="100"></div><span class="field-error" id="error-facebook" role="alert" aria-live="polite"></span></div>
+              <div><div class="input-shell" id="input-shell-github"><input id="github" type="url" inputmode="url" placeholder="GitHub: https://github.com/yourname" maxlength="100"></div><span class="field-error" id="error-github" role="alert" aria-live="polite"></span></div>
+              <div><div class="input-shell" id="input-shell-youtube"><input id="youtube" type="url" inputmode="url" placeholder="YouTube: https://youtube.com/@yourname" maxlength="100"></div><span class="field-error" id="error-youtube" role="alert" aria-live="polite"></span></div>
+              <div><div class="input-shell" id="input-shell-customUrl"><input id="customUrl" type="url" inputmode="url" placeholder="その他のURL" maxlength="100"></div><span class="field-error" id="error-customUrl" role="alert" aria-live="polite"></span></div>
             </div>
             <div class="hint">QRコードに含める場合は入力してください（任意）</div>
           </div>
@@ -1954,6 +2096,7 @@
         canvas.width = width;
         canvas.height = height;
 
+        try {
         // Background
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, width, height);
@@ -2089,6 +2232,16 @@
         }
 
         drawWatermark(ctx, width, height, isPremium);
+        } catch (e) {
+          console.error("MeQR: canvas render error", e);
+          ctx.fillStyle = "#f3f4f6";
+          ctx.fillRect(0, 0, width, height);
+          ctx.fillStyle = "#6b7280";
+          ctx.font = '14px "Noto Sans JP", sans-serif';
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("プレビューを表示できません", width / 2, height / 2);
+        }
       }
 
       async function exportBusinessCardAsPDF() {
@@ -2116,7 +2269,7 @@
           doc.save(filename);
         } catch (e) {
           console.error("MeQR: failed to export business card PDF", e);
-          alert("名刺PDFの書き出し中にエラーが発生しました。");
+          alert("名刺のPDF書き出しに失敗しました。\n\nブラウザや接続環境を確認し、もう一度お試しください。");
         }
       }
 
@@ -2132,24 +2285,29 @@
           canvas.toBlob(
             (blob) => {
               if (!blob) {
-                alert("名刺PNGの書き出しに失敗しました。");
+                alert("名刺のPNG書き出しに失敗しました。もう一度お試しください。");
                 return;
               }
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = filename;
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              URL.revokeObjectURL(url);
+              try {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              } catch (err) {
+                console.error("MeQR: PNG download failed", err);
+                alert("ダウンロードの開始に失敗しました。ポップアップがブロックされていないか確認してください。");
+              }
             },
             "image/png",
             0.9
           );
         } catch (e) {
           console.error("MeQR: failed to export business card PNG", e);
-          alert("名刺PNGの書き出し中にエラーが発生しました。");
+          alert("名刺のPNG書き出しに失敗しました。\n\nもう一度お試しください。");
         }
       }
 
@@ -2235,7 +2393,11 @@
           localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
         } catch (e) {
           console.error("Failed to save profiles", e);
-          alert("プロファイルの保存に失敗しました。");
+          if (e && e.name === "QuotaExceededError") {
+            alert("保存容量が不足しています。\n\n不要な名刺を削除するか、ブラウザの保存データを整理してから再度お試しください。");
+          } else {
+            alert("プロファイルの保存に失敗しました。しばらくしてから再度お試しください。");
+          }
         }
       }
 
@@ -2475,6 +2637,107 @@
         if (githubInput) githubInput.value = data.github || "";
         if (youtubeInput) youtubeInput.value = data.youtube || "";
         if (customUrlInput) customUrlInput.value = data.customUrl || "";
+      }
+
+      // === バリデーション・エラー表示 ===
+      const LIMIT = { name: 50, orgTitle: 100, address: 200, url: 100 };
+      const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const PHONE_REGEX = /^[0-9\-+\s()]*$/;
+      const URL_PREFIX = /^https?:\/\//i;
+
+      function validateEmail(v) {
+        if (!v) return { valid: true };
+        if (!EMAIL_REGEX.test(v)) return { valid: false, message: "メールアドレスの形式が正しくありません。" };
+        return { valid: true };
+      }
+
+      function validatePhone(v) {
+        if (!v) return { valid: true };
+        if (!PHONE_REGEX.test(v)) return { valid: false, message: "電話番号は数字とハイフンのみ入力できます。" };
+        return { valid: true };
+      }
+
+      function validateUrl(v, fieldLabel) {
+        if (!v) return { valid: true };
+        if (!URL_PREFIX.test(v)) return { valid: false, message: "URLは http:// または https:// で始めてください。" };
+        if (v.length > LIMIT.url) return { valid: false, message: "URLは" + LIMIT.url + "文字以内で入力してください。" };
+        return { valid: true };
+      }
+
+      function validateForm(data) {
+        const errors = [];
+        const lastName = (data.lastName || "").trim();
+        const firstName = (data.firstName || "").trim();
+        const fullNameLen = (lastName + " " + firstName).trim().length;
+
+        if (!lastName && !firstName) {
+          errors.push({ field: "name", message: "名前を入力してください。（姓または名のどちらか必須）" });
+        } else if (fullNameLen > LIMIT.name) {
+          errors.push({ field: "name", message: "名前は合計" + LIMIT.name + "文字以内で入力してください。" });
+        }
+
+        const phone = (data.phone || "").trim();
+        const email = (data.email || "").trim();
+        if (!phone && !email) {
+          var contactMsg = "メールアドレスまたは電話番号の少なくとも1つを入力してください。";
+          errors.push({ field: "phone", message: contactMsg });
+          errors.push({ field: "email", message: contactMsg });
+        } else {
+          var r = validatePhone(phone);
+          if (!r.valid) errors.push({ field: "phone", message: r.message });
+          r = validateEmail(email);
+          if (!r.valid) errors.push({ field: "email", message: r.message });
+        }
+
+        var r = validateUrl(data.url || "", "URL");
+        if (!r.valid) errors.push({ field: "url", message: r.message });
+
+        const org = (data.org || "").trim();
+        if (org.length > LIMIT.orgTitle) errors.push({ field: "org", message: "会社名は" + LIMIT.orgTitle + "文字以内で入力してください。" });
+        const title = (data.title || "").trim();
+        if (title.length > LIMIT.orgTitle) errors.push({ field: "title", message: "役職は" + LIMIT.orgTitle + "文字以内で入力してください。" });
+
+        ["linkedin", "twitter", "instagram", "facebook", "github", "youtube", "customUrl"].forEach(function (key) {
+          var res = validateUrl(data[key] || "", key);
+          if (!res.valid) errors.push({ field: key, message: res.message });
+        });
+
+        return { valid: errors.length === 0, errors: errors };
+      }
+
+      function showFieldError(fieldId, message) {
+        var el = document.getElementById("error-" + fieldId);
+        var shell = document.getElementById("input-shell-" + fieldId);
+        if (el) el.textContent = message || "";
+        if (shell) shell.classList.toggle("has-error", !!message);
+        if (fieldId === "name") {
+          var shellL = document.getElementById("input-shell-lastName");
+          var shellF = document.getElementById("input-shell-firstName");
+          if (shellL) shellL.classList.toggle("has-error", !!message);
+          if (shellF) shellF.classList.toggle("has-error", !!message);
+        }
+      }
+
+      function clearAllErrors() {
+        var ids = ["name", "phone", "email", "org", "title", "url", "linkedin", "twitter", "instagram", "facebook", "github", "youtube", "customUrl"];
+        ids.forEach(function (id) {
+          showFieldError(id, "");
+        });
+      }
+
+      function runRealtimeValidation() {
+        var data = readForm();
+        var result = validateForm(data);
+        result.errors.forEach(function (e) {
+          if (e.message) showFieldError(e.field, e.message);
+        });
+        var shown = {};
+        result.errors.forEach(function (e) {
+          if (e.message && !shown[e.field]) { shown[e.field] = true; }
+        });
+        ["name", "phone", "email", "org", "title", "url", "linkedin", "twitter", "instagram", "facebook", "github", "youtube", "customUrl"].forEach(function (id) {
+          if (!shown[id]) showFieldError(id, "");
+        });
       }
 
       function readForm() {
@@ -3532,13 +3795,22 @@
           }
           console.log("btn-save found, attaching click handler.");
           btnSave.addEventListener("click", () => {
-            console.log("btn-save clicked");
             const data = readForm();
-            console.log("form data:", data);
-            if (!data.lastName && !data.firstName) {
-              if (!confirm("姓・名が未入力です。このまま QR を更新しますか？")) {
-                return;
+            clearAllErrors();
+            const result = validateForm(data);
+            if (!result.valid) {
+              result.errors.forEach(function (e) {
+                if (e.message) showFieldError(e.field, e.message);
+              });
+              var first = result.errors[0];
+              if (first && first.field === "name") {
+                var el = document.getElementById("lastName");
+                if (el) el.focus();
+              } else if (first) {
+                var input = document.getElementById(first.field);
+                if (input) input.focus();
               }
+              return;
             }
             saveCurrentProfile(data);
             fillDisplay(data);
@@ -3547,10 +3819,25 @@
           });
         })();
 
+        (function setupValidationListeners() {
+          var fields = ["lastName", "firstName", "phone", "email", "org", "title", "url", "linkedin", "twitter", "instagram", "facebook", "github", "youtube", "customUrl"];
+          var timer = null;
+          function runSoon() {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(runRealtimeValidation, 300);
+          }
+          fields.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener("input", runSoon);
+            el.addEventListener("blur", runRealtimeValidation);
+          });
+        })();
+
         document.getElementById("btn-clear").addEventListener("click", () => {
           const ok = confirm("現在の名刺の情報をクリアします。よろしいですか？");
           if (!ok) return;
-          
+          clearAllErrors();
           const emptyData = {
             lastName: "",
             firstName: "",
@@ -3561,7 +3848,6 @@
             url: "",
             photo: ""
           };
-          
           saveCurrentProfile(emptyData);
           fillDisplay(emptyData);
           fillForm(emptyData);
