@@ -28,8 +28,10 @@
       --bg: #f8f9fa;
       --bg-elevated: #ffffff;
       --accent: #2563eb;
+      --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       --accent-soft: rgba(37, 99, 235, 0.1);
       --accent-strong: rgba(37, 99, 235, 0.85);
+      --step-done: #22c55e;
       --border-subtle: #e5e7eb;
       --border-medium: #d1d5db;
       --text-main: #1f2937;
@@ -48,9 +50,11 @@
       color-scheme: dark;
       --bg: #0f172a;
       --bg-elevated: #1e293b;
-      --accent: #3b82f6;
-      --accent-soft: rgba(59, 130, 246, 0.15);
-      --accent-strong: rgba(59, 130, 246, 0.9);
+      --accent: #667eea;
+      --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --accent-soft: rgba(102, 126, 234, 0.15);
+      --accent-strong: rgba(102, 126, 234, 0.9);
+      --step-done: #22c55e;
       --border-subtle: #334155;
       --border-medium: #475569;
       --text-main: #f1f5f9;
@@ -129,11 +133,11 @@
     }
 
     [data-theme="dark"] .btn-primary {
-      background: #3b82f6;
+      background: var(--accent-gradient);
     }
 
     [data-theme="dark"] .btn-primary:hover {
-      background: #2563eb;
+      opacity: 0.95;
     }
 
     [data-theme="dark"] .btn-secondary {
@@ -543,6 +547,19 @@
     }
 
     /* 編集フォーム */
+    .form-section {
+      margin-bottom: 20px;
+    }
+    .form-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
     .form-root {
       display: none;
       flex-direction: column;
@@ -651,7 +668,7 @@
       border-radius: 10px;
       padding: 12px 16px;
       border: none;
-      background: var(--accent);
+      background: var(--accent-gradient);
       color: white;
       font-size: 14px;
       font-weight: 600;
@@ -666,7 +683,7 @@
     }
 
     .btn-primary:hover {
-      background: #1d4ed8;
+      opacity: 0.95;
       box-shadow: var(--shadow-lg);
     }
 
@@ -936,13 +953,66 @@
     }
 
     .mode-toggle-large button.active {
-      background: var(--accent);
+      background: var(--accent-gradient);
       color: white;
       box-shadow: var(--shadow-md);
     }
 
     .mode-toggle-large button .icon {
       font-size: 18px;
+    }
+
+    /* ステップインジケーター（選ぶ→編集→共有・印刷） */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 12px;
+      margin: 0 16px 12px;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 12px;
+    }
+    .step-indicator .step-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .step-indicator .step-item .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--border-medium);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 11px;
+    }
+    .step-indicator .step-item.active .step-num {
+      background: var(--accent);
+      color: white;
+    }
+    .step-indicator .step-item.completed .step-num {
+      background: var(--step-done);
+      color: white;
+    }
+    .step-indicator .step-item.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .step-indicator .step-arrow {
+      color: var(--border-medium);
+      font-size: 10px;
+    }
+    @media (max-width: 400px) {
+      .step-indicator .step-item .step-label { display: none; }
     }
 
     /* Onboarding (swipeable 3 pages) */
@@ -1105,6 +1175,89 @@
       margin-bottom: 12px;
     }
 
+    .export-modal-usage {
+      margin-bottom: 14px;
+    }
+    .export-modal-usage-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .export-usage-option {
+      position: relative;
+      background: var(--bg);
+      border: 2px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 12px 10px 36px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .export-usage-option::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-medium);
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .export-usage-option:hover {
+      border-color: var(--border-medium);
+    }
+    .export-usage-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .export-usage-option.selected::before {
+      border-color: var(--accent);
+      background: var(--accent);
+      box-shadow: inset 0 0 0 3px var(--bg-elevated);
+    }
+    .export-usage-option .usage-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .export-usage-option .usage-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .export-usage-option .usage-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      background: var(--accent);
+      color: white;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+
+    .freemium-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.08) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .freemium-banner .icon { font-size: 20px; }
+    .freemium-banner .text { flex: 1; }
+    .freemium-banner .title { font-weight: 600; color: #b45309; }
+    .freemium-banner .desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    [data-theme="dark"] .freemium-banner .title { color: #fbbf24; }
+
     .export-modal-options {
       display: flex;
       flex-direction: column;
@@ -1207,9 +1360,11 @@
     }
 
     .bc-preview-title {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
-      color: var(--text-main);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .bc-preview-note {
@@ -1367,6 +1522,74 @@
       }
     }
 
+    /* テンプレートセレクター */
+    .template-selector {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 12px 0 8px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      margin-bottom: 12px;
+    }
+    .template-selector::-webkit-scrollbar {
+      display: none;
+    }
+    .template-chip {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 2px solid var(--border-medium);
+      background: var(--bg-elevated);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      position: relative;
+      min-width: 72px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .template-chip:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .template-chip.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .template-chip-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+    .template-chip-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: 0.02em;
+    }
+    .template-chip-desc {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.3;
+      max-width: 72px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .template-chip-lock {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 9px;
+      color: #f59e0b;
+      font-weight: 700;
+    }
+
     /* 小画面（iPhone SE 等）でボタン群の折り返しを確保 */
     .contact-meta [style*="flex-wrap"] {
       gap: 10px;
@@ -1398,6 +1621,15 @@
       <button id="btn-edit-mode" role="tab" aria-selected="false">
         <span class="icon">✏️</span><span>編集モード</span>
       </button>
+    </div>
+
+    <!-- ステップフロー（名刺作成コンセプト準拠） -->
+    <div class="step-indicator" id="stepIndicator" aria-label="使い方の流れ">
+      <span class="step-item completed" id="step-1" data-step="1"><span class="step-num">1</span><span class="step-label">名刺を選ぶ</span></span>
+      <span class="step-arrow" aria-hidden="true">→</span>
+      <span class="step-item" id="step-2" data-step="2"><span class="step-num">2</span><span class="step-label">情報を編集</span></span>
+      <span class="step-arrow" aria-hidden="true">→</span>
+      <span class="step-item active" id="step-3" data-step="3"><span class="step-num">3</span><span class="step-label">共有・印刷</span></span>
     </div>
 
     <main>
@@ -1467,12 +1699,25 @@
             <span class="bc-preview-title">名刺デザインプレビュー（Minimal）</span>
             <span class="bc-preview-note">※ 印刷用レイアウトの縮小イメージです</span>
           </div>
+          <!-- テンプレート選択 -->
+          <div class="template-selector" id="templateSelector" role="radiogroup" aria-label="名刺テンプレートを選択">
+          </div>
           <div class="bc-preview-canvas-wrapper">
             <canvas id="businessCardCanvas" aria-label="Business card preview"></canvas>
           </div>
         </div>
 
         <section class="form-root" id="editFormSection" aria-label="連絡先編集フォーム">
+          <div class="freemium-banner" id="freemiumBanner" style="display: none;">
+            <span class="icon" aria-hidden="true">🔓</span>
+            <div class="text">
+              <div class="title">無料でプレビューまで作成できます</div>
+              <div class="desc">ダウンロード時はウォーターマーク付き。Premium でクリアに。</div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">基本情報</div>
           <div class="field-group photo-upload-area">
             <div class="field-label">プロフィール写真</div>
             <label class="photo-upload-label">
@@ -1502,20 +1747,11 @@
           </div>
 
           <div class="field-group">
-            <div class="field-label">連絡先 / CONTACT</div>
-            <div class="input-shell" id="input-shell-phone">
-              <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="090-1234-5678" maxlength="20">
+            <div class="field-label">フリガナ（任意）</div>
+            <div class="input-shell" id="input-shell-furigana">
+              <input id="furigana" type="text" autocomplete="off" placeholder="ヤマダ タロウ" maxlength="50">
             </div>
-            <span class="field-error" id="error-phone" role="alert" aria-live="polite"></span>
-            <div class="hint">携帯番号（ハイフンありでも可）</div>
-          </div>
-
-          <div class="field-group">
-            <div class="field-label">メールアドレス / EMAIL</div>
-            <div class="input-shell" id="input-shell-email">
-              <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="example@example.com" maxlength="60">
-            </div>
-            <span class="field-error" id="error-email" role="alert" aria-live="polite"></span>
+            <div class="hint">名刺にふりがなとして表示されます</div>
           </div>
 
           <div class="field-group">
@@ -1536,9 +1772,29 @@
               </div>
             </div>
           </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">連絡先</div>
+          <div class="field-group">
+            <div class="field-label">電話番号</div>
+            <div class="input-shell" id="input-shell-phone">
+              <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="090-1234-5678" maxlength="20">
+            </div>
+            <span class="field-error" id="error-phone" role="alert" aria-live="polite"></span>
+            <div class="hint">携帯番号（ハイフンありでも可）</div>
+          </div>
 
           <div class="field-group">
-            <div class="field-label">URL / WEBSITE</div>
+            <div class="field-label">メールアドレス</div>
+            <div class="input-shell" id="input-shell-email">
+              <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="example@example.com" maxlength="60">
+            </div>
+            <span class="field-error" id="error-email" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">URL / ウェブサイト</div>
             <div class="input-shell" id="input-shell-url">
               <input id="url" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com" maxlength="100">
             </div>
@@ -1547,17 +1803,26 @@
           </div>
 
           <div class="field-group">
-            <div class="field-label">🔗 SNS・ソーシャルメディア</div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <div><div class="input-shell" id="input-shell-linkedin"><input id="linkedin" type="url" inputmode="url" placeholder="LinkedIn: https://linkedin.com/in/yourname" maxlength="100"></div><span class="field-error" id="error-linkedin" role="alert" aria-live="polite"></span></div>
-              <div><div class="input-shell" id="input-shell-twitter"><input id="twitter" type="url" inputmode="url" placeholder="X (Twitter): https://x.com/yourname" maxlength="100"></div><span class="field-error" id="error-twitter" role="alert" aria-live="polite"></span></div>
-              <div><div class="input-shell" id="input-shell-instagram"><input id="instagram" type="url" inputmode="url" placeholder="Instagram: https://instagram.com/yourname" maxlength="100"></div><span class="field-error" id="error-instagram" role="alert" aria-live="polite"></span></div>
-              <div><div class="input-shell" id="input-shell-facebook"><input id="facebook" type="url" inputmode="url" placeholder="Facebook: https://facebook.com/yourname" maxlength="100"></div><span class="field-error" id="error-facebook" role="alert" aria-live="polite"></span></div>
-              <div><div class="input-shell" id="input-shell-github"><input id="github" type="url" inputmode="url" placeholder="GitHub: https://github.com/yourname" maxlength="100"></div><span class="field-error" id="error-github" role="alert" aria-live="polite"></span></div>
-              <div><div class="input-shell" id="input-shell-youtube"><input id="youtube" type="url" inputmode="url" placeholder="YouTube: https://youtube.com/@yourname" maxlength="100"></div><span class="field-error" id="error-youtube" role="alert" aria-live="polite"></span></div>
-              <div><div class="input-shell" id="input-shell-customUrl"><input id="customUrl" type="url" inputmode="url" placeholder="その他のURL" maxlength="100"></div><span class="field-error" id="error-customUrl" role="alert" aria-live="polite"></span></div>
+            <div class="field-label">住所（任意）</div>
+            <div class="input-shell" id="input-shell-address">
+              <input id="address" type="text" autocomplete="street-address" placeholder="〒100-0001 東京都千代田区…" maxlength="200">
             </div>
-            <div class="hint">QRコードに含める場合は入力してください（任意）</div>
+            <span class="field-error" id="error-address" role="alert" aria-live="polite"></span>
+            <div class="hint">名刺に表示されます。200文字以内</div>
+          </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">SNS・ソーシャルメディア（QRに含まれるのはこの3つのみ）</div>
+          <div class="field-group">
+            <div class="field-label">X / Instagram / LINE</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div><div class="input-shell" id="input-shell-twitter"><input id="twitter" type="url" inputmode="url" placeholder="X: https://x.com/yourname" maxlength="100"></div><span class="field-error" id="error-twitter" role="alert" aria-live="polite"></span></div>
+              <div><div class="input-shell" id="input-shell-instagram"><input id="instagram" type="url" inputmode="url" placeholder="Instagram: https://instagram.com/yourname" maxlength="100"></div><span class="field-error" id="error-instagram" role="alert" aria-live="polite"></span></div>
+              <div><div class="input-shell" id="input-shell-line"><input id="line" type="url" inputmode="url" placeholder="LINE: https://line.me/ti/p/〜 または LINE ID" maxlength="100"></div><span class="field-error" id="error-line" role="alert" aria-live="polite"></span></div>
+            </div>
+            <div class="hint">いずれも任意です。入力したものだけQRに含まれます。</div>
+          </div>
           </div>
 
           <div class="footer-actions">
@@ -1637,7 +1902,22 @@
   <div id="exportModalOverlay" class="export-modal-overlay" aria-hidden="true">
     <div class="export-modal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
       <div class="export-modal-title" id="exportModalTitle">名刺をダウンロード</div>
-      <div class="export-modal-desc">形式を選んで、印刷用の名刺データを書き出します。</div>
+      <div class="export-modal-desc">どこで使いますか？形式を選んで書き出します。</div>
+      <div class="export-modal-usage">
+        <div class="export-modal-usage-title">どこで使いますか？</div>
+        <div class="export-usage-option selected" id="export-usage-printshop" data-usage="printshop" role="button" tabindex="0">
+          <span class="usage-label">印刷会社に発注する</span><span class="usage-badge">推奨</span>
+          <div class="usage-desc">ラクスル・プリントパック等に最適。PDFを選んでください。</div>
+        </div>
+        <div class="export-usage-option" id="export-usage-home" data-usage="home" role="button" tabindex="0">
+          <span class="usage-label">自宅プリンターで印刷</span>
+          <div class="usage-desc">A4用紙に印刷して切り取り。PDF推奨。</div>
+        </div>
+        <div class="export-usage-option" id="export-usage-sns" data-usage="sns" role="button" tabindex="0">
+          <span class="usage-label">SNS・メール用</span>
+          <div class="usage-desc">画像として使う場合はPNGを選んでください。</div>
+        </div>
+      </div>
       <div class="export-modal-options">
         <label>
           <input type="radio" name="export-format" value="pdf" checked> PDF（推奨・印刷用）
@@ -1657,6 +1937,31 @@
         <button type="button" class="btn-primary" onclick="handleExportDownload()">
           <span class="icon">📥</span>
           <span>ダウンロード</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Download Modal -->
+  <div id="qrDownloadModalOverlay" class="export-modal-overlay" aria-hidden="true">
+    <div class="export-modal" role="dialog" aria-modal="true" aria-labelledby="qrDownloadModalTitle">
+      <div class="export-modal-title" id="qrDownloadModalTitle">QRコードを保存</div>
+      <div class="export-modal-desc">保存する形式を選んでください。</div>
+      <div class="export-modal-options">
+        <label>
+          <input type="radio" name="qr-format" value="png" checked>
+          PNG（印刷用・高解像度 1024×1024px）
+        </label>
+        <label>
+          <input type="radio" name="qr-format" value="svg">
+          SVG（編集可能・軽量）
+        </label>
+      </div>
+      <div class="export-modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeQRDownloadModal()">キャンセル</button>
+        <button type="button" class="btn-primary" onclick="handleQRDownload()">
+          <span class="icon">⬇️</span>
+          <span>保存</span>
         </button>
       </div>
     </div>
@@ -1705,7 +2010,7 @@
     referrerpolicy="no-referrer">
   </script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="js/i18n.js"></script>
+  <script src="i18n.js"></script>
   <script>
     (function () {
       "use strict";
@@ -1720,19 +2025,17 @@
       var DEMO_PROFILE_DATA = {
         lastName: "山田",
         firstName: "太郎",
+        furigana: "ヤマダ タロウ",
         phone: "090-1234-5678",
         email: "yamada.taro@example.com",
         org: "株式会社サンプル",
         title: "営業部 マネージャー",
         url: "https://example.com",
+        address: "",
         photo: "",
-        linkedin: "https://linkedin.com/in/example",
         twitter: "https://x.com/example",
-        instagram: "",
-        facebook: "",
-        github: "",
-        youtube: "",
-        customUrl: ""
+        instagram: "https://instagram.com/example",
+        line: ""
       };
 
       /** @type {ReturnType<typeof createQRCodeInstance> | null} */
@@ -1800,9 +2103,11 @@
             previewRafId = 0;
             var canvas = document.getElementById("businessCardCanvas");
             if (!canvas) return;
+            ensureQRReady();
             var data = loadCurrentProfile() || {};
             var cardData = buildBusinessCardDataFromProfile(data);
-            renderMinimalTemplate(canvas, cardData, isPremiumUser());
+            cardData.qrCode = getQRCodeDataURL();
+            renderCurrentTemplate(canvas, cardData, isPremiumUser());
           });
         }, PREVIEW_DEBOUNCE_MS);
       }
@@ -1851,70 +2156,29 @@
         const org = data.org || "";
         const title = data.title || "";
         const url = data.url || "";
-        const linkedin = data.linkedin || "";
+        const address = data.address || "";
         const twitter = data.twitter || "";
         const instagram = data.instagram || "";
-        const facebook = data.facebook || "";
-        const github = data.github || "";
-        const youtube = data.youtube || "";
-        const customUrl = data.customUrl || "";
+        const line = data.line || "";
 
         const fullName = (lastName + " " + firstName).trim() || "My Contact";
 
         let v = "";
         v += ln("BEGIN:VCARD");
         v += ln("VERSION:3.0");
-        // Outlook など一部クライアントでの文字化け対策として、UTF-8 を明示
-        v += ln("N;CHARSET=UTF-8:" + escapeVCardValue(lastName) + ";" + escapeVCardValue(firstName) + ";;;");
-        v += ln("FN;CHARSET=UTF-8:" + escapeVCardValue(fullName));
+        v += ln("N:" + escapeVCardValue(lastName) + ";" + escapeVCardValue(firstName) + ";;;");
+        v += ln("FN:" + escapeVCardValue(fullName));
 
-        if (org) {
-          v += ln("ORG;CHARSET=UTF-8:" + escapeVCardValue(org));
-        }
+        if (org) v += ln("ORG:" + escapeVCardValue(org));
+        if (title) v += ln("TITLE:" + escapeVCardValue(title));
+        if (phone) v += ln("TEL;TYPE=CELL,VOICE:" + escapeVCardValue(phone));
+        if (email) v += ln("EMAIL;TYPE=INTERNET:" + escapeVCardValue(email));
+        if (address) v += ln("ADR:;;" + escapeVCardValue(address) + ";;;;");
+        if (url) v += ln("URL;TYPE=HOME:" + escapeVCardValue(url));
 
-        if (title) {
-          v += ln("TITLE;CHARSET=UTF-8:" + escapeVCardValue(title));
-        }
-
-        if (phone) {
-          v += ln("TEL;TYPE=CELL,VOICE:" + escapeVCardValue(phone));
-        }
-
-        if (email) {
-          v += ln("EMAIL;TYPE=INTERNET:" + escapeVCardValue(email));
-        }
-
-        if (url) {
-          v += ln("URL;TYPE=HOME:" + escapeVCardValue(url));
-        }
-
-        if (linkedin) {
-          v += ln("URL;TYPE=LINKEDIN:" + escapeVCardValue(linkedin));
-        }
-
-        if (twitter) {
-          v += ln("URL;TYPE=TWITTER:" + escapeVCardValue(twitter));
-        }
-
-        if (instagram) {
-          v += ln("URL;TYPE=INSTAGRAM:" + escapeVCardValue(instagram));
-        }
-
-        if (facebook) {
-          v += ln("URL;TYPE=FACEBOOK:" + escapeVCardValue(facebook));
-        }
-
-        if (github) {
-          v += ln("URL;TYPE=GITHUB:" + escapeVCardValue(github));
-        }
-
-        if (youtube) {
-          v += ln("URL;TYPE=YOUTUBE:" + escapeVCardValue(youtube));
-        }
-
-        if (customUrl) {
-          v += ln("URL;TYPE=OTHER:" + escapeVCardValue(customUrl));
-        }
+        if (twitter) v += ln("URL;TYPE=X:" + escapeVCardValue(twitter));
+        if (instagram) v += ln("URL;TYPE=INSTAGRAM:" + escapeVCardValue(instagram));
+        if (line) v += ln("URL;TYPE=LINE:" + escapeVCardValue(line));
 
         v += ln("END:VCARD");
         return v;
@@ -1923,7 +2187,31 @@
       // === Business Card Templates (Canvas) ===
 
       const PREMIUM_KEY = "meqr_premium";
-      const DEV_SHOW_PREMIUM_TOGGLE = true;
+      const TEMPLATE_KEY = "meqr_template";
+      const DEV_SHOW_PREMIUM_TOGGLE = false;
+
+      const TEMPLATES = [
+        { id: "minimal", label: "Minimal", desc: "シンプル・白背景", icon: "⬜", premium: false, render: function(canvas, cardData, isPremium, onComplete) { renderMinimalTemplate(canvas, cardData, isPremium, onComplete); } },
+        { id: "bold", label: "Bold", desc: "ダーク・インパクト重視", icon: "◼", premium: false, render: function(canvas, cardData, isPremium, onComplete) { renderBoldTemplate(canvas, cardData, isPremium, onComplete); } },
+        { id: "elegant", label: "Elegant", desc: "グラデーション帯・上品", icon: "▨", premium: false, render: function(canvas, cardData, isPremium, onComplete) { renderElegantTemplate(canvas, cardData, isPremium, onComplete); } },
+        { id: "flat", label: "Flat", desc: "右帯カラー・スッキリ", icon: "▐", premium: true, render: function(canvas, cardData, isPremium, onComplete) { renderFlatTemplate(canvas, cardData, isPremium, onComplete); } },
+        { id: "photo", label: "Photo", desc: "左に写真・プロ仕様", icon: "🖼", premium: true, render: function(canvas, cardData, isPremium, onComplete) { renderPhotoTemplate(canvas, cardData, isPremium, onComplete); } }
+      ];
+
+      function getCurrentTemplateId() {
+        return localStorage.getItem(TEMPLATE_KEY) || "minimal";
+      }
+      function setCurrentTemplateId(id) {
+        localStorage.setItem(TEMPLATE_KEY, id);
+      }
+      function getCurrentTemplate() {
+        const id = getCurrentTemplateId();
+        return TEMPLATES.find(function(t) { return t.id === id; }) || TEMPLATES[0];
+      }
+      function renderCurrentTemplate(canvas, cardData, isPremium, onComplete) {
+        const template = getCurrentTemplate();
+        template.render(canvas, cardData, isPremium, onComplete);
+      }
 
       function getPremiumState() {
         try {
@@ -1987,7 +2275,7 @@
                 if (canvas) {
                   const data = loadCurrentProfile() || {};
                   const cardData = buildBusinessCardDataFromProfile(data);
-                  renderMinimalTemplate(canvas, cardData, true);
+                  renderCurrentTemplate(canvas, cardData, true);
                 }
               } catch (e) {
                 console.warn("MeQR: failed to refresh UI after premium purchase", e);
@@ -2048,7 +2336,7 @@
           if (canvas) {
             const data = loadCurrentProfile() || {};
             const cardData = buildBusinessCardDataFromProfile(data);
-            renderMinimalTemplate(canvas, cardData, true);
+            renderCurrentTemplate(canvas, cardData, true);
           }
         } else {
           const store = window.CdvPurchase && window.CdvPurchase.store;
@@ -2083,7 +2371,7 @@
         if (canvas) {
           const data = loadCurrentProfile() || {};
           const cardData = buildBusinessCardDataFromProfile(data);
-          renderMinimalTemplate(canvas, cardData, true);
+          renderCurrentTemplate(canvas, cardData, true);
         }
         showToast("Premiumを有効化しました（テスト用）。");
       }
@@ -2096,7 +2384,7 @@
         if (canvas) {
           const data = loadCurrentProfile() || {};
           const cardData = buildBusinessCardDataFromProfile(data);
-          renderMinimalTemplate(canvas, cardData, isPremiumUser());
+          renderCurrentTemplate(canvas, cardData, isPremiumUser());
         }
       }
 
@@ -2138,23 +2426,40 @@
 
         return {
           name: fullName,
-          nameKana: "",
+          nameKana: data.furigana || "",
           company: data.org || "",
           position: data.title || "",
           phone: data.phone || "",
           email: data.email || "",
           website: data.url || "",
-          address: "",
+          address: data.address || "",
+          photo: data.photo || "",
           sns: {
             twitter: data.twitter || "",
-            linkedin: data.linkedin || "",
-            instagram: data.instagram || ""
+            instagram: data.instagram || "",
+            line: data.line || ""
           },
           qrCode: null
         };
       }
 
-      function renderMinimalTemplate(canvas, cardData, isPremium) {
+      function getQRCodeDataURL() {
+        var container = document.getElementById("qrcode");
+        if (!container) return null;
+        var svg = container.querySelector("svg");
+        if (!svg) return null;
+        var clone = svg.cloneNode(true);
+        clone.setAttribute("width", "256");
+        clone.setAttribute("height", "256");
+        try {
+          var s = new XMLSerializer().serializeToString(clone);
+          return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(s)));
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function renderMinimalTemplate(canvas, cardData, isPremium, onComplete) {
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
@@ -2165,20 +2470,30 @@
         canvas.height = height;
 
         try {
-        // Background
+        // KANAKO OTA サンプル準拠：数値ルール厳守・左揃え1カラム・基準線ベース
+        var DESIGN_W = 360;
+        var scale = width / DESIGN_W;
+
+        function px(v) { return Math.round(v * scale); }
+
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, width, height);
 
-        // Border
-        ctx.strokeStyle = "#e5e7eb";
-        ctx.lineWidth = 4;
-        ctx.strokeRect(8, 8, width - 16, height - 16);
+        var marginLeft = px(26);
+        var marginRight = px(26);
+        var marginTop = px(24);
+        var marginBottom = px(24);
+        var blockGap = px(14);
+        var lineGapInBlock = px(7);
+        var contactLineHeight = 1.7;
+        var fontScale = 1.1;
 
-        const marginX = 48;
-        const marginY = 40;
-        const textWidth = width * 0.6;
+        var qrSizePct = 0.17;
+        var qrSize = Math.min(px(Math.floor(DESIGN_W * qrSizePct)), Math.floor(height * 0.32));
+        var qrRight = width - marginRight;
+        var qrX = qrRight - qrSize;
+        var leftContentMaxWidth = Math.max(px(100), qrX - marginLeft - px(14));
 
-        ctx.fillStyle = "#111827";
         ctx.textAlign = "left";
         ctx.textBaseline = "top";
 
@@ -2189,114 +2504,101 @@
         const phone = cardData.phone || "";
         const email = cardData.email || "";
         const website = cardData.website || "";
+        const address = cardData.address || "";
 
-        let y = marginY;
+        var y = marginTop;
 
-        // Company
+        // 1. 社名（最上位）
         if (company) {
-          ctx.font = '500 26px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-          ctx.fillText(company, marginX, y);
-          y += 34;
-        }
-
-        // Name
-        if (name) {
-          ctx.font = '600 32px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-          ctx.fillText(name, marginX, y);
-          y += 40;
-        }
-
-        // Name kana (sub)
-        if (nameKana) {
-          ctx.font = '400 18px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-          ctx.fillStyle = "#6b7280";
-          ctx.fillText(nameKana, marginX, y);
-          ctx.fillStyle = "#111827";
-          y += 26;
-        }
-
-        // Position
-        if (position) {
-          ctx.font = '400 20px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.font = '500 ' + px(12 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
           ctx.fillStyle = "#374151";
-          ctx.fillText(position, marginX, y);
-          ctx.fillStyle = "#111827";
-          y += 32;
+          ctx.fillText(company, marginLeft, y, leftContentMaxWidth);
+          y += px(15 * fontScale);
         }
+        if (position) {
+          ctx.font = '400 ' + px(12 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillStyle = "#4b5563";
+          ctx.fillText(position, marginLeft, y, leftContentMaxWidth);
+          y += px(15 * fontScale);
+        }
+        y += blockGap;
 
-        // Contact block
-        ctx.font = '400 18px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+        // 2. 名前（主役）
+        if (name) {
+          ctx.font = '600 ' + px(21 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillStyle = "#111111";
+          ctx.fillText(name, marginLeft, y, leftContentMaxWidth);
+          y += px(26 * fontScale);
+        }
+        if (nameKana) {
+          ctx.font = '400 ' + px(11 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillStyle = "#6b7280";
+          ctx.fillText(nameKana, marginLeft, y, leftContentMaxWidth);
+          y += px(15 * fontScale);
+        }
+        y += blockGap;
+
+        // 3. 連絡先ブロック・縦中央を記録してQRと揃える
+        var contactStartY = y;
+        var contactFs = 12 * fontScale;
+        ctx.font = '400 ' + px(contactFs) + 'px "Noto Sans JP", system-ui, sans-serif';
         ctx.fillStyle = "#374151";
-
-        const lineGap = 24;
         if (phone) {
-          ctx.fillText(`TEL  ${phone}`, marginX, y);
-          y += lineGap;
+          ctx.fillText("TEL " + phone, marginLeft, y, leftContentMaxWidth);
+          y += Math.round(px(contactFs) * contactLineHeight);
         }
         if (email) {
-          ctx.fillText(email, marginX, y);
-          y += lineGap;
+          ctx.fillStyle = "#666666";
+          ctx.font = '400 ' + px(11 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillText(email, marginLeft, y, leftContentMaxWidth);
+          y += Math.round(px(11 * fontScale) * contactLineHeight);
+        }
+        if (address) {
+          ctx.fillStyle = "#374151";
+          ctx.font = '400 ' + px(contactFs) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillText(address, marginLeft, y, leftContentMaxWidth);
+          y += Math.round(px(contactFs) * contactLineHeight);
         }
         if (website) {
-          ctx.fillText(website, marginX, y);
-          y += lineGap;
+          ctx.fillStyle = "#374151";
+          ctx.font = '400 ' + px(11 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillText(website, marginLeft, y, leftContentMaxWidth);
+          y += Math.round(px(11 * fontScale) * contactLineHeight);
+        }
+        var contactEndY = y;
+        var contactCenterY = (contactStartY + contactEndY) / 2;
+        y += blockGap;
+
+        // 4. 補助（SNS）・ブロック内行間 6〜8px
+        const sns = cardData.sns || {};
+        var snsEntries = [
+          ["X", sns.twitter],
+          ["Instagram", sns.instagram],
+          ["LINE", sns.line]
+        ].filter(function (entry) { return !!entry[1]; });
+        if (snsEntries.length > 0 && y + px(13) < height - marginBottom) {
+          ctx.font = '400 ' + px(10 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillStyle = "#9ca3af";
+          snsEntries.forEach(function (entry) {
+          ctx.fillText(entry[0], marginLeft, y, leftContentMaxWidth);
+          y += px(9);
+          });
         }
 
-        // Right side subtle divider
-        ctx.strokeStyle = "#e5e7eb";
-        ctx.lineWidth = 2;
-        const dividerX = marginX + textWidth + 16;
-        ctx.beginPath();
-        ctx.moveTo(dividerX, marginY);
-        ctx.lineTo(dividerX, height - marginY);
-        ctx.stroke();
-
-        // QR code area
-        const qrSize = Math.min(width * 0.26, height * 0.45);
-        const qrX = width - marginX - qrSize;
-        const qrY = height - marginY - qrSize;
-
-        ctx.fillStyle = "#f3f4f6";
-        ctx.fillRect(qrX, qrY, qrSize, qrSize);
-        ctx.strokeStyle = "#d1d5db";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(qrX, qrY, qrSize, qrSize);
+        // QR：連絡先ブロックの縦中央に揃える（四隅に孤立させない）
+        var qrY = contactCenterY - qrSize / 2;
+        qrY = Math.max(marginTop, Math.min(qrY, height - marginBottom - qrSize));
 
         if (cardData.qrCode) {
-          const img = new Image();
-          img.onload = () => {
-            ctx.drawImage(img, qrX + 6, qrY + 6, qrSize - 12, qrSize - 12);
+          var img = new Image();
+          img.onload = function () {
+            ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+            if (typeof onComplete === "function") onComplete();
           };
+          img.onerror = function () { if (typeof onComplete === "function") onComplete(); };
           img.src = cardData.qrCode;
-        }
-
-        // SNS (icons as text labels) above QR
-        const sns = cardData.sns || {};
-        const snsStartY = qrY - 8;
-        let snsY = snsStartY;
-        const snsEntries = [
-          ["Twitter", sns.twitter],
-          ["LinkedIn", sns.linkedin],
-          ["Instagram", sns.instagram]
-        ].filter(([, url]) => !!url);
-
-        if (snsEntries.length > 0) {
-          ctx.font = '500 16px "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-          ctx.fillStyle = "#6b7280";
-          for (let i = snsEntries.length - 1; i >= 0; i--) {
-            const [label, url] = snsEntries[i];
-            snsY -= 22;
-            const text = `${label}: ${url}`;
-            const maxWidth = width - dividerX - marginX;
-            let display = text;
-            while (display.length > 0 && ctx.measureText(display).width > maxWidth) {
-              display = display.slice(0, -1);
-            }
-            if (display !== text) {
-              display = display.slice(0, -1) + "…";
-            }
-            ctx.fillText(display, dividerX + 16, snsY);
-          }
+        } else {
+          if (typeof onComplete === "function") onComplete();
         }
 
         drawWatermark(ctx, width, height, isPremium);
@@ -2312,29 +2614,392 @@
         }
       }
 
+      // roundRect のポリフィル（Bold テンプレートのQRパディング描画部分で使う）
+      function drawRoundRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+      }
+
+      function measureAndEllipsis(ctx, text, maxWidth) {
+        if (!text) return "";
+        if (ctx.measureText(text).width <= maxWidth) return text;
+        let t = text;
+        while (t.length > 1 && ctx.measureText(t + "…").width > maxWidth) {
+          t = t.slice(0, -1);
+        }
+        return t + "…";
+      }
+
+      function drawCoverImage(ctx, img, x, y, w, h) {
+        const imgAspect = img.naturalWidth / img.naturalHeight;
+        const boxAspect = w / h;
+        let sx, sy, sw, sh;
+        if (imgAspect > boxAspect) {
+          sh = img.naturalHeight;
+          sw = sh * boxAspect;
+          sx = (img.naturalWidth - sw) / 2;
+          sy = 0;
+        } else {
+          sw = img.naturalWidth;
+          sh = sw / boxAspect;
+          sx = 0;
+          sy = (img.naturalHeight - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+      }
+
+      function renderBoldTemplate(canvas, cardData, isPremium, onComplete) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
+        const { width, height } = getBusinessCardPixelSize(300);
+        canvas.width = width;
+        canvas.height = height;
+        const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        function px(v) { return Math.round(v * (width / 400)); }
+        try {
+          ctx.fillStyle = "#111827";
+          ctx.fillRect(0, 0, width, height);
+          ctx.fillStyle = "#667eea";
+          ctx.fillRect(0, 0, px(8), height);
+          const lineRight = px(8);
+          const marginLeft = lineRight + px(20);
+          const marginRight = px(24);
+          const marginBottom = px(24);
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          const company = cardData.company || "";
+          const name = cardData.name || "";
+          const position = cardData.position || "";
+          const phone = cardData.phone || "";
+          const email = cardData.email || "";
+          const website = cardData.website || "";
+          let y = px(28);
+          if (company) {
+            ctx.font = "500 " + px(11) + "px " + fontStack;
+            ctx.fillStyle = "#94a3b8";
+            ctx.fillText(measureAndEllipsis(ctx, company, width - marginLeft - marginRight), marginLeft, y);
+            y += px(14);
+          }
+          ctx.font = "600 " + px(28) + "px " + fontStack;
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(measureAndEllipsis(ctx, name, width - marginLeft - marginRight), marginLeft, y);
+          y += px(32);
+          if (position) {
+            ctx.font = "500 " + px(14) + "px " + fontStack;
+            ctx.fillStyle = "#667eea";
+            ctx.fillText(measureAndEllipsis(ctx, position, width - marginLeft - marginRight), marginLeft, y);
+            y += px(20);
+          }
+          y = height - marginBottom - px(80);
+          ctx.font = "400 " + px(10) + "px " + fontStack;
+          ctx.fillStyle = "#e2e8f0";
+          if (phone) { ctx.fillText("TEL " + phone, marginLeft, y); y += px(14); }
+          if (email) { ctx.fillText(email, marginLeft, y); y += px(14); }
+          if (website) { ctx.fillText(website, marginLeft, y); }
+          const qrSize = Math.min(px(120), height * 0.32);
+          const qrX = width - marginRight - qrSize;
+          const qrY = height - marginBottom - qrSize;
+          const pad = px(6);
+          ctx.fillStyle = "#ffffff";
+          drawRoundRect(ctx, qrX - pad, qrY - pad, qrSize + pad * 2, qrSize + pad * 2, px(4));
+          ctx.fill();
+          if (cardData.qrCode) {
+            const img = new Image();
+            img.onload = function() {
+              ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+              drawWatermark(ctx, width, height, isPremium);
+              if (typeof onComplete === "function") onComplete();
+            };
+            img.onerror = function() { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); };
+            img.src = cardData.qrCode;
+          } else {
+            drawWatermark(ctx, width, height, isPremium);
+            if (typeof onComplete === "function") onComplete();
+          }
+        } catch (e) {
+          console.error("MeQR: Bold template error", e);
+          if (typeof onComplete === "function") onComplete();
+        }
+      }
+
+      function renderElegantTemplate(canvas, cardData, isPremium, onComplete) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
+        const { width, height } = getBusinessCardPixelSize(300);
+        canvas.width = width;
+        canvas.height = height;
+        const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        function px(v) { return Math.round(v * (width / 400)); }
+        try {
+          const bandHeight = height * 0.38;
+          const grad = ctx.createLinearGradient(0, 0, 0, bandHeight);
+          grad.addColorStop(0, "#1e293b");
+          grad.addColorStop(1, "#334155");
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, width, bandHeight);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, bandHeight, width, height - bandHeight);
+          ctx.textAlign = "center";
+          ctx.textBaseline = "top";
+          const nameKana = cardData.nameKana || "";
+          const company = cardData.company || "";
+          const name = cardData.name || "";
+          let y = px(20);
+          if (nameKana) {
+            ctx.font = "400 " + px(10) + "px " + fontStack;
+            ctx.fillStyle = "rgba(255,255,255,0.9)";
+            ctx.fillText(nameKana, width / 2, y);
+            y += px(14);
+          }
+          if (company) {
+            ctx.font = "500 " + px(13) + "px " + fontStack;
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(measureAndEllipsis(ctx, company, width - px(40)), width / 2, y);
+            y += px(18);
+          }
+          ctx.font = "600 " + px(26) + "px " + fontStack;
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(measureAndEllipsis(ctx, name, width - px(40)), width / 2, y);
+          ctx.strokeStyle = "#e5e7eb";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(0, bandHeight);
+          ctx.lineTo(width, bandHeight);
+          ctx.stroke();
+          const leftColX = px(28);
+          const rightColX = width / 2 + px(12);
+          const rowH = px(22);
+          let contactY = bandHeight + px(24);
+          ctx.textAlign = "left";
+          ctx.font = "400 " + px(11) + "px " + fontStack;
+          ctx.fillStyle = "#374151";
+          const phone = cardData.phone || "";
+          const email = cardData.email || "";
+          if (phone) { ctx.fillText("TEL " + phone, leftColX, contactY); contactY += rowH; }
+          if (email) { ctx.fillText(email, leftColX, contactY); contactY += rowH; }
+          contactY = bandHeight + px(24);
+          const website = cardData.website || "";
+          const address = cardData.address || "";
+          const urlText = measureAndEllipsis(ctx, website, width / 2 - rightColX - px(20));
+          ctx.fillText(urlText, rightColX, contactY); contactY += rowH;
+          ctx.fillText(measureAndEllipsis(ctx, address, width / 2 - rightColX - px(20)), rightColX, contactY);
+          const qrSize = Math.floor(height * 0.28);
+          const qrX = width - px(24) - qrSize;
+          const qrY = height - px(24) - qrSize;
+          if (cardData.qrCode) {
+            const img = new Image();
+            img.onload = function() {
+              ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+              drawWatermark(ctx, width, height, isPremium);
+              if (typeof onComplete === "function") onComplete();
+            };
+            img.onerror = function() { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); };
+            img.src = cardData.qrCode;
+          } else {
+            drawWatermark(ctx, width, height, isPremium);
+            if (typeof onComplete === "function") onComplete();
+          }
+        } catch (e) {
+          console.error("MeQR: Elegant template error", e);
+          if (typeof onComplete === "function") onComplete();
+        }
+      }
+
+      function renderFlatTemplate(canvas, cardData, isPremium, onComplete) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
+        const { width, height } = getBusinessCardPixelSize(300);
+        canvas.width = width;
+        canvas.height = height;
+        const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        function px(v) { return Math.round(v * (width / 400)); }
+        try {
+          const bandWidth = width * 0.08;
+          const contentWidth = width - bandWidth;
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, contentWidth, height);
+          ctx.fillStyle = "#2563eb";
+          ctx.fillRect(contentWidth, 0, bandWidth, height);
+          const marginLeft = px(24);
+          const marginRight = px(24);
+          let y = px(28);
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          ctx.font = "600 " + px(24) + "px " + fontStack;
+          ctx.fillStyle = "#111827";
+          ctx.fillText(measureAndEllipsis(ctx, cardData.name || "", contentWidth - marginLeft - marginRight), marginLeft, y);
+          y += px(28);
+          const company = cardData.company || "";
+          const position = cardData.position || "";
+          const subLine = [company, position].filter(Boolean).join(" ／ ");
+          if (subLine) {
+            ctx.font = "400 " + px(11) + "px " + fontStack;
+            ctx.fillStyle = "#6b7280";
+            ctx.fillText(measureAndEllipsis(ctx, subLine, contentWidth - marginLeft - marginRight), marginLeft, y);
+            y += px(20);
+          }
+          const dotR = px(3);
+          const lineH = px(18);
+          ctx.fillStyle = "#2563eb";
+          const phone = cardData.phone || "";
+          const email = cardData.email || "";
+          const website = cardData.website || "";
+          if (phone) { ctx.beginPath(); ctx.arc(marginLeft + dotR, y + lineH / 2, dotR, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#374151"; ctx.font = "400 " + px(11) + "px " + fontStack; ctx.fillText(phone, marginLeft + px(14), y); y += lineH; ctx.fillStyle = "#2563eb"; }
+          if (email) { ctx.beginPath(); ctx.arc(marginLeft + dotR, y + lineH / 2, dotR, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#374151"; ctx.font = "400 " + px(11) + "px " + fontStack; ctx.fillText(measureAndEllipsis(ctx, email, contentWidth - marginLeft - px(40)), marginLeft + px(14), y); y += lineH; ctx.fillStyle = "#2563eb"; }
+          if (website) { ctx.beginPath(); ctx.arc(marginLeft + dotR, y + lineH / 2, dotR, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#374151"; ctx.font = "400 " + px(11) + "px " + fontStack; ctx.fillText(measureAndEllipsis(ctx, website, contentWidth - marginLeft - px(40)), marginLeft + px(14), y); }
+          const qrPadding = px(10);
+          const qrMaxInBand = Math.max(0, bandWidth - qrPadding * 2);
+          let qrSize = Math.min(qrMaxInBand, height * 0.35);
+          let qrX = contentWidth - qrSize - qrPadding;
+          if (qrSize < px(40)) {
+            qrSize = Math.min(px(140), height * 0.28);
+            qrX = contentWidth - qrSize - px(10);
+          }
+          const qrY = (height - qrSize) / 2;
+          if (cardData.qrCode) {
+            const img = new Image();
+            img.onload = function() {
+              ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+              drawWatermark(ctx, width, height, isPremium);
+              if (typeof onComplete === "function") onComplete();
+            };
+            img.onerror = function() { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); };
+            img.src = cardData.qrCode;
+          } else {
+            drawWatermark(ctx, width, height, isPremium);
+            if (typeof onComplete === "function") onComplete();
+          }
+        } catch (e) {
+          console.error("MeQR: Flat template error", e);
+          if (typeof onComplete === "function") onComplete();
+        }
+      }
+
+      function renderPhotoTemplate(canvas, cardData, isPremium, onComplete) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
+        const { width, height } = getBusinessCardPixelSize(300);
+        canvas.width = width;
+        canvas.height = height;
+        const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        function px(v) { return Math.round(v * (width / 400)); }
+        try {
+          const photoW = width * 0.35;
+          ctx.fillStyle = "#1e293b";
+          ctx.fillRect(0, 0, photoW, height);
+          const photoImg = cardData.photo;
+          if (photoImg) {
+            const img = new Image();
+            img.onload = function() {
+              drawCoverImage(ctx, img, 0, 0, photoW, height);
+              ctx.fillStyle = "rgba(0,0,0,0.25)";
+              ctx.fillRect(0, 0, photoW, height);
+              drawPhotoRightSide();
+              if (cardData.qrCode) drawQRPhoto(); else { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); }
+            };
+            img.onerror = function() { drawPhotoRightSide(); if (cardData.qrCode) drawQRPhoto(); else { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); } };
+            img.src = photoImg;
+          } else {
+            ctx.font = "400 " + px(40) + "px " + fontStack;
+            ctx.fillStyle = "#ffffff";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("👤", photoW / 2, height / 2);
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+            drawPhotoRightSide();
+            if (cardData.qrCode) drawQRPhoto(); else { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); }
+          }
+          function drawPhotoRightSide() {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(photoW, 0, width - photoW, height);
+            const left = photoW + px(24);
+            const maxW = width - left - px(24);
+            let y = px(28);
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+            ctx.font = "600 " + px(22) + "px " + fontStack;
+            ctx.fillStyle = "#111827";
+            ctx.fillText(measureAndEllipsis(ctx, cardData.name || "", maxW), left, y);
+            y += px(26);
+            ctx.font = "500 " + px(14) + "px " + fontStack;
+            ctx.fillStyle = "#667eea";
+            if (cardData.position) { ctx.fillText(measureAndEllipsis(ctx, cardData.position, maxW), left, y); y += px(20); }
+            ctx.font = "400 " + px(11) + "px " + fontStack;
+            ctx.fillStyle = "#4b5563";
+            if (cardData.company) { ctx.fillText(measureAndEllipsis(ctx, cardData.company, maxW), left, y); y += px(18); }
+            y += px(8);
+            ctx.strokeStyle = "#e5e7eb";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(left, y);
+            ctx.lineTo(width - px(24), y);
+            ctx.stroke();
+            y += px(16);
+            ctx.fillStyle = "#374151";
+            ctx.font = "400 " + px(10) + "px " + fontStack;
+            if (cardData.phone) { ctx.fillText("TEL " + cardData.phone, left, y); y += px(16); }
+            if (cardData.email) { ctx.fillText(measureAndEllipsis(ctx, cardData.email, maxW), left, y); y += px(16); }
+            if (cardData.website) { ctx.fillText(measureAndEllipsis(ctx, cardData.website, maxW), left, y); }
+          }
+          function drawQRPhoto() {
+            const qrSize = Math.min(px(100), height * 0.22);
+            const qrX = width - px(24) - qrSize;
+            const qrY = height - px(24) - qrSize;
+            const img = new Image();
+            img.onload = function() {
+              ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+              drawWatermark(ctx, width, height, isPremium);
+              if (typeof onComplete === "function") onComplete();
+            };
+            img.onerror = function() { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); };
+            img.src = cardData.qrCode;
+          }
+        } catch (e) {
+          console.error("MeQR: Photo template error", e);
+          if (typeof onComplete === "function") onComplete();
+        }
+      }
+
       async function exportBusinessCardAsPDF() {
         try {
           if (!window.jspdf || !window.jspdf.jsPDF) {
             alert("PDFライブラリの読み込みに失敗しました。ネットワーク接続を確認してください。");
             return;
           }
-
-          const canvas = document.createElement("canvas");
-          const data = loadCurrentProfile() || {};
-          const cardData = buildBusinessCardDataFromProfile(data);
-          renderMinimalTemplate(canvas, cardData, isPremiumUser());
-
-          const img = canvas.toDataURL("image/png", 1.0);
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF({
-            unit: "mm",
-            format: [91, 55],
-            compress: true
+          ensureQRReady();
+          var canvas = document.createElement("canvas");
+          var data = loadCurrentProfile() || {};
+          var cardData = buildBusinessCardDataFromProfile(data);
+          cardData.qrCode = getQRCodeDataURL();
+          renderCurrentTemplate(canvas, cardData, isPremiumUser(), function () {
+            var img = canvas.toDataURL("image/png", 1.0);
+            var jsPDF = window.jspdf.jsPDF;
+            var doc = new jsPDF({
+              unit: "mm",
+              format: [91, 55],
+              compress: true
+            });
+            doc.addImage(img, "PNG", 0, 0, 91, 55);
+            doc.save(buildBusinessCardFilename("pdf"));
           });
-
-          doc.addImage(img, "PNG", 0, 0, 91, 55);
-          const filename = buildBusinessCardFilename("pdf");
-          doc.save(filename);
         } catch (e) {
           console.error("MeQR: failed to export business card PDF", e);
           alert("名刺のPDF書き出しに失敗しました。\n\nブラウザや接続環境を確認し、もう一度お試しください。");
@@ -2343,36 +3008,37 @@
 
       async function exportBusinessCardAsPNG() {
         try {
-          const canvas = document.createElement("canvas");
-          const data = loadCurrentProfile() || {};
-          const cardData = buildBusinessCardDataFromProfile(data);
-          renderMinimalTemplate(canvas, cardData, isPremiumUser());
-
-          const filename = buildBusinessCardFilename("png");
-
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                alert("名刺のPNG書き出しに失敗しました。もう一度お試しください。");
-                return;
-              }
-              try {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-              } catch (err) {
-                console.error("MeQR: PNG download failed", err);
-                alert("ダウンロードの開始に失敗しました。ポップアップがブロックされていないか確認してください。");
-              }
-            },
-            "image/png",
-            0.9
-          );
+          ensureQRReady();
+          var canvas = document.createElement("canvas");
+          var data = loadCurrentProfile() || {};
+          var cardData = buildBusinessCardDataFromProfile(data);
+          cardData.qrCode = getQRCodeDataURL();
+          var filename = buildBusinessCardFilename("png");
+          renderCurrentTemplate(canvas, cardData, isPremiumUser(), function () {
+            canvas.toBlob(
+              function (blob) {
+                if (!blob) {
+                  alert("名刺のPNG書き出しに失敗しました。もう一度お試しください。");
+                  return;
+                }
+                try {
+                  var url = URL.createObjectURL(blob);
+                  var a = document.createElement("a");
+                  a.href = url;
+                  a.download = filename;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                } catch (err) {
+                  console.error("MeQR: PNG download failed", err);
+                  alert("ダウンロードの開始に失敗しました。ポップアップがブロックされていないか確認してください。");
+                }
+              },
+              "image/png",
+              0.9
+            );
+          });
         } catch (e) {
           console.error("MeQR: failed to export business card PNG", e);
           alert("名刺のPNG書き出しに失敗しました。\n\nもう一度お試しください。");
@@ -2386,21 +3052,29 @@
         var radios = overlay.querySelectorAll('input[name="export-format"]');
         radios.forEach(function (r) { r.checked = r.value === "pdf"; });
 
+        var opts = overlay.querySelectorAll(".export-usage-option");
+        opts.forEach(function (o) {
+          o.classList.remove("selected");
+          if (o.getAttribute("data-usage") === "printshop") o.classList.add("selected");
+        });
+
         overlay.classList.add("active");
         overlay.setAttribute("aria-hidden", "false");
 
         var previewCanvas = document.getElementById("exportPreviewCanvas");
         if (previewCanvas && "requestAnimationFrame" in window) {
+          ensureQRReady();
           requestAnimationFrame(function () {
             var data = loadCurrentProfile() || {};
             var cardData = buildBusinessCardDataFromProfile(data);
+            cardData.qrCode = getQRCodeDataURL();
             var ctx = previewCanvas.getContext("2d");
             if (ctx) {
               var size = getBusinessCardPixelSize(150);
               previewCanvas.width = size.width;
               previewCanvas.height = size.height;
             }
-            renderMinimalTemplate(previewCanvas, cardData, isPremiumUser());
+            renderCurrentTemplate(previewCanvas, cardData, isPremiumUser());
           });
         }
       }
@@ -2492,14 +3166,12 @@
             org: "",
             title: "",
             url: "",
+            address: "",
             photo: "",
-            linkedin: "",
+            furigana: "",
             twitter: "",
             instagram: "",
-            facebook: "",
-            github: "",
-            youtube: "",
-            customUrl: ""
+            line: ""
           },
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
@@ -2650,6 +3322,60 @@
         } catch (e) {}
       }
 
+      function renderTemplateSelector() {
+        const container = document.getElementById("templateSelector");
+        if (!container) return;
+        container.innerHTML = "";
+        const currentId = getCurrentTemplateId();
+        TEMPLATES.forEach(function(template) {
+          const chip = document.createElement("div");
+          chip.className = "template-chip" + (template.id === currentId ? " selected" : "");
+          chip.setAttribute("role", "radio");
+          chip.setAttribute("aria-checked", template.id === currentId ? "true" : "false");
+          chip.setAttribute("aria-label", template.label + (template.premium ? "（Premium）" : ""));
+          chip.setAttribute("tabindex", "0");
+          chip.dataset.templateId = template.id;
+          chip.innerHTML =
+            "<span class=\"template-chip-icon\">" + template.icon + "</span>" +
+            "<span class=\"template-chip-label\">" + template.label + "</span>" +
+            "<span class=\"template-chip-desc\">" + template.desc + "</span>" +
+            (template.premium ? "<span class=\"template-chip-lock\">PRO</span>" : "");
+          chip.addEventListener("click", function() { onTemplateSelect(template.id); });
+          chip.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onTemplateSelect(template.id); }
+          });
+          container.appendChild(chip);
+        });
+        var titleEl = document.querySelector(".bc-preview-title");
+        if (titleEl) {
+          var tpl = getCurrentTemplate();
+          titleEl.textContent = "名刺デザインプレビュー（" + tpl.label + "）";
+        }
+      }
+
+      function onTemplateSelect(templateId) {
+        var template = TEMPLATES.find(function(t) { return t.id === templateId; });
+        if (!template) return;
+        if (template.premium && !isPremiumUser()) {
+          var ok = confirm(
+            "「" + template.label + "」はPremiumテンプレートです。\n\n" +
+            "Premiumにアップグレードすると、ウォーターマークなしで全テンプレートが使えます。\n\n" +
+            "（現在のところ無料でプレビューのみ可能）"
+          );
+          if (!ok) return;
+        }
+        setCurrentTemplateId(templateId);
+        renderTemplateSelector();
+        var canvas = document.getElementById("businessCardCanvas");
+        if (canvas) {
+          ensureQRReady();
+          var data = loadCurrentProfile() || {};
+          var cardData = buildBusinessCardDataFromProfile(data);
+          cardData.qrCode = getQRCodeDataURL();
+          renderCurrentTemplate(canvas, cardData, isPremiumUser());
+        }
+      }
+
       function setSyncStatus(state) {
         const label = document.getElementById("syncStatusLabel");
         if (!label) return;
@@ -2714,28 +3440,23 @@
       function fillForm(data) {
         document.getElementById("lastName").value = data.lastName || "";
         document.getElementById("firstName").value = data.firstName || "";
+        var furiganaEl = document.getElementById("furigana");
+        if (furiganaEl) furiganaEl.value = data.furigana || "";
         document.getElementById("phone").value = data.phone || "";
         document.getElementById("email").value = data.email || "";
         document.getElementById("org").value = data.org || "";
         document.getElementById("title").value = data.title || "";
         document.getElementById("url").value = data.url || "";
+        var addressEl = document.getElementById("address");
+        if (addressEl) addressEl.value = data.address || "";
         
         // SNS fields (if they exist in DOM)
-        const linkedinInput = document.getElementById("linkedin");
         const twitterInput = document.getElementById("twitter");
         const instagramInput = document.getElementById("instagram");
-        const facebookInput = document.getElementById("facebook");
-        const githubInput = document.getElementById("github");
-        const youtubeInput = document.getElementById("youtube");
-        const customUrlInput = document.getElementById("customUrl");
-        
-        if (linkedinInput) linkedinInput.value = data.linkedin || "";
+        const lineInput = document.getElementById("line");
         if (twitterInput) twitterInput.value = data.twitter || "";
         if (instagramInput) instagramInput.value = data.instagram || "";
-        if (facebookInput) facebookInput.value = data.facebook || "";
-        if (githubInput) githubInput.value = data.github || "";
-        if (youtubeInput) youtubeInput.value = data.youtube || "";
-        if (customUrlInput) customUrlInput.value = data.customUrl || "";
+        if (lineInput) lineInput.value = data.line || "";
       }
 
       // === バリデーション・エラー表示 ===
@@ -2796,7 +3517,10 @@
         const title = (data.title || "").trim();
         if (title.length > LIMIT.orgTitle) errors.push({ field: "title", message: "役職は" + LIMIT.orgTitle + "文字以内で入力してください。" });
 
-        ["linkedin", "twitter", "instagram", "facebook", "github", "youtube", "customUrl"].forEach(function (key) {
+        var addressStr = (data.address || "").trim();
+        if (addressStr.length > LIMIT.address) errors.push({ field: "address", message: "住所は" + LIMIT.address + "文字以内で入力してください。" });
+
+        ["twitter", "instagram", "line"].forEach(function (key) {
           var res = validateUrl(data[key] || "", key);
           if (!res.valid) errors.push({ field: key, message: res.message });
         });
@@ -2818,7 +3542,7 @@
       }
 
       function clearAllErrors() {
-        var ids = ["name", "phone", "email", "org", "title", "url", "linkedin", "twitter", "instagram", "facebook", "github", "youtube", "customUrl"];
+        var ids = ["name", "phone", "email", "org", "title", "url", "furigana", "address", "twitter", "instagram", "line"];
         ids.forEach(function (id) {
           showFieldError(id, "");
         });
@@ -2834,7 +3558,7 @@
         result.errors.forEach(function (e) {
           if (e.message && !shown[e.field]) { shown[e.field] = true; }
         });
-        ["name", "phone", "email", "org", "title", "url", "linkedin", "twitter", "instagram", "facebook", "github", "youtube", "customUrl"].forEach(function (id) {
+        ["name", "phone", "email", "org", "title", "url", "furigana", "address", "twitter", "instagram", "line"].forEach(function (id) {
           if (!shown[id]) showFieldError(id, "");
         });
       }
@@ -2842,30 +3566,25 @@
       function readForm() {
         const currentData = loadCurrentProfile() || {};
         
-        const linkedinInput = document.getElementById("linkedin");
         const twitterInput = document.getElementById("twitter");
         const instagramInput = document.getElementById("instagram");
-        const facebookInput = document.getElementById("facebook");
-        const githubInput = document.getElementById("github");
-        const youtubeInput = document.getElementById("youtube");
-        const customUrlInput = document.getElementById("customUrl");
-        
+        const lineInput = document.getElementById("line");
+        var furiganaEl = document.getElementById("furigana");
+        var addressEl = document.getElementById("address");
         return {
           lastName: document.getElementById("lastName").value.trim(),
           firstName: document.getElementById("firstName").value.trim(),
+          furigana: furiganaEl ? furiganaEl.value.trim() : "",
           phone: document.getElementById("phone").value.trim(),
           email: document.getElementById("email").value.trim(),
           org: document.getElementById("org").value.trim(),
           title: document.getElementById("title").value.trim(),
           url: document.getElementById("url").value.trim(),
+          address: addressEl ? addressEl.value.trim() : "",
           photo: currentData.photo || "",
-          linkedin: linkedinInput ? linkedinInput.value.trim() : "",
           twitter: twitterInput ? twitterInput.value.trim() : "",
           instagram: instagramInput ? instagramInput.value.trim() : "",
-          facebook: facebookInput ? facebookInput.value.trim() : "",
-          github: githubInput ? githubInput.value.trim() : "",
-          youtube: youtubeInput ? youtubeInput.value.trim() : "",
-          customUrl: customUrlInput ? customUrlInput.value.trim() : ""
+          line: lineInput ? lineInput.value.trim() : ""
         };
       }
 
@@ -2906,6 +3625,24 @@
         return "MECARD:" + parts.join(";") + ";;";
       }
 
+      function updateStepIndicator(mode) {
+        var s1 = document.getElementById("step-1");
+        var s2 = document.getElementById("step-2");
+        var s3 = document.getElementById("step-3");
+        if (!s1 || !s2 || !s3) return;
+        [s1, s2, s3].forEach(function (el) {
+          el.classList.remove("active", "completed");
+          el.querySelector(".step-num").textContent = el.getAttribute("data-step");
+        });
+        s1.classList.add("completed");
+        s1.querySelector(".step-num").textContent = "✓";
+        if (mode === "edit") {
+          s2.classList.add("active");
+        } else {
+          s3.classList.add("active");
+        }
+      }
+
       function switchMode(mode) {
         const isView = mode === "view";
         const viewBtn = document.getElementById("btn-view-mode");
@@ -2926,7 +3663,14 @@
           editBtn.classList.add("active");
           editBtn.setAttribute("aria-selected", "true");
           formSection.classList.add("active");
+          var banner = document.getElementById("freemiumBanner");
+          if (banner) banner.style.display = isPremiumUser() ? "none" : "flex";
         }
+        if (isView) {
+          var banner = document.getElementById("freemiumBanner");
+          if (banner) banner.style.display = "none";
+        }
+        updateStepIndicator(isView ? "view" : "edit");
       }
 
       function setupOfflineBadge() {
@@ -3104,15 +3848,41 @@
         img.src = url;
       }
 
-      function downloadQRCode(data) {
-        // Show format selection
-        const format = confirm('QRコードを保存します。\n\nOK = PNG形式（印刷用・高解像度）\nキャンセル = SVG形式（編集可能・軽量）');
-        
-        if (format) {
-          downloadQRCodeAsPNG(data);
-        } else {
+      // QRダウンロードモーダルを開く
+      function openQRDownloadModal() {
+        const overlay = document.getElementById("qrDownloadModalOverlay");
+        if (!overlay) return;
+        overlay.classList.add("active");
+        overlay.setAttribute("aria-hidden", "false");
+      }
+
+      // QRダウンロードモーダルを閉じる
+      window.closeQRDownloadModal = function() {
+        const overlay = document.getElementById("qrDownloadModalOverlay");
+        if (!overlay) return;
+        overlay.classList.remove("active");
+        overlay.setAttribute("aria-hidden", "true");
+      };
+
+      // QRダウンロード実行
+      window.handleQRDownload = function() {
+        const overlay = document.getElementById("qrDownloadModalOverlay");
+        if (!overlay) return;
+        const selected = overlay.querySelector('input[name="qr-format"]:checked');
+        const format = selected ? selected.value : "png";
+        const data = loadCurrentProfile();
+        if (!data) return;
+        if (format === "svg") {
           downloadQRCodeAsSVG(data);
+        } else {
+          downloadQRCodeAsPNG(data);
         }
+        closeQRDownloadModal();
+        showToast("QRコードを保存しました。");
+      };
+
+      function downloadQRCode(data) {
+        openQRDownloadModal();
       }
 
       function initTheme() {
@@ -3413,9 +4183,9 @@
             closeMenu();
             switchMode("edit");
             setTimeout(() => {
-              const linkedinInput = document.getElementById("linkedin");
-              if (linkedinInput) {
-                linkedinInput.scrollIntoView({ behavior: "smooth", block: "center" });
+              const lineInput = document.getElementById("line");
+              if (lineInput) {
+                lineInput.scrollIntoView({ behavior: "smooth", block: "center" });
               }
             }, 100);
           },
@@ -3618,8 +4388,15 @@
               ✅ オープンソース
             </div>
           </div>
+          <div style="margin-top: 20px;">
+            <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">名刺作成コンセプト（統合ドキュメント）</div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <a href="docs/specification.html" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none; font-size: 13px;">📋 仕様書（確定仕様書）</a>
+              <a href="docs/wireframe-v2.html" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none; font-size: 13px;">🎨 ワイヤーフレーム v2</a>
+            </div>
+          </div>
           <div style="margin-top: 20px; text-align: center;">
-            <a href="https://github.com/YumaKakuya/meqr" target="_blank" style="color: var(--accent); text-decoration: none; font-size: 13px;">
+            <a href="https://github.com/YumaKakuya/meqr" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none; font-size: 13px;">
               📂 GitHubリポジトリ
             </a>
           </div>
@@ -3732,19 +4509,17 @@
             data: {
               lastName: "山田",
               firstName: "太郎",
+              furigana: "ヤマダ タロウ",
               phone: "090-1234-5678",
               email: "yamada.taro@example.co.jp",
               org: "株式会社サンプル",
               title: "営業部長",
               url: "https://example.co.jp",
+              address: "〒100-0001 東京都千代田区千代田1-1",
               photo: "",
-              linkedin: "https://linkedin.com/in/yamada-taro",
               twitter: "https://x.com/yamada_taro",
               instagram: "https://instagram.com/yamada.taro",
-              facebook: "https://facebook.com/yamada.taro",
-              github: "https://github.com/yamada-taro",
-              youtube: "https://youtube.com/@yamadataro",
-              customUrl: "https://portfolio.example.com"
+              line: ""
             },
             createdAt: now,
             updatedAt: now
@@ -3755,19 +4530,17 @@
             data: {
               lastName: "山田",
               firstName: "太郎",
+              furigana: "",
               phone: "080-9876-5432",
               email: "taro.yamada@gmail.com",
               org: "",
               title: "",
               url: "https://taro-yamada.blog",
+              address: "",
               photo: "",
-              linkedin: "",
               twitter: "https://x.com/taro_private",
               instagram: "https://instagram.com/taro_private",
-              facebook: "",
-              github: "https://github.com/taro-yamada",
-              youtube: "",
-              customUrl: ""
+              line: ""
             },
             createdAt: now,
             updatedAt: now
@@ -3835,6 +4608,7 @@
         updateProfileSelector();
         applyQRSize();
         setupLazyObservers();
+        renderTemplateSelector();
         } catch (err) {
           console.error("MeQR: Initialization error", err);
           alert("初期化エラーが発生しました: " + err.message);
@@ -3910,7 +4684,7 @@
         })();
 
         (function setupValidationListeners() {
-          var fields = ["lastName", "firstName", "phone", "email", "org", "title", "url", "linkedin", "twitter", "instagram", "facebook", "github", "youtube", "customUrl"];
+          var fields = ["lastName", "firstName", "furigana", "phone", "email", "org", "title", "url", "address", "twitter", "instagram", "line"];
           var timer = null;
           function runSoon() {
             if (timer) clearTimeout(timer);
@@ -3931,12 +4705,17 @@
           const emptyData = {
             lastName: "",
             firstName: "",
+            furigana: "",
             phone: "",
             email: "",
             org: "",
             title: "",
             url: "",
-            photo: ""
+            address: "",
+            photo: "",
+            twitter: "",
+            instagram: "",
+            line: ""
           };
           saveCurrentProfile(emptyData);
           fillDisplay(emptyData);
@@ -3967,6 +4746,35 @@
           }
           openExportModal();
         });
+
+        (function setupExportUsageOptions() {
+          var overlay = document.getElementById("exportModalOverlay");
+          if (!overlay) return;
+          overlay.querySelectorAll(".export-usage-option").forEach(function (el) {
+            el.addEventListener("click", function () {
+              overlay.querySelectorAll(".export-usage-option").forEach(function (o) { o.classList.remove("selected"); });
+              el.classList.add("selected");
+              var usage = el.getAttribute("data-usage");
+              var pdfRadio = overlay.querySelector('input[name="export-format"][value="pdf"]');
+              var pngRadio = overlay.querySelector('input[name="export-format"][value="png"]');
+              if (usage === "sns" && pngRadio) pngRadio.checked = true;
+              else if (pdfRadio) pdfRadio.checked = true;
+            });
+            el.addEventListener("keydown", function (e) {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                el.click();
+              }
+            });
+          });
+        })();
+
+        const qrModalOverlay = document.getElementById("qrDownloadModalOverlay");
+        if (qrModalOverlay) {
+          qrModalOverlay.addEventListener("click", function(e) {
+            if (e.target === qrModalOverlay) closeQRDownloadModal();
+          });
+        }
 
         document.getElementById("btn-share-vcard").addEventListener("click", async () => {
           const data = loadCurrentProfile();
