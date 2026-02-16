@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -205,8 +205,11 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding: env(safe-area-inset-top, 20px) 20px env(safe-area-inset-bottom, 24px);
+      padding: max(env(safe-area-inset-top, 0px), 20px) 20px 0;
       gap: 20px;
+    }
+    .app-root.has-bottom-nav {
+      padding-bottom: 0;
     }
 
     header {
@@ -541,6 +544,11 @@
       background: #f9fafb;
       border-color: var(--accent);
     }
+    .btn-ghost:active {
+      background: #f3f4f6;
+      border-color: var(--accent);
+      transform: scale(0.98);
+    }
 
     .btn-ghost span.icon {
       font-size: 14px;
@@ -567,7 +575,8 @@
       margin-top: 8px;
     }
 
-    .form-root.active {
+    .form-root.active,
+    .view-section#meqr-form-section.active .form-root {
       display: flex;
     }
 
@@ -686,6 +695,10 @@
       opacity: 0.95;
       box-shadow: var(--shadow-lg);
     }
+    .btn-primary:active {
+      opacity: 0.88;
+      transform: scale(0.99);
+    }
 
     .btn-primary span.icon {
       font-size: 16px;
@@ -711,6 +724,10 @@
       background: #fef2f2;
       border-color: var(--danger);
       color: var(--danger);
+    }
+    .btn-secondary:active {
+      background: #fee2e2;
+      transform: scale(0.98);
     }
 
     .danger-text {
@@ -956,6 +973,10 @@
       background: var(--accent-gradient);
       color: white;
       box-shadow: var(--shadow-md);
+    }
+    .mode-toggle-large button:active {
+      opacity: 0.9;
+      transform: scale(0.98);
     }
 
     .mode-toggle-large button .icon {
@@ -1293,6 +1314,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      direction: ltr;
     }
 
     .export-modal-actions {
@@ -1387,6 +1409,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      direction: ltr;
     }
 
     /* タッチ操作: タップ領域 44px 以上 */
@@ -1590,6 +1613,85 @@
       font-weight: 700;
     }
 
+    /* 画面切り替え（SPA） */
+    .view-section {
+      display: none;
+      animation: meqr-fadeIn 0.25s ease;
+    }
+    .view-section.active {
+      display: block;
+    }
+    @keyframes meqr-fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ボトムナビゲーション（ネイティブアプリ風・透過＋ブラー） */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      background: rgba(255, 255, 255, 0.72);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      z-index: 100;
+      box-shadow: 0 -1px 0 0 rgba(0,0,0,0.06);
+    }
+    [data-theme="dark"] .bottom-nav {
+      background: rgba(30, 41, 59, 0.85);
+      border-top-color: rgba(255, 255, 255, 0.08);
+    }
+    .bottom-nav-btn {
+      flex: 1;
+      max-width: 200px;
+      height: 56px;
+      min-height: 56px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      transition: color 0.18s ease, background 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .bottom-nav-btn .icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .bottom-nav-btn:hover {
+      color: var(--text-main);
+      background: var(--accent-soft);
+    }
+    .bottom-nav-btn:active {
+      background: rgba(37, 99, 235, 0.25);
+      color: var(--accent);
+    }
+    .bottom-nav-btn.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .bottom-nav-btn.active:active {
+      background: rgba(37, 99, 235, 0.3);
+      opacity: 0.95;
+    }
+    .app-root.has-bottom-nav main {
+      padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    }
+
     /* 小画面（iPhone SE 等）でボタン群の折り返しを確保 */
     .contact-meta [style*="flex-wrap"] {
       gap: 10px;
@@ -1597,7 +1699,7 @@
   </style>
 </head>
 <body>
-  <div class="app-root">
+  <div class="app-root has-bottom-nav">
     <header>
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">
@@ -1633,6 +1735,7 @@
     </div>
 
     <main>
+      <div class="view-section" id="meqr-display-section" aria-label="表示画面">
       <section class="card" aria-label="デジタル名刺">
         <div class="card-header">
           <div class="photo-area">
@@ -1690,6 +1793,10 @@
                 <span class="icon">📥</span>
                 <span>ダウンロード</span>
               </button>
+              <button id="btn-print-png" class="btn-ghost" type="button" title="名刺表示を印刷用高解像度PNGでダウンロード（91×55mm・300dpi）">
+                <span class="icon">🖨️</span>
+                <span>印刷用PNG</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1706,7 +1813,9 @@
             <canvas id="businessCardCanvas" aria-label="Business card preview"></canvas>
           </div>
         </div>
+      </div>
 
+      <div class="view-section" id="meqr-form-section" aria-label="編集画面">
         <section class="form-root" id="editFormSection" aria-label="連絡先編集フォーム">
           <div class="freemium-banner" id="freemiumBanner" style="display: none;">
             <span class="icon" aria-hidden="true">🔓</span>
@@ -1840,6 +1949,7 @@
             このアプリはサーバーに一切データを送信せず、<strong>ブラウザの localStorage のみ</strong>に保存します。
           </div>
         </section>
+      </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
           <div class="badge-offline" id="offlineBadge">
@@ -1849,6 +1959,17 @@
         </div>
       </section>
     </main>
+
+    <nav class="bottom-nav" role="tablist" aria-label="画面切り替え">
+      <button type="button" class="bottom-nav-btn active" id="btn-bottom-display" role="tab" aria-selected="true">
+        <span class="icon">👁️</span>
+        <span>表示（名刺）</span>
+      </button>
+      <button type="button" class="bottom-nav-btn" id="btn-bottom-edit" role="tab" aria-selected="false">
+        <span class="icon">✏️</span>
+        <span>編集（設定）</span>
+      </button>
+    </nav>
   </div>
 
   <!-- Hamburger Menu -->
@@ -2393,6 +2514,7 @@
         const text = "MeQR";
         const fontSize = Math.max(24, Math.min(width, height) * 0.10);
         ctx.save();
+        ctx.direction = "ltr";
         ctx.globalAlpha = 0.4;
         ctx.fillStyle = "#6b7280";
         ctx.font = `600 ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
@@ -2406,8 +2528,11 @@
         const mmToInch = 1 / 25.4;
         const widthMm = 91;
         const heightMm = 55;
-        const widthPx = Math.round(widthMm * mmToInch * dpi);
-        const heightPx = Math.round(heightMm * mmToInch * dpi);
+        let widthPx = Math.round(widthMm * mmToInch * dpi);
+        let heightPx = Math.round(heightMm * mmToInch * dpi);
+        if (widthPx < heightPx) {
+          var t = widthPx; widthPx = heightPx; heightPx = t;
+        }
         return { width: widthPx, height: heightPx };
       }
 
@@ -2465,9 +2590,14 @@
         if (!ctx) return;
         if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
 
-        const { width, height } = getBusinessCardPixelSize(300);
+        const size = getBusinessCardPixelSize(300);
+        const width = size.width;
+        const height = size.height;
         canvas.width = width;
         canvas.height = height;
+        ctx.direction = "ltr";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
 
         try {
         // KANAKO OTA サンプル準拠：数値ルール厳守・左揃え1カラム・基準線ベース
@@ -2493,9 +2623,6 @@
         var qrRight = width - marginRight;
         var qrX = qrRight - qrSize;
         var leftContentMaxWidth = Math.max(px(100), qrX - marginLeft - px(14));
-
-        ctx.textAlign = "left";
-        ctx.textBaseline = "top";
 
         const name = cardData.name || "";
         const nameKana = cardData.nameKana || "";
@@ -2662,9 +2789,14 @@
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
         if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
-        const { width, height } = getBusinessCardPixelSize(300);
+        const size = getBusinessCardPixelSize(300);
+        const width = size.width;
+        const height = size.height;
         canvas.width = width;
         canvas.height = height;
+        ctx.direction = "ltr";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
         const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
         function px(v) { return Math.round(v * (width / 400)); }
         try {
@@ -2676,8 +2808,6 @@
           const marginLeft = lineRight + px(20);
           const marginRight = px(24);
           const marginBottom = px(24);
-          ctx.textAlign = "left";
-          ctx.textBaseline = "top";
           const company = cardData.company || "";
           const name = cardData.name || "";
           const position = cardData.position || "";
@@ -2738,9 +2868,14 @@
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
         if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
-        const { width, height } = getBusinessCardPixelSize(300);
+        const size = getBusinessCardPixelSize(300);
+        const width = size.width;
+        const height = size.height;
         canvas.width = width;
         canvas.height = height;
+        ctx.direction = "ltr";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "center";
         const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
         function px(v) { return Math.round(v * (width / 400)); }
         try {
@@ -2752,8 +2887,6 @@
           ctx.fillRect(0, 0, width, bandHeight);
           ctx.fillStyle = "#ffffff";
           ctx.fillRect(0, bandHeight, width, height - bandHeight);
-          ctx.textAlign = "center";
-          ctx.textBaseline = "top";
           const nameKana = cardData.nameKana || "";
           const company = cardData.company || "";
           const name = cardData.name || "";
@@ -2823,9 +2956,14 @@
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
         if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
-        const { width, height } = getBusinessCardPixelSize(300);
+        const size = getBusinessCardPixelSize(300);
+        const width = size.width;
+        const height = size.height;
         canvas.width = width;
         canvas.height = height;
+        ctx.direction = "ltr";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
         const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
         function px(v) { return Math.round(v * (width / 400)); }
         try {
@@ -2838,8 +2976,6 @@
           const marginLeft = px(24);
           const marginRight = px(24);
           let y = px(28);
-          ctx.textAlign = "left";
-          ctx.textBaseline = "top";
           ctx.font = "600 " + px(24) + "px " + fontStack;
           ctx.fillStyle = "#111827";
           ctx.fillText(measureAndEllipsis(ctx, cardData.name || "", contentWidth - marginLeft - marginRight), marginLeft, y);
@@ -2895,9 +3031,14 @@
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
         if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
-        const { width, height } = getBusinessCardPixelSize(300);
+        const size = getBusinessCardPixelSize(300);
+        const width = size.width;
+        const height = size.height;
         canvas.width = width;
         canvas.height = height;
+        ctx.direction = "ltr";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
         const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
         function px(v) { return Math.round(v * (width / 400)); }
         try {
@@ -3043,6 +3184,47 @@
           console.error("MeQR: failed to export business card PNG", e);
           alert("名刺のPNG書き出しに失敗しました。\n\nもう一度お試しください。");
         }
+      }
+
+      function downloadDisplaySectionAsPrintPNG() {
+        var data = loadCurrentProfile();
+        if (!data || (!data.lastName && !data.firstName && !data.email && !data.org)) {
+          alert("名刺情報がありません。先に編集画面で名前などを入力して保存してください。");
+          return;
+        }
+        ensureQRReady();
+        var size = getBusinessCardPixelSize(300);
+        var canvas = document.createElement("canvas");
+        canvas.width = size.width;
+        canvas.height = size.height;
+        var cardData = buildBusinessCardDataFromProfile(data);
+        cardData.qrCode = getQRCodeDataURL();
+        renderCurrentTemplate(canvas, cardData, isPremiumUser(), function () {
+          canvas.toBlob(
+            function (blob) {
+              if (!blob) {
+                alert("印刷用PNGの生成に失敗しました。もう一度お試しください。");
+                return;
+              }
+              try {
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement("a");
+                a.href = url;
+                a.download = buildBusinessCardFilename("png").replace(".png", "_print.png");
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast("印刷用PNGをダウンロードしました（91×55mm・300dpi）");
+              } catch (err) {
+                console.error("MeQR: print PNG download failed", err);
+                alert("ダウンロードの開始に失敗しました。");
+              }
+            },
+            "image/png",
+            1.0
+          );
+        });
       }
 
       function openExportModal() {
@@ -3643,34 +3825,42 @@
         }
       }
 
-      function switchMode(mode) {
-        const isView = mode === "view";
+      function switchView(viewName) {
+        const isDisplay = viewName === "display";
+        const displaySection = document.getElementById("meqr-display-section");
+        const formSection = document.getElementById("meqr-form-section");
         const viewBtn = document.getElementById("btn-view-mode");
         const editBtn = document.getElementById("btn-edit-mode");
-        const formSection = document.getElementById("editFormSection");
+        const bottomDisplay = document.getElementById("btn-bottom-display");
+        const bottomEdit = document.getElementById("btn-bottom-edit");
 
-        if (isView) {
-          viewBtn.classList.add("active");
-          viewBtn.setAttribute("aria-selected", "true");
-          editBtn.classList.remove("active");
-          editBtn.setAttribute("aria-selected", "false");
-          formSection.classList.remove("active");
+        if (displaySection) displaySection.classList.toggle("active", isDisplay);
+        if (formSection) formSection.classList.toggle("active", !isDisplay);
+
+        function setActive(btn, active) {
+          if (!btn) return;
+          btn.classList.toggle("active", active);
+          btn.setAttribute("aria-selected", active ? "true" : "false");
+        }
+        setActive(viewBtn, isDisplay);
+        setActive(editBtn, !isDisplay);
+        setActive(bottomDisplay, isDisplay);
+        setActive(bottomEdit, !isDisplay);
+
+        if (isDisplay) {
           ensureQRReady();
           schedulePreviewDraw();
+          var banner = document.getElementById("freemiumBanner");
+          if (banner) banner.style.display = "none";
         } else {
-          viewBtn.classList.remove("active");
-          viewBtn.setAttribute("aria-selected", "false");
-          editBtn.classList.add("active");
-          editBtn.setAttribute("aria-selected", "true");
-          formSection.classList.add("active");
           var banner = document.getElementById("freemiumBanner");
           if (banner) banner.style.display = isPremiumUser() ? "none" : "flex";
         }
-        if (isView) {
-          var banner = document.getElementById("freemiumBanner");
-          if (banner) banner.style.display = "none";
-        }
-        updateStepIndicator(isView ? "view" : "edit");
+        updateStepIndicator(isDisplay ? "view" : "edit");
+      }
+
+      function switchMode(mode) {
+        switchView(mode === "view" ? "display" : "form");
       }
 
       function setupOfflineBadge() {
@@ -4609,6 +4799,8 @@
         applyQRSize();
         setupLazyObservers();
         renderTemplateSelector();
+        var hasData = initialData && (initialData.lastName || initialData.firstName || initialData.email || initialData.phone || initialData.org);
+        switchView(hasData ? "display" : "form");
         } catch (err) {
           console.error("MeQR: Initialization error", err);
           alert("初期化エラーが発生しました: " + err.message);
@@ -4648,11 +4840,15 @@
         });
 
         document.getElementById("btn-view-mode").addEventListener("click", () => {
-          switchMode("view");
+          switchView("display");
         });
         document.getElementById("btn-edit-mode").addEventListener("click", () => {
-          switchMode("edit");
+          switchView("form");
         });
+        var btnBottomDisplay = document.getElementById("btn-bottom-display");
+        var btnBottomEdit = document.getElementById("btn-bottom-edit");
+        if (btnBottomDisplay) btnBottomDisplay.addEventListener("click", function() { switchView("display"); });
+        if (btnBottomEdit) btnBottomEdit.addEventListener("click", function() { switchView("form"); });
 
         (function attachSaveHandler(){
           const btnSave = document.getElementById("btn-save");
@@ -4745,6 +4941,10 @@
             return;
           }
           openExportModal();
+        });
+
+        document.getElementById("btn-print-png").addEventListener("click", () => {
+          downloadDisplaySectionAsPrintPNG();
         });
 
         (function setupExportUsageOptions() {
