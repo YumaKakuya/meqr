@@ -1,15 +1,13 @@
-const CACHE_NAME = "meqr-pwa-v5";
+const CACHE_NAME = "meqr-pwa-v8";
 
 const ASSETS = [
   "./",
-  "./manifest.json",
-  "./js/i18n.js",
-  "./lang/ja.json",
-  "./lang/en.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/icon-192.svg",
-  "./icons/icon-512.svg"
+  "manifest.json",
+  "js/i18n.js",
+  "lang/ja.json",
+  "lang/en.json",
+  "icons/icon-192.svg",
+  "icons/icon-512.svg"
 ];
 
 self.addEventListener("install", event => {
