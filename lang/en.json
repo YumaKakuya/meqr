@@ -3,12 +3,21 @@
     "language": "en",
     "languageName": "English",
     "appName": "MeQR",
-    "appFullName": "MeQR – Digital Business Card"
+    "appFullName": "MeQR - Digital Business Card"
   },
   "language": {
     "label": "Language",
     "auto": "Auto (browser setting)",
     "ja": "Japanese",
     "en": "English"
+  },
+  "menu": {
+    "settingsTitle": "Settings",
+    "settingsQrSizeSection": "QR Code Size",
+    "settingsQrSizeLarge": "Large (easy to scan)",
+    "settingsQrSizeMedium": "Medium (standard / recommended)",
+    "settingsQrSizeSmall": "Small (compact)",
+    "settingsPrivacySection": "Privacy",
+    "settingsPasswordComingSoon": "Password Protection (coming soon)"
   }
 }

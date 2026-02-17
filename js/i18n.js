@@ -39,7 +39,7 @@
   async function loadLang(lang) {
     const safeLang = SUPPORTED.includes(lang) ? lang : DEFAULT_LANG;
     try {
-      const res = await fetch(`./${safeLang}.json`);
+      const res = await fetch(`./lang/${safeLang}.json`);
       if (!res.ok) throw new Error("failed to load lang file");
       messages = await res.json();
       currentLang = safeLang;

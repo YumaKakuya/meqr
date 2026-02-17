@@ -356,6 +356,9 @@
 
     .name-main {
       font-size: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       font-weight: 700;
       letter-spacing: -0.01em;
       color: var(--text-main);
@@ -367,6 +370,9 @@
       color: var(--text-muted);
       letter-spacing: 0.01em;
       line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .meta-chips {
@@ -2131,7 +2137,7 @@
     referrerpolicy="no-referrer">
   </script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="i18n.js"></script>
+  <!-- <script src="i18n.js"></script> -->
   <script>
     (function () {
       "use strict";
@@ -2141,6 +2147,8 @@
       const THEME_KEY = "meqr_theme";
       const ONBOARDING_KEY = "meqr_onboarding_completed";
       const PREVIEW_DEBOUNCE_MS = 150;
+      var CARD_OUTPUT_WIDTH = 1075;
+      var CARD_OUTPUT_HEIGHT = 650;
       const MAX_PHOTO_BASE64_KB = 200;
 
       var DEMO_PROFILE_DATA = {
@@ -2524,12 +2532,15 @@
         ctx.restore();
       }
 
-      function getBusinessCardPixelSize(dpi = 300) {
-        const mmToInch = 1 / 25.4;
-        const widthMm = 91;
-        const heightMm = 55;
-        let widthPx = Math.round(widthMm * mmToInch * dpi);
-        let heightPx = Math.round(heightMm * mmToInch * dpi);
+      function getBusinessCardPixelSize(dpi) {
+        if (dpi === 300) {
+          return { width: CARD_OUTPUT_WIDTH, height: CARD_OUTPUT_HEIGHT };
+        }
+        var mmToInch = 1 / 25.4;
+        var widthMm = 91;
+        var heightMm = 55;
+        var widthPx = Math.round(widthMm * mmToInch * (dpi || 300));
+        var heightPx = Math.round(heightMm * mmToInch * (dpi || 300));
         if (widthPx < heightPx) {
           var t = widthPx; widthPx = heightPx; heightPx = t;
         }
@@ -2590,9 +2601,10 @@
         if (!ctx) return;
         if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
 
-        const size = getBusinessCardPixelSize(300);
-        const width = size.width;
-        const height = size.height;
+        var size = getBusinessCardPixelSize(300);
+        var width = size.width;
+        var height = size.height;
+        if (width < height) { var t = width; width = height; height = t; }
         canvas.width = width;
         canvas.height = height;
         ctx.direction = "ltr";
@@ -2600,6 +2612,7 @@
         ctx.textAlign = "left";
 
         try {
+        // 出力は常に横長 1075x650 (91mm x 55mm 300dpi)。フォントは px 単位で絶対指定。
         // KANAKO OTA サンプル準拠：数値ルール厳守・左揃え1カラム・基準線ベース
         var DESIGN_W = 360;
         var scale = width / DESIGN_W;
@@ -2789,15 +2802,16 @@
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
         if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
-        const size = getBusinessCardPixelSize(300);
-        const width = size.width;
-        const height = size.height;
+        var size = getBusinessCardPixelSize(300);
+        var width = size.width;
+        var height = size.height;
+        if (width < height) { var t = width; width = height; height = t; }
         canvas.width = width;
         canvas.height = height;
         ctx.direction = "ltr";
         ctx.textBaseline = "top";
         ctx.textAlign = "left";
-        const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        var fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
         function px(v) { return Math.round(v * (width / 400)); }
         try {
           ctx.fillStyle = "#111827";
@@ -2868,18 +2882,19 @@
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
         if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
-        const size = getBusinessCardPixelSize(300);
-        const width = size.width;
-        const height = size.height;
+        var size = getBusinessCardPixelSize(300);
+        var width = size.width;
+        var height = size.height;
+        if (width < height) { var t = width; width = height; height = t; }
         canvas.width = width;
         canvas.height = height;
         ctx.direction = "ltr";
         ctx.textBaseline = "top";
         ctx.textAlign = "center";
-        const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        var fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
         function px(v) { return Math.round(v * (width / 400)); }
         try {
-          const bandHeight = height * 0.38;
+          var bandHeight = height * 0.38;
           const grad = ctx.createLinearGradient(0, 0, 0, bandHeight);
           grad.addColorStop(0, "#1e293b");
           grad.addColorStop(1, "#334155");
@@ -2956,18 +2971,19 @@
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
         if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
-        const size = getBusinessCardPixelSize(300);
-        const width = size.width;
-        const height = size.height;
+        var size = getBusinessCardPixelSize(300);
+        var width = size.width;
+        var height = size.height;
+        if (width < height) { var t = width; width = height; height = t; }
         canvas.width = width;
         canvas.height = height;
         ctx.direction = "ltr";
         ctx.textBaseline = "top";
         ctx.textAlign = "left";
-        const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        var fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
         function px(v) { return Math.round(v * (width / 400)); }
         try {
-          const bandWidth = width * 0.08;
+          var bandWidth = width * 0.08;
           const contentWidth = width - bandWidth;
           ctx.fillStyle = "#ffffff";
           ctx.fillRect(0, 0, contentWidth, height);
@@ -3031,18 +3047,19 @@
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
         if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
-        const size = getBusinessCardPixelSize(300);
-        const width = size.width;
-        const height = size.height;
+        var size = getBusinessCardPixelSize(300);
+        var width = size.width;
+        var height = size.height;
+        if (width < height) { var t = width; width = height; height = t; }
         canvas.width = width;
         canvas.height = height;
         ctx.direction = "ltr";
         ctx.textBaseline = "top";
         ctx.textAlign = "left";
-        const fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        var fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
         function px(v) { return Math.round(v * (width / 400)); }
         try {
-          const photoW = width * 0.35;
+          var photoW = width * 0.35;
           ctx.fillStyle = "#1e293b";
           ctx.fillRect(0, 0, photoW, height);
           const photoImg = cardData.photo;
@@ -3151,6 +3168,8 @@
         try {
           ensureQRReady();
           var canvas = document.createElement("canvas");
+          canvas.width = CARD_OUTPUT_WIDTH;
+          canvas.height = CARD_OUTPUT_HEIGHT;
           var data = loadCurrentProfile() || {};
           var cardData = buildBusinessCardDataFromProfile(data);
           cardData.qrCode = getQRCodeDataURL();
@@ -3193,10 +3212,9 @@
           return;
         }
         ensureQRReady();
-        var size = getBusinessCardPixelSize(300);
         var canvas = document.createElement("canvas");
-        canvas.width = size.width;
-        canvas.height = size.height;
+        canvas.width = CARD_OUTPUT_WIDTH;
+        canvas.height = CARD_OUTPUT_HEIGHT;
         var cardData = buildBusinessCardDataFromProfile(data);
         cardData.qrCode = getQRCodeDataURL();
         renderCurrentTemplate(canvas, cardData, isPremiumUser(), function () {
@@ -4489,27 +4507,6 @@
           <div class="menu-item">
             <span class="menu-item-icon">🔐</span>
             <span class="menu-item-text" data-i18n="menu.settingsPasswordComingSoon">パスワード保護（準備中）</span>
-          </div>
-          <div class="menu-divider"></div>
-          <div class="menu-section-title" data-i18n="language.label">言語 / Language</div>
-          <div class="menu-item">
-            <span class="menu-item-icon">🌐</span>
-            <span class="menu-item-text">
-              <div id="meqr-lang-options" style="display:flex; flex-direction:column; gap:4px; font-size:13px;">
-                <label>
-                  <input type="radio" name="meqr-lang" id="meqr-lang-auto" value="auto">
-                  <span data-i18n="language.auto">自動（ブラウザ設定）</span>
-                </label>
-                <label>
-                  <input type="radio" name="meqr-lang" id="meqr-lang-ja" value="ja">
-                  🇯🇵 <span data-i18n="language.ja">日本語</span>
-                </label>
-                <label>
-                  <input type="radio" name="meqr-lang" id="meqr-lang-en" value="en">
-                  🇬🇧 <span data-i18n="language.en">English</span>
-                </label>
-              </div>
-            </span>
           </div>
           <div class="menu-divider"></div>
           <div class="menu-section-title">ストア公開用</div>
