@@ -1,0 +1,68 @@
+<div class="view-section" id="meqr-display-section" aria-label="表示画面">
+
+    <div class="bento-grid">
+        <!-- 1. Profile Tile (Span 2) -->
+        <div class="glass-card bento-full profile-tile">
+            <div class="profile-photo-ring">
+                <div class="profile-photo-inner">
+                    <img id="displayPhoto" alt="プロフィール写真" decoding="async" />
+                    <div class="photo-placeholder" id="photoPlaceholder"
+                        style="background:var(--bg-glass); width:100%; height:100%; border:none;">👤</div>
+                </div>
+            </div>
+            <div class="profile-info">
+                <div>
+                    <h1 class="name-main" id="displayName">Loading...</h1>
+                    <div class="name-sub" id="displayTitleOrg">MeQR User</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. QR Jewel (Span 2) -->
+        <div class="glass-card bento-full qr-jewel-card">
+            <div class="qr-jewel-glow"></div>
+            <div id="qrcode"></div> <!-- Existing QR target -->
+            <div class="brightness-tip" style="bottom: 20px;">
+                <span class="icon">🔆</span> 読み取りにくい場合は画面を明るくしてください
+            </div>
+        </div>
+
+        <!-- 3. Actions (Span 2, Grid) -->
+        <div class="bento-full action-grid">
+            <div class="bento-btn" id="btn-share-line">
+                <span class="icon">💬</span>
+                <span>LINE送信</span>
+            </div>
+            <div class="bento-btn" id="btn-preview-vcard">
+                <span class="icon">📇</span>
+                <span>連絡先保存</span>
+            </div>
+            <button class="bento-btn" id="btn-export-card">
+                <span class="icon">🖼️</span>
+                <span>画像保存</span>
+            </button>
+            <button class="bento-btn" id="btn-print-png">
+                <span class="icon">🖨️</span>
+                <span>印刷用</span>
+            </button>
+        </div>
+
+        <!-- 4. Template Preview (Span 2) -->
+        <div class="glass-card bento-full" style="padding:16px;">
+            <div
+                style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">
+                Design Preview</div>
+            <!-- Existing Slider Re-inserted -->
+            <div class="template-slider-wrap" id="templateSliderWrap">
+                <div class="template-slider-track" id="templateSliderTrack"></div>
+                <button class="template-slider-nav prev" id="tplPrev">◀</button>
+                <button class="template-slider-nav next" id="tplNext">▶</button>
+            </div>
+            <div class="template-slider-info">
+                <div class="template-slider-name" id="tplName">Minimal</div>
+                <div class="template-slider-dots" id="tplDots"></div>
+            </div>
+        </div>
+
+    </div>
+</div>

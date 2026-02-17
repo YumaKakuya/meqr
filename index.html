@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 
 <head>
@@ -10,6 +10,7 @@
   <meta name="theme-color" content="#1e293b" id="themeColorMeta">
   <meta name="description" content="MeQRはプライバシー重視のデジタル名刺アプリ。QRコードで連絡先を共有。データは端末内のみ保存。">
   <title>MeQR - デジタル名刺</title>
+  <link rel="icon" href="data:,">
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -17,7 +18,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MeQR">
   <link rel="apple-touch-icon" href="icons/icon-192.svg">
-  <script src="i18n.js"></script>
+  <script src="js/i18n.js"></script>
 
   <style>
     :root {
@@ -27,58 +28,56 @@
     /* Light theme (default) */
     :root,
     [data-theme="light"] {
-      --bg: #FCF6E5;
-      --bg-elevated: #FFFFFF;
-      --accent: #008397;
-      --accent-gradient: linear-gradient(135deg, #008397 0%, #00606E 100%);
-      --accent-soft: rgba(0, 131, 151, 0.12);
-      --accent-strong: rgba(0, 131, 151, 0.9);
-      --step-done: #008397;
-      --border-subtle: #EBE1CD;
-      --border-medium: #D4AF37;
-      --text-main: #004852;
-      --text-muted: #827E70;
-      --danger: #C0392B;
-      --highlight: #FDD000;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 72, 82, 0.06);
-      --shadow: 0 1px 3px 0 rgba(0, 72, 82, 0.1), 0 1px 2px -1px rgba(0, 72, 82, 0.08);
-      --shadow-md: 0 4px 6px -1px rgba(0, 72, 82, 0.1), 0 2px 4px -2px rgba(0, 72, 82, 0.08);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 72, 82, 0.12), 0 4px 6px -4px rgba(0, 72, 82, 0.08);
-      --qr-dark: #004852;
-      --qr-light: #FCF6E5;
+      --bg: #FFF4E0;
+      --bg-elevated: #FFFAF2;
+      --accent: #5C7A5F;
+      --accent-gradient: linear-gradient(135deg, #5C7A5F 0%, #343936 100%);
+      --accent-soft: rgba(92, 122, 95, 0.12);
+      --accent-strong: rgba(92, 122, 95, 0.85);
+      --step-done: #5C7A5F;
+      --border-subtle: #E8DECE;
+      --border-medium: #D6CABB;
+      --text-main: #343936;
+      --text-muted: #7A7060;
+      --danger: #B85C38;
+      --shadow-sm: 0 1px 2px 0 rgba(52, 57, 54, 0.06);
+      --shadow: 0 1px 3px 0 rgba(52, 57, 54, 0.1), 0 1px 2px -1px rgba(52, 57, 54, 0.08);
+      --shadow-md: 0 4px 6px -1px rgba(52, 57, 54, 0.1), 0 2px 4px -2px rgba(52, 57, 54, 0.08);
+      --shadow-lg: 0 10px 15px -3px rgba(52, 57, 54, 0.12), 0 4px 6px -4px rgba(52, 57, 54, 0.08);
+      --qr-dark: #343936;
+      --qr-light: #FFF4E0;
     }
 
     /* Dark theme */
     [data-theme="dark"] {
       color-scheme: dark;
-      --bg: #002D33;
-      --bg-elevated: #004852;
-      --accent: #4DD0E1;
-      --accent-gradient: linear-gradient(135deg, #4DD0E1 0%, #008397 100%);
-      --accent-soft: rgba(77, 208, 225, 0.15);
-      --accent-strong: rgba(77, 208, 225, 0.9);
-      --step-done: #4DD0E1;
-      --border-subtle: #00606E;
-      --border-medium: #008397;
-      --text-main: #F2F9FA;
-      --text-muted: #B2EBF2;
-      --danger: #EF5350;
-      --highlight: #FFEB3B;
+      --bg: #1E2320;
+      --bg-elevated: #272D29;
+      --accent: #8BAD8E;
+      --accent-gradient: linear-gradient(135deg, #8BAD8E 0%, #5C7A5F 100%);
+      --accent-soft: rgba(139, 173, 142, 0.15);
+      --accent-strong: rgba(139, 173, 142, 0.9);
+      --step-done: #8BAD8E;
+      --border-subtle: #343936;
+      --border-medium: #4A5249;
+      --text-main: #F0EBE1;
+      --text-muted: #9E9A8E;
+      --danger: #E07B55;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
       --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
-      --qr-dark: #F2F9FA;
-      --qr-light: #002D33;
+      --qr-dark: #F0EBE1;
+      --qr-light: #1E2320;
     }
 
     [data-theme="dark"] body {
-      background: linear-gradient(to bottom, #002D33 0%, #001A1D 100%);
+      background: linear-gradient(to bottom, #1E2320 0%, #0F1210 100%);
     }
 
     [data-theme="dark"] .card {
-      background: #004852;
-      border-color: #00606E;
+      background: #272D29;
+      border-color: #343936;
     }
 
     [data-theme="dark"] .photo-placeholder {
@@ -106,15 +105,15 @@
     }
 
     [data-theme="dark"] .chip-strong {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      color: var(--accent);
+      background: rgba(59, 130, 246, 0.2);
+      border-color: #3b82f6;
+      color: #93c5fd;
     }
 
     [data-theme="dark"] .badge-premium {
-      background: linear-gradient(135deg, var(--highlight) 0%, #FFA000 100%);
-      color: #002D33;
-      border-color: rgba(255, 235, 59, 0.5);
+      background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+      color: #0f172a;
+      border-color: rgba(251, 191, 36, 0.5);
     }
 
     [data-theme="dark"] .mode-toggle {
@@ -123,7 +122,7 @@
     }
 
     [data-theme="dark"] .mode-toggle button.active {
-      background: var(--accent);
+      background: #3b82f6;
     }
 
     [data-theme="dark"] .btn-ghost {
@@ -133,7 +132,7 @@
 
     [data-theme="dark"] .btn-ghost:hover {
       background: #334155;
-      border-color: var(--accent);
+      border-color: #3b82f6;
     }
 
     [data-theme="dark"] .btn-primary {
@@ -169,7 +168,7 @@
     [data-theme="dark"] .input-shell input:focus,
     [data-theme="dark"] .input-shell textarea:focus {
       background: #1e293b;
-      border-color: var(--accent);
+      border-color: #3b82f6;
     }
 
     [data-theme="dark"] .photo-upload-label {
@@ -179,11 +178,11 @@
 
     [data-theme="dark"] .photo-upload-label:hover {
       background: #334155;
-      border-color: var(--accent);
+      border-color: #3b82f6;
     }
 
     [data-theme="dark"] .brand-mark {
-      background: var(--accent-gradient);
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
       border-color: #1e293b;
     }
 
@@ -234,7 +233,7 @@
       width: 36px;
       height: 36px;
       border-radius: 8px;
-      background: var(--accent-gradient);
+      background: linear-gradient(135deg, #5C7A5F 0%, #343936 100%);
       border: 2px solid #ffffff;
       display: flex;
       align-items: center;
@@ -407,9 +406,9 @@
       font-weight: 700;
       padding: 4px 10px;
       border-radius: 6px;
-      background: linear-gradient(135deg, var(--highlight) 0%, #D4AF37 100%);
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
       color: #1f2937;
-      border: 1px solid rgba(253, 221, 0, 0.6);
+      border: 1px solid rgba(251, 191, 36, 0.6);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
@@ -685,8 +684,8 @@
       border-radius: 10px;
       padding: 12px 16px;
       border: none;
-      background: var(--accent-gradient);
-      color: #FFFFFF;
+      background: linear-gradient(135deg, #5C7A5F 0%, #343936 100%);
+      color: #FFF4E0;
       font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.01em;
@@ -700,7 +699,7 @@
     }
 
     .btn-primary:hover {
-      filter: brightness(110%);
+      background: linear-gradient(135deg, #6D8F70 0%, #4A5249 100%);
       box-shadow: var(--shadow-lg);
     }
 
@@ -1592,181 +1591,6 @@
       }
     }
 
-    /* テンプレートセレクター */
-    .template-selector {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 12px 0 8px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      margin-bottom: 12px;
-    }
-
-    .template-selector::-webkit-scrollbar {
-      display: none;
-    }
-
-    .template-chip {
-      flex: 0 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      padding: 8px 14px;
-      border-radius: 10px;
-      border: 2px solid var(--border-medium);
-      background: var(--bg-elevated);
-      cursor: pointer;
-      transition: all 0.18s ease;
-      position: relative;
-      min-width: 72px;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .template-chip:hover {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-    }
-
-    .template-chip.selected {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    }
-
-    .template-chip-icon {
-      font-size: 18px;
-      line-height: 1;
-    }
-
-    .template-chip-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-main);
-      letter-spacing: 0.02em;
-    }
-
-    .template-chip-desc {
-      font-size: 9px;
-      color: var(--text-muted);
-      text-align: center;
-      line-height: 1.3;
-      max-width: 72px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .template-chip-lock {
-      position: absolute;
-      top: 4px;
-      right: 6px;
-      font-size: 9px;
-      color: #f59e0b;
-      font-weight: 700;
-    }
-
-    /* 画面切り替え（SPA） */
-    .view-section {
-      display: none;
-      animation: meqr-fadeIn 0.25s ease;
-    }
-
-    .view-section.active {
-      display: block;
-    }
-
-    @keyframes meqr-fadeIn {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
-
-    /* ボトムナビゲーション（ネイティブアプリ風・透過＋ブラー） */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 56px;
-      padding-bottom: env(safe-area-inset-bottom, 0);
-      background: rgba(255, 255, 255, 0.72);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      z-index: 100;
-      box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.06);
-    }
-
-    [data-theme="dark"] .bottom-nav {
-      background: rgba(30, 41, 59, 0.85);
-      border-top-color: rgba(255, 255, 255, 0.08);
-    }
-
-    .bottom-nav-btn {
-      flex: 1;
-      max-width: 200px;
-      height: 56px;
-      min-height: 56px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 500;
-      transition: color 0.18s ease, background 0.18s ease;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .bottom-nav-btn .icon {
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .bottom-nav-btn:hover {
-      color: var(--text-main);
-      background: var(--accent-soft);
-    }
-
-    .bottom-nav-btn:active {
-      background: rgba(37, 99, 235, 0.25);
-      color: var(--accent);
-    }
-
-    .bottom-nav-btn.active {
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .bottom-nav-btn.active:active {
-      background: rgba(37, 99, 235, 0.3);
-      opacity: 0.95;
-    }
-
-    .app-root.has-bottom-nav main {
-      padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-    }
-
-    /* 小画面（iPhone SE 等）でボタン群の折り返しを確保 */
-    .contact-meta [style*="flex-wrap"] {
-      gap: 10px;
-    }
-
     /* ===== テンプレートスライダー ===== */
     .template-slider-wrap {
       position: relative;
@@ -1896,6 +1720,105 @@
     /* 既存の.template-selectorを非表示に */
     .template-selector {
       display: none !important;
+    }
+
+    /* 画面切り替え（SPA） */
+    .view-section {
+      display: none;
+      animation: meqr-fadeIn 0.25s ease;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes meqr-fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* ボトムナビゲーション（ネイティブアプリ風・透過＋ブラー） */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      background: rgba(255, 255, 255, 0.72);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      z-index: 100;
+      box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.06);
+    }
+
+    [data-theme="dark"] .bottom-nav {
+      background: rgba(30, 41, 59, 0.85);
+      border-top-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .bottom-nav-btn {
+      flex: 1;
+      max-width: 200px;
+      height: 56px;
+      min-height: 56px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      transition: color 0.18s ease, background 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .bottom-nav-btn .icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .bottom-nav-btn:hover {
+      color: var(--text-main);
+      background: var(--accent-soft);
+    }
+
+    .bottom-nav-btn:active {
+      background: rgba(37, 99, 235, 0.25);
+      color: var(--accent);
+    }
+
+    .bottom-nav-btn.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .bottom-nav-btn.active:active {
+      background: rgba(37, 99, 235, 0.3);
+      opacity: 0.95;
+    }
+
+    .app-root.has-bottom-nav main {
+      padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* 小画面（iPhone SE 等）でボタン群の折り返しを確保 */
+    .contact-meta [style*="flex-wrap"] {
+      gap: 10px;
     }
   </style>
 </head>
@@ -2458,6 +2381,7 @@
             previewRafId = 0;
             var canvas = document.getElementById("businessCardCanvas");
             if (!canvas) return;
+            // ★ 高解像度でCanvasサイズを設定（300dpi相当）
             var size = getBusinessCardPixelSize(300);
             canvas.width = size.width;
             canvas.height = size.height;
@@ -2465,10 +2389,7 @@
             var data = loadCurrentProfile() || {};
             var cardData = buildBusinessCardDataFromProfile(data);
             cardData.qrCode = getQRCodeDataURL();
-            cardData.qrCode = getQRCodeDataURL();
             renderCurrentTemplate(canvas, cardData, isPremiumUser());
-            // Update slider thumbnails as well
-            renderAllTemplateSlides();
           });
         }, PREVIEW_DEBOUNCE_MS);
       }
@@ -5474,8 +5395,6 @@
           updateProfileSelector();
           applyQRSize();
           setupLazyObservers();
-          applyQRSize();
-          setupLazyObservers();
           initTemplateSlider();
           var hasData = initialData && (initialData.lastName || initialData.firstName || initialData.email || initialData.phone || initialData.org);
           switchView(hasData ? "display" : "form");
@@ -5552,6 +5471,7 @@
             saveCurrentProfile(data);
             fillDisplay(data);
             regenerateQR(data);
+            renderAllTemplateSlides();
             schedulePreviewDraw();
             switchMode("view");
           });
@@ -5595,6 +5515,7 @@
           fillDisplay(emptyData);
           fillForm(emptyData);
           regenerateQR(emptyData);
+          renderAllTemplateSlides();
           setSyncStatus("empty");
         });
 
@@ -5697,6 +5618,7 @@
             currentData.photo = event.target.result;
             saveCurrentProfile(currentData);
             fillDisplay(currentData);
+            renderAllTemplateSlides();
           };
           reader.onerror = function () {
             alert("画像の読み込みに失敗しました。");

@@ -1,0 +1,315 @@
+    /* =========================================
+       2026 Modern Design System - MeQR
+       Refresh: Mesh Gradients, Glassmorphism, Bento Grid
+       ========================================= */
+
+    :root {
+      /* Palette */
+      --color-cream: #FCF6E5;
+      --color-teal: #2D6A4F;
+      --color-teal-dark: #1B4332;
+      --color-teal-light: #52B788;
+      --color-gold: #D4AF37;
+      --color-gold-light: #F4E285;
+      --color-text: #1F2937;
+      --color-text-muted: #6B7280;
+      
+      /* Theme Variables */
+      --bg-base: var(--color-cream);
+      --bg-glass: rgba(255, 255, 255, 0.45);
+      --bg-glass-heavy: rgba(255, 255, 255, 0.85);
+      --border-glass: rgba(255, 255, 255, 0.6);
+      --border-subtle: rgba(45, 106, 79, 0.1);
+      --shadow-glass: 0 8px 32px 0 rgba(45, 106, 79, 0.08);
+      
+      --mesh-gradient: 
+        radial-gradient(at 0% 0%, rgba(45,106,79,0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(212,175,55,0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(252,246,229,1) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(45,106,79,0.05) 0px, transparent 50%);
+
+      /* Components */
+      --primary: var(--color-teal);
+      --accent: var(--color-gold);
+      --danger: #EF5350;
+      --radius-l: 24px;
+      --radius-m: 16px;
+      --radius-s: 12px;
+      
+      /* Typography */
+      --font-main: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-base: #1A1D1C;
+      --bg-glass: rgba(30, 30, 30, 0.5);
+      --bg-glass-heavy: rgba(30, 30, 30, 0.9);
+      --border-glass: rgba(255, 255, 255, 0.1);
+      --border-subtle: rgba(255, 255, 255, 0.1);
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+      --color-text: #F3F4F6;
+      --color-text-muted: #9CA3AF;
+      
+      --mesh-gradient: 
+        radial-gradient(at 0% 0%, rgba(45,106,79,0.3) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(212,175,55,0.2) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(26,29,28,1) 0px, transparent 50%);
+    }
+
+    /* Reset & Base */
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: var(--font-main);
+      background-color: var(--bg-base);
+      background-image: var(--mesh-gradient);
+      background-attachment: fixed;
+      background-size: cover;
+      color: var(--color-text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Layout */
+    .app-root {
+      width: 100%;
+      max-width: 600px; /* Slightly wider for Bento */
+      padding: max(env(safe-area-inset-top), 20px) 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Glassmorphism Card */
+    .glass-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-l);
+      box-shadow: var(--shadow-glass);
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(45,106,79,0.3);
+    }
+    .brand-mark span { color: #fff; font-weight: 800; font-size: 18px; }
+    .brand-text-main { font-weight: 800; font-size: 18px; letter-spacing: -0.02em; }
+    .brand-text-sub { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.7; }
+
+    /* Bento Grid System */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .bento-full { grid-column: span 2; }
+    .bento-card {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .bento-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+    
+    /* Bento: Profile */
+    .profile-tile {
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+    }
+    .profile-photo-ring {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, var(--color-gold), var(--color-teal));
+      flex-shrink: 0;
+    }
+    .profile-photo-inner {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: var(--bg-glass-heavy);
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .profile-photo-inner img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-info h1 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+    .profile-info p { margin: 4px 0 0; font-size: 12px; opacity: 0.7; }
+
+    /* Bento: QR Jewel */
+    .qr-jewel-card {
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-glass-heavy); /* Lighter for contrast */
+      position: relative;
+      overflow: hidden;
+      min-height: 280px;
+    }
+    .qr-jewel-glow {
+      position: absolute;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(45,106,79,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #qrcode { z-index: 10; padding: 10px; background: #fff; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+
+    /* Bento: Actions */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .bento-btn {
+      background: var(--bg-glass-heavy);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-m);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bento-btn:hover { background: #fff; border-color: var(--color-teal); color: var(--color-teal); }
+    .bento-btn .icon { font-size: 24px; }
+    .bento-btn span { font-size: 12px; font-weight: 600; }
+
+    /* Thumb-friendly Mobile Bar */
+    .thumb-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30,30,30,0.8);
+      backdrop-filter: blur(20px);
+      border-radius: 100px;
+      padding: 6px;
+      display: flex;
+      gap: 4px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      z-index: 5000;
+    }
+    .thumb-btn {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      font-size: 20px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .thumb-btn.active { background: #fff; color: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+    /* Legacy/Form Support (re-styled) */
+    .form-section { border-bottom: 1px solid var(--border-subtle); margin-bottom: 20px; padding-bottom: 20px; }
+    .field-group { margin-bottom: 16px; }
+    .field-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-teal); margin-bottom: 6px; }
+    .input-shell input, .input-shell textarea {
+      width: 100%; border-radius: 12px; border: 1px solid var(--border-glass);
+      background: var(--bg-glass-heavy); padding: 12px; font-size: 16px;
+      transition: all 0.2s;
+    }
+    .input-shell input:focus { border-color: var(--color-teal); background: #fff; box-shadow: 0 0 0 4px rgba(45,106,79,0.1); outline: none; }
+    .btn-primary {
+      width: 100%; border: none; border-radius: 16px; padding: 16px;
+      background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark));
+      color: #fff; font-weight: 700; font-size: 15px; cursor: pointer;
+      box-shadow: 0 8px 20px rgba(45,106,79,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { box-shadow: 0 12px 24px rgba(45,106,79,0.4); transform: translateY(-1px); }
+    
+    /* Template Slider (Preserved & Enhanced) */
+    .template-slider-wrap { width: 100%; margin: 16px 0; }
+    .template-slider-track {
+      display: flex; overflow: hidden; border-radius: 16px;
+      background: var(--bg-glass); border: 1px solid var(--border-glass);
+      aspect-ratio: 91/55; position: relative;
+    }
+    .template-slide { flex: 0 0 100%; width: 100%; transition: transform 0.35s ease; cursor: pointer; }
+    .template-slide canvas { width: 100%; height: 100%; }
+    .template-slider-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 32px; height: 32px; border-radius: 50%; background: #fff;
+      border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;
+    }
+    .template-slider-nav.prev { left: 8px; }
+    .template-slider-nav.next { right: 8px; }
+    .template-slider-info { display: flex; justify-content: space-between; padding: 8px 4px; }
+    .template-slider-name { font-weight: 700; font-size: 13px; }
+    .template-slider-desc { font-size: 11px; opacity: 0.7; }
+    .template-slider-dots { display: flex; gap: 4px; }
+    .template-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.1); }
+    .template-dot.active { background: var(--color-teal); width: 16px; border-radius: 4px; }
+
+    /* ===== スタートページ (User Request) ===== */
+    .start-page {
+      position: fixed; inset: 0; background: #343936; z-index: 99999;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.4s ease;
+    }
+    .start-page.fade-out { opacity: 0; pointer-events: none; }
+    .start-content { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px 32px; text-align: center; }
+    .start-brand-mark {
+      width: 72px; height: 72px; border-radius: 18px;
+      background: linear-gradient(135deg, #5C7A5F 0%, #2A2F2B 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4); margin-bottom: 4px;
+    }
+    .start-brand-mark span {
+      color: #FFF4E0; font-size: 28px; font-weight: 900;
+      letter-spacing: -1px; font-family: 'Helvetica Neue', 'Arial Black', sans-serif;
+    }
+    .start-app-name {
+      font-size: 40px; font-weight: 900; color: #FFF4E0;
+      letter-spacing: -0.02em; line-height: 1; font-family: 'Helvetica Neue', 'Arial Black', sans-serif;
+    }
+    .start-app-sub {
+      font-size: 11px; font-weight: 600; color: rgba(255, 244, 224, 0.5);
+      letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    .start-divider { width: 40px; height: 1px; background: rgba(255, 244, 224, 0.25); margin: 4px 0; }
+    .start-catch {
+      font-size: 16px; color: rgba(255, 244, 224, 0.85);
+      letter-spacing: 0.02em; line-height: 1.6; font-family: 'Noto Sans JP', sans-serif;
+    }
+    .start-btn {
+      margin-top: 24px; padding: 14px 48px; border-radius: 100px;
+      border: none; background: #FFF4E0; color: #343936;
+      font-size: 15px; font-weight: 700; letter-spacing: 0.04em;
+      cursor: pointer; transition: all 0.2s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3); font-family: 'Noto Sans JP', sans-serif;
+    }
+    .start-btn:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+    .start-content > * { opacity: 0; transform: translateY(16px); animation: startFadeUp 0.5s ease forwards; }
+    .start-content > *:nth-child(1) { animation-delay: 0.05s; }
+    .start-content > *:nth-child(2) { animation-delay: 0.15s; }
+    .start-content > *:nth-child(3) { animation-delay: 0.22s; }
+    .start-content > *:nth-child(4) { animation-delay: 0.28s; }
+    .start-content > *:nth-child(5) { animation-delay: 0.35s; }
+    .start-content > *:nth-child(6) { animation-delay: 0.45s; }
+    @keyframes startFadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    /* Helper Utilities */
+    .hidden { display: none !important; }
+    .visible { display: block !important; }

@@ -2,9 +2,14 @@ const CACHE_NAME = "meqr-pwa-v5";
 
 const ASSETS = [
   "./",
-  "./manifest.json"
-  // 注意: index.html は network-first で常に更新を優先する
-  // アイコン画像や追加アセットがあればここに追記する（例: "./icons/icon-192.svg"）
+  "./manifest.json",
+  "./js/i18n.js",
+  "./lang/ja.json",
+  "./lang/en.json",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./icons/icon-192.svg",
+  "./icons/icon-512.svg"
 ];
 
 self.addEventListener("install", event => {
