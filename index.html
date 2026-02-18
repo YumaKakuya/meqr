@@ -2,11 +2,12 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#1e293b" id="themeColorMeta">
+  <meta name="description" content="MeQRはプライバシー重視のデジタル名刺アプリ。QRコードで連絡先を共有。データは端末内のみ保存。">
   <title>MeQR - デジタル名刺</title>
 
   <!-- PWA -->
@@ -27,8 +28,10 @@
       --bg: #f8f9fa;
       --bg-elevated: #ffffff;
       --accent: #2563eb;
+      --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       --accent-soft: rgba(37, 99, 235, 0.1);
       --accent-strong: rgba(37, 99, 235, 0.85);
+      --step-done: #22c55e;
       --border-subtle: #e5e7eb;
       --border-medium: #d1d5db;
       --text-main: #1f2937;
@@ -47,9 +50,11 @@
       color-scheme: dark;
       --bg: #0f172a;
       --bg-elevated: #1e293b;
-      --accent: #3b82f6;
-      --accent-soft: rgba(59, 130, 246, 0.15);
-      --accent-strong: rgba(59, 130, 246, 0.9);
+      --accent: #667eea;
+      --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --accent-soft: rgba(102, 126, 234, 0.15);
+      --accent-strong: rgba(102, 126, 234, 0.9);
+      --step-done: #22c55e;
       --border-subtle: #334155;
       --border-medium: #475569;
       --text-main: #f1f5f9;
@@ -102,6 +107,12 @@
       color: #93c5fd;
     }
 
+    [data-theme="dark"] .badge-premium {
+      background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+      color: #0f172a;
+      border-color: rgba(251, 191, 36, 0.5);
+    }
+
     [data-theme="dark"] .mode-toggle {
       background: #1e293b;
       border-color: #475569;
@@ -122,11 +133,11 @@
     }
 
     [data-theme="dark"] .btn-primary {
-      background: #3b82f6;
+      background: var(--accent-gradient);
     }
 
     [data-theme="dark"] .btn-primary:hover {
-      background: #2563eb;
+      opacity: 0.95;
     }
 
     [data-theme="dark"] .btn-secondary {
@@ -194,8 +205,11 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding: env(safe-area-inset-top, 20px) 20px env(safe-area-inset-bottom, 24px);
+      padding: max(env(safe-area-inset-top, 0px), 20px) 20px 0;
       gap: 20px;
+    }
+    .app-root.has-bottom-nav {
+      padding-bottom: 0;
     }
 
     header {
@@ -342,6 +356,9 @@
 
     .name-main {
       font-size: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       font-weight: 700;
       letter-spacing: -0.01em;
       color: var(--text-main);
@@ -353,6 +370,9 @@
       color: var(--text-muted);
       letter-spacing: 0.01em;
       line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .meta-chips {
@@ -378,6 +398,20 @@
       border-color: var(--accent);
       color: var(--accent);
       background: var(--accent-soft);
+    }
+
+    .badge-premium {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1f2937;
+      border: 1px solid rgba(251, 191, 36, 0.6);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
     .qr-shell {
@@ -516,12 +550,30 @@
       background: #f9fafb;
       border-color: var(--accent);
     }
+    .btn-ghost:active {
+      background: #f3f4f6;
+      border-color: var(--accent);
+      transform: scale(0.98);
+    }
 
     .btn-ghost span.icon {
       font-size: 14px;
     }
 
     /* 編集フォーム */
+    .form-section {
+      margin-bottom: 20px;
+    }
+    .form-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
     .form-root {
       display: none;
       flex-direction: column;
@@ -529,7 +581,8 @@
       margin-top: 8px;
     }
 
-    .form-root.active {
+    .form-root.active,
+    .view-section#meqr-form-section.active .form-root {
       display: flex;
     }
 
@@ -583,6 +636,30 @@
       box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
+    .input-shell.has-error input,
+    .input-shell.has-error textarea {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+    }
+
+    .input-shell.has-error input:focus,
+    .input-shell.has-error textarea:focus {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+    }
+
+    .field-error {
+      display: block;
+      font-size: 12px;
+      color: #dc2626;
+      margin-top: 4px;
+      min-height: 1.2em;
+    }
+
+    .field-error:empty {
+      display: none;
+    }
+
     textarea {
       min-height: 52px;
       resize: vertical;
@@ -606,7 +683,7 @@
       border-radius: 10px;
       padding: 12px 16px;
       border: none;
-      background: var(--accent);
+      background: var(--accent-gradient);
       color: white;
       font-size: 14px;
       font-weight: 600;
@@ -621,8 +698,12 @@
     }
 
     .btn-primary:hover {
-      background: #1d4ed8;
+      opacity: 0.95;
       box-shadow: var(--shadow-lg);
+    }
+    .btn-primary:active {
+      opacity: 0.88;
+      transform: scale(0.99);
     }
 
     .btn-primary span.icon {
@@ -649,6 +730,10 @@
       background: #fef2f2;
       border-color: var(--danger);
       color: var(--danger);
+    }
+    .btn-secondary:active {
+      background: #fee2e2;
+      transform: scale(0.98);
     }
 
     .danger-text {
@@ -891,29 +976,83 @@
     }
 
     .mode-toggle-large button.active {
-      background: var(--accent);
+      background: var(--accent-gradient);
       color: white;
       box-shadow: var(--shadow-md);
+    }
+    .mode-toggle-large button:active {
+      opacity: 0.9;
+      transform: scale(0.98);
     }
 
     .mode-toggle-large button .icon {
       font-size: 18px;
     }
 
-    /* Onboarding */
+    /* ステップインジケーター（選ぶ→編集→共有・印刷） */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 12px;
+      margin: 0 16px 12px;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 12px;
+    }
+    .step-indicator .step-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .step-indicator .step-item .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--border-medium);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 11px;
+    }
+    .step-indicator .step-item.active .step-num {
+      background: var(--accent);
+      color: white;
+    }
+    .step-indicator .step-item.completed .step-num {
+      background: var(--step-done);
+      color: white;
+    }
+    .step-indicator .step-item.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .step-indicator .step-arrow {
+      color: var(--border-medium);
+      font-size: 10px;
+    }
+    @media (max-width: 400px) {
+      .step-indicator .step-item .step-label { display: none; }
+    }
+
+    /* Onboarding (swipeable 3 pages) */
     .onboarding-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
       z-index: 9999;
       display: none;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
     }
 
     .onboarding-overlay.active {
@@ -921,76 +1060,295 @@
     }
 
     .onboarding-card {
+      position: relative;
+      background: var(--bg-elevated);
+      border-radius: 20px;
+      padding: 0;
+      max-width: 400px;
+      width: 100%;
+      max-height: 90vh;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-medium);
+      overflow: hidden;
+    }
+
+    .onboarding-skip {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      padding: 8px 14px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .onboarding-skip:hover {
+      background: var(--accent-soft);
+      color: var(--text-main);
+    }
+
+    .onboarding-slides-wrap {
+      overflow: hidden;
+      touch-action: pan-y pinch-zoom;
+    }
+
+    .onboarding-slides {
+      display: flex;
+      width: 300%;
+      transition: transform 0.3s ease;
+      will-change: transform;
+    }
+
+    .onboarding-slide {
+      flex: 0 0 33.333%;
+      width: 33.333%;
+      padding: 48px 28px 28px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .onboarding-slide-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-soft);
+      border-radius: 20px;
+      color: var(--accent);
+    }
+
+    .onboarding-slide-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0 0 12px 0;
+      line-height: 1.3;
+    }
+
+    .onboarding-slide-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin: 0 0 24px 0;
+      line-height: 1.6;
+    }
+
+    .onboarding-slide .onboarding-btn-primary {
+      margin-top: 8px;
+    }
+
+    .onboarding-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 0 20px;
+    }
+
+    .onboarding-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-medium);
+      transition: background 0.2s ease;
+    }
+
+    .onboarding-dot.active {
+      background: var(--accent);
+      transform: scale(1.2);
+    }
+
+    /* Export modal */
+    .export-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9000;
+      backdrop-filter: blur(4px);
+    }
+
+    .export-modal-overlay.active {
+      display: flex;
+    }
+
+    .export-modal {
+      width: 100%;
+      max-width: 360px;
       background: var(--bg-elevated);
       border-radius: 16px;
-      padding: 32px;
-      max-width: 500px;
-      width: 100%;
+      padding: 20px 20px 16px;
       box-shadow: var(--shadow-lg);
       border: 1px solid var(--border-medium);
     }
 
-    .onboarding-header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .onboarding-header h2 {
-      font-size: 24px;
-      margin: 0 0 8px 0;
-      color: var(--text-main);
-    }
-
-    .onboarding-header p {
-      font-size: 14px;
-      color: var(--text-muted);
-      margin: 0;
-    }
-
-    .onboarding-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .onboarding-step {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .onboarding-step-number {
-      flex-shrink: 0;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .export-modal-title {
+      font-size: 16px;
       font-weight: 600;
-      font-size: 14px;
-    }
-
-    .onboarding-step-content h3 {
-      margin: 0 0 4px 0;
-      font-size: 15px;
       color: var(--text-main);
+      margin-bottom: 8px;
     }
 
-    .onboarding-step-content p {
-      margin: 0;
+    .export-modal-desc {
       font-size: 13px;
       color: var(--text-muted);
-      line-height: 1.5;
+      margin-bottom: 12px;
     }
 
-    .onboarding-footer {
+    .export-modal-usage {
+      margin-bottom: 14px;
+    }
+    .export-modal-usage-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .export-usage-option {
+      position: relative;
+      background: var(--bg);
+      border: 2px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 12px 10px 36px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .export-usage-option::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-medium);
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .export-usage-option:hover {
+      border-color: var(--border-medium);
+    }
+    .export-usage-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .export-usage-option.selected::before {
+      border-color: var(--accent);
+      background: var(--accent);
+      box-shadow: inset 0 0 0 3px var(--bg-elevated);
+    }
+    .export-usage-option .usage-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .export-usage-option .usage-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .export-usage-option .usage-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      background: var(--accent);
+      color: white;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+
+    .freemium-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.08) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
       display: flex;
-      gap: 12px;
-      justify-content: center;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .freemium-banner .icon { font-size: 20px; }
+    .freemium-banner .text { flex: 1; }
+    .freemium-banner .title { font-weight: 600; color: #b45309; }
+    .freemium-banner .desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    [data-theme="dark"] .freemium-banner .title { color: #fbbf24; }
+
+    .export-modal-options {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .export-modal-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .export-modal-preview-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .export-modal-preview-box {
+      width: 100%;
+      max-width: 260px;
+      aspect-ratio: 91 / 55;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: #f9fafb;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    #exportPreviewCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      direction: ltr;
+    }
+
+    .export-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.9);
+      color: #f9fafb;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      z-index: 9500;
+      box-shadow: var(--shadow-md);
+    }
+
+    .toast.active {
+      display: inline-flex;
     }
 
     .onboarding-btn {
@@ -1014,15 +1372,127 @@
       box-shadow: var(--shadow-lg);
     }
 
-    .onboarding-btn-secondary {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid var(--border-medium);
+    .bc-preview {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .onboarding-btn-secondary:hover {
-      background: var(--accent-soft);
-      color: var(--text-main);
+    .bc-preview-header {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .bc-preview-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .bc-preview-note {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .bc-preview-canvas-wrapper {
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 91 / 55;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: #f9fafb;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    #businessCardCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      direction: ltr;
+    }
+
+    /* タッチ操作: タップ領域 44px 以上 */
+    .btn-ghost,
+    .btn-primary,
+    .btn-secondary,
+    .hamburger-btn,
+    .menu-close-btn,
+    .onboarding-skip,
+    .onboarding-btn {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .btn-ghost {
+      padding: 10px 14px;
+    }
+
+    .menu-item {
+      min-height: 48px;
+      padding: 14px 20px;
+    }
+
+    .mode-toggle-large button {
+      min-height: 44px;
+    }
+
+    .photo-upload-label {
+      min-height: 44px;
+    }
+
+    /* 編集フォーム: モバイルは1カラム */
+    .field-row {
+      flex-direction: column;
+    }
+
+    .field-row > div {
+      width: 100%;
+    }
+
+    /* モーダル: モバイルでフルスクリーン */
+    @media (max-width: 599px) {
+      .export-modal-overlay {
+        padding: 0;
+        align-items: stretch;
+      }
+
+      .export-modal {
+        max-width: none;
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: safe center;
+      }
+
+      .onboarding-card {
+        max-width: none;
+        width: 100%;
+        min-height: 100vh;
+        max-height: none;
+        border-radius: 0;
+        border: none;
+      }
+
+      .onboarding-slide {
+        padding: 56px 24px 32px;
+      }
+    }
+
+    /* タブレット */
+    @media (min-width: 600px) {
+      .export-modal {
+        max-width: 400px;
+      }
     }
 
     @media (min-width: 768px) {
@@ -1035,11 +1505,207 @@
         min-height: 320px;
         max-height: 380px;
       }
+
+      /* 名刺プレビュー: タブレットで中央・適度なサイズ */
+      .bc-preview-canvas-wrapper {
+        max-width: 380px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* 編集フォーム: 2カラム */
+      .field-row {
+        flex-direction: row;
+      }
+
+      .field-row > div {
+        width: auto;
+      }
+    }
+
+    /* PC・大画面: 名刺プレビュー実寸に近いサイズ */
+    @media (min-width: 1024px) {
+      .bc-preview-canvas-wrapper {
+        max-width: 420px;
+      }
+
+      .app-root {
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    /* テンプレート選択: タブレット/PCで横並び（将来用） */
+    .template-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .template-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    /* テンプレートセレクター */
+    .template-selector {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 12px 0 8px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      margin-bottom: 12px;
+    }
+    .template-selector::-webkit-scrollbar {
+      display: none;
+    }
+    .template-chip {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 2px solid var(--border-medium);
+      background: var(--bg-elevated);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      position: relative;
+      min-width: 72px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .template-chip:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .template-chip.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .template-chip-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+    .template-chip-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: 0.02em;
+    }
+    .template-chip-desc {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.3;
+      max-width: 72px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .template-chip-lock {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 9px;
+      color: #f59e0b;
+      font-weight: 700;
+    }
+
+    /* 画面切り替え（SPA） */
+    .view-section {
+      display: none;
+      animation: meqr-fadeIn 0.25s ease;
+    }
+    .view-section.active {
+      display: block;
+    }
+    @keyframes meqr-fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ボトムナビゲーション（ネイティブアプリ風・透過＋ブラー） */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      background: rgba(255, 255, 255, 0.72);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      z-index: 100;
+      box-shadow: 0 -1px 0 0 rgba(0,0,0,0.06);
+    }
+    [data-theme="dark"] .bottom-nav {
+      background: rgba(30, 41, 59, 0.85);
+      border-top-color: rgba(255, 255, 255, 0.08);
+    }
+    .bottom-nav-btn {
+      flex: 1;
+      max-width: 200px;
+      height: 56px;
+      min-height: 56px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      transition: color 0.18s ease, background 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .bottom-nav-btn .icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .bottom-nav-btn:hover {
+      color: var(--text-main);
+      background: var(--accent-soft);
+    }
+    .bottom-nav-btn:active {
+      background: rgba(37, 99, 235, 0.25);
+      color: var(--accent);
+    }
+    .bottom-nav-btn.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .bottom-nav-btn.active:active {
+      background: rgba(37, 99, 235, 0.3);
+      opacity: 0.95;
+    }
+    .app-root.has-bottom-nav main {
+      padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* 小画面（iPhone SE 等）でボタン群の折り返しを確保 */
+    .contact-meta [style*="flex-wrap"] {
+      gap: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="app-root">
+  <div class="app-root has-bottom-nav">
     <header>
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">
@@ -1065,11 +1731,21 @@
       </button>
     </div>
 
+    <!-- ステップフロー（名刺作成コンセプト準拠） -->
+    <div class="step-indicator" id="stepIndicator" aria-label="使い方の流れ">
+      <span class="step-item completed" id="step-1" data-step="1"><span class="step-num">1</span><span class="step-label">名刺を選ぶ</span></span>
+      <span class="step-arrow" aria-hidden="true">→</span>
+      <span class="step-item" id="step-2" data-step="2"><span class="step-num">2</span><span class="step-label">情報を編集</span></span>
+      <span class="step-arrow" aria-hidden="true">→</span>
+      <span class="step-item active" id="step-3" data-step="3"><span class="step-num">3</span><span class="step-label">共有・印刷</span></span>
+    </div>
+
     <main>
+      <div class="view-section" id="meqr-display-section" aria-label="表示画面">
       <section class="card" aria-label="デジタル名刺">
         <div class="card-header">
           <div class="photo-area">
-            <img id="displayPhoto" alt="プロフィール写真" />
+            <img id="displayPhoto" alt="プロフィール写真" decoding="async" />
             <div class="photo-placeholder" id="photoPlaceholder">👤</div>
           </div>
           <div class="id-block">
@@ -1119,11 +1795,44 @@
                 <span class="icon">🔎</span>
                 <span>確認</span>
               </button>
+              <button id="btn-export-card" class="btn-ghost" type="button" title="名刺をPDF/PNGでダウンロード">
+                <span class="icon">📥</span>
+                <span>ダウンロード</span>
+              </button>
+              <button id="btn-print-png" class="btn-ghost" type="button" title="名刺表示を印刷用高解像度PNGでダウンロード（91×55mm・300dpi）">
+                <span class="icon">🖨️</span>
+                <span>印刷用PNG</span>
+              </button>
             </div>
           </div>
         </div>
 
+        <div class="bc-preview" aria-label="名刺デザインプレビュー">
+          <div class="bc-preview-header">
+            <span class="bc-preview-title">名刺デザインプレビュー（Minimal）</span>
+            <span class="bc-preview-note">※ 印刷用レイアウトの縮小イメージです</span>
+          </div>
+          <!-- テンプレート選択 -->
+          <div class="template-selector" id="templateSelector" role="radiogroup" aria-label="名刺テンプレートを選択">
+          </div>
+          <div class="bc-preview-canvas-wrapper">
+            <canvas id="businessCardCanvas" aria-label="Business card preview"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-section" id="meqr-form-section" aria-label="編集画面">
         <section class="form-root" id="editFormSection" aria-label="連絡先編集フォーム">
+          <div class="freemium-banner" id="freemiumBanner" style="display: none;">
+            <span class="icon" aria-hidden="true">🔓</span>
+            <div class="text">
+              <div class="title">無料でプレビューまで作成できます</div>
+              <div class="desc">ダウンロード時はウォーターマーク付き。Premium でクリアに。</div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">基本情報</div>
           <div class="field-group photo-upload-area">
             <div class="field-label">プロフィール写真</div>
             <label class="photo-upload-label">
@@ -1134,89 +1843,101 @@
             <div class="hint">写真のサイズは200KB以下を推奨（大きいとQRコード生成に影響する場合があります）</div>
           </div>
 
-          <div class="field-group">
+          <div class="field-group" id="field-group-name">
             <div class="field-row">
               <div>
                 <div class="field-label">姓 / LAST NAME</div>
-                <div class="input-shell">
-                  <input id="lastName" type="text" autocomplete="family-name" placeholder="山田" maxlength="20">
+                <div class="input-shell" id="input-shell-lastName">
+                  <input id="lastName" type="text" autocomplete="family-name" placeholder="山田" maxlength="50">
                 </div>
               </div>
               <div>
                 <div class="field-label">名 / FIRST NAME</div>
-                <div class="input-shell">
-                  <input id="firstName" type="text" autocomplete="given-name" placeholder="太郎" maxlength="20">
+                <div class="input-shell" id="input-shell-firstName">
+                  <input id="firstName" type="text" autocomplete="given-name" placeholder="太郎" maxlength="50">
                 </div>
               </div>
             </div>
+            <span class="field-error" id="error-name" role="alert" aria-live="polite"></span>
           </div>
 
           <div class="field-group">
-            <div class="field-label">連絡先 / CONTACT</div>
-            <div class="input-shell">
-              <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="090-1234-5678" maxlength="20">
+            <div class="field-label">フリガナ（任意）</div>
+            <div class="input-shell" id="input-shell-furigana">
+              <input id="furigana" type="text" autocomplete="off" placeholder="ヤマダ タロウ" maxlength="50">
             </div>
-            <div class="hint">携帯番号（ハイフンありでも可）</div>
-          </div>
-
-          <div class="field-group">
-            <div class="field-label">メールアドレス / EMAIL</div>
-            <div class="input-shell">
-              <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="example@example.com" maxlength="60">
-            </div>
+            <div class="hint">名刺にふりがなとして表示されます</div>
           </div>
 
           <div class="field-group">
             <div class="field-row">
               <div>
                 <div class="field-label">会社名 / ORGANIZATION</div>
-                <div class="input-shell">
-                  <input id="org" type="text" autocomplete="organization" placeholder="株式会社〇〇" maxlength="40">
+                <div class="input-shell" id="input-shell-org">
+                  <input id="org" type="text" autocomplete="organization" placeholder="株式会社〇〇" maxlength="100">
                 </div>
+                <span class="field-error" id="error-org" role="alert" aria-live="polite"></span>
               </div>
               <div>
                 <div class="field-label">役職 / TITLE</div>
-                <div class="input-shell">
-                  <input id="title" type="text" autocomplete="organization-title" placeholder="営業部長" maxlength="30">
+                <div class="input-shell" id="input-shell-title">
+                  <input id="title" type="text" autocomplete="organization-title" placeholder="営業部長" maxlength="100">
                 </div>
+                <span class="field-error" id="error-title" role="alert" aria-live="polite"></span>
               </div>
             </div>
           </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">連絡先</div>
+          <div class="field-group">
+            <div class="field-label">電話番号</div>
+            <div class="input-shell" id="input-shell-phone">
+              <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="090-1234-5678" maxlength="20">
+            </div>
+            <span class="field-error" id="error-phone" role="alert" aria-live="polite"></span>
+            <div class="hint">携帯番号（ハイフンありでも可）</div>
+          </div>
 
           <div class="field-group">
-            <div class="field-label">URL / WEBSITE</div>
-            <div class="input-shell">
+            <div class="field-label">メールアドレス</div>
+            <div class="input-shell" id="input-shell-email">
+              <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="example@example.com" maxlength="60">
+            </div>
+            <span class="field-error" id="error-email" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">URL / ウェブサイト</div>
+            <div class="input-shell" id="input-shell-url">
               <input id="url" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com" maxlength="100">
             </div>
+            <span class="field-error" id="error-url" role="alert" aria-live="polite"></span>
             <div class="hint">個人サイト、ポートフォリオなど</div>
           </div>
 
           <div class="field-group">
-            <div class="field-label">🔗 SNS・ソーシャルメディア</div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <div class="input-shell">
-                <input id="linkedin" type="url" inputmode="url" placeholder="LinkedIn: https://linkedin.com/in/yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="twitter" type="url" inputmode="url" placeholder="X (Twitter): https://x.com/yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="instagram" type="url" inputmode="url" placeholder="Instagram: https://instagram.com/yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="facebook" type="url" inputmode="url" placeholder="Facebook: https://facebook.com/yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="github" type="url" inputmode="url" placeholder="GitHub: https://github.com/yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="youtube" type="url" inputmode="url" placeholder="YouTube: https://youtube.com/@yourname" maxlength="100">
-              </div>
-              <div class="input-shell">
-                <input id="customUrl" type="url" inputmode="url" placeholder="その他のURL" maxlength="100">
-              </div>
+            <div class="field-label">住所（任意）</div>
+            <div class="input-shell" id="input-shell-address">
+              <input id="address" type="text" autocomplete="street-address" placeholder="〒100-0001 東京都千代田区…" maxlength="200">
             </div>
-            <div class="hint">QRコードに含める場合は入力してください（任意）</div>
+            <span class="field-error" id="error-address" role="alert" aria-live="polite"></span>
+            <div class="hint">名刺に表示されます。200文字以内</div>
+          </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">SNS・ソーシャルメディア（QRに含まれるのはこの3つのみ）</div>
+          <div class="field-group">
+            <div class="field-label">X / Instagram / LINE</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div><div class="input-shell" id="input-shell-twitter"><input id="twitter" type="url" inputmode="url" placeholder="X: https://x.com/yourname" maxlength="100"></div><span class="field-error" id="error-twitter" role="alert" aria-live="polite"></span></div>
+              <div><div class="input-shell" id="input-shell-instagram"><input id="instagram" type="url" inputmode="url" placeholder="Instagram: https://instagram.com/yourname" maxlength="100"></div><span class="field-error" id="error-instagram" role="alert" aria-live="polite"></span></div>
+              <div><div class="input-shell" id="input-shell-line"><input id="line" type="url" inputmode="url" placeholder="LINE: https://line.me/ti/p/〜 または LINE ID" maxlength="100"></div><span class="field-error" id="error-line" role="alert" aria-live="polite"></span></div>
+            </div>
+            <div class="hint">いずれも任意です。入力したものだけQRに含まれます。</div>
+          </div>
           </div>
 
           <div class="footer-actions">
@@ -1234,6 +1955,7 @@
             このアプリはサーバーに一切データを送信せず、<strong>ブラウザの localStorage のみ</strong>に保存します。
           </div>
         </section>
+      </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
           <div class="badge-offline" id="offlineBadge">
@@ -1243,6 +1965,17 @@
         </div>
       </section>
     </main>
+
+    <nav class="bottom-nav" role="tablist" aria-label="画面切り替え">
+      <button type="button" class="bottom-nav-btn active" id="btn-bottom-display" role="tab" aria-selected="true">
+        <span class="icon">👁️</span>
+        <span>表示（名刺）</span>
+      </button>
+      <button type="button" class="bottom-nav-btn" id="btn-bottom-edit" role="tab" aria-selected="false">
+        <span class="icon">✏️</span>
+        <span>編集（設定）</span>
+      </button>
+    </nav>
   </div>
 
   <!-- Hamburger Menu -->
@@ -1292,46 +2025,108 @@
     </div>
   </div>
 
-  <!-- Onboarding Overlay -->
-  <div id="onboarding-overlay" class="onboarding-overlay">
+  <!-- Export modal -->
+  <div id="exportModalOverlay" class="export-modal-overlay" aria-hidden="true">
+    <div class="export-modal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
+      <div class="export-modal-title" id="exportModalTitle">名刺をダウンロード</div>
+      <div class="export-modal-desc">どこで使いますか？形式を選んで書き出します。</div>
+      <div class="export-modal-usage">
+        <div class="export-modal-usage-title">どこで使いますか？</div>
+        <div class="export-usage-option selected" id="export-usage-printshop" data-usage="printshop" role="button" tabindex="0">
+          <span class="usage-label">印刷会社に発注する</span><span class="usage-badge">推奨</span>
+          <div class="usage-desc">ラクスル・プリントパック等に最適。PDFを選んでください。</div>
+        </div>
+        <div class="export-usage-option" id="export-usage-home" data-usage="home" role="button" tabindex="0">
+          <span class="usage-label">自宅プリンターで印刷</span>
+          <div class="usage-desc">A4用紙に印刷して切り取り。PDF推奨。</div>
+        </div>
+        <div class="export-usage-option" id="export-usage-sns" data-usage="sns" role="button" tabindex="0">
+          <span class="usage-label">SNS・メール用</span>
+          <div class="usage-desc">画像として使う場合はPNGを選んでください。</div>
+        </div>
+      </div>
+      <div class="export-modal-options">
+        <label>
+          <input type="radio" name="export-format" value="pdf" checked> PDF（推奨・印刷用）
+        </label>
+        <label>
+          <input type="radio" name="export-format" value="png"> PNG（画像ファイル）
+        </label>
+      </div>
+      <div class="export-modal-preview">
+        <div class="export-modal-preview-label">プレビュー（Minimal）</div>
+        <div class="export-modal-preview-box">
+          <canvas id="exportPreviewCanvas" aria-label="Export preview"></canvas>
+        </div>
+      </div>
+      <div class="export-modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeExportModal()">キャンセル</button>
+        <button type="button" class="btn-primary" onclick="handleExportDownload()">
+          <span class="icon">📥</span>
+          <span>ダウンロード</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Download Modal -->
+  <div id="qrDownloadModalOverlay" class="export-modal-overlay" aria-hidden="true">
+    <div class="export-modal" role="dialog" aria-modal="true" aria-labelledby="qrDownloadModalTitle">
+      <div class="export-modal-title" id="qrDownloadModalTitle">QRコードを保存</div>
+      <div class="export-modal-desc">保存する形式を選んでください。</div>
+      <div class="export-modal-options">
+        <label>
+          <input type="radio" name="qr-format" value="png" checked>
+          PNG（印刷用・高解像度 1024×1024px）
+        </label>
+        <label>
+          <input type="radio" name="qr-format" value="svg">
+          SVG（編集可能・軽量）
+        </label>
+      </div>
+      <div class="export-modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeQRDownloadModal()">キャンセル</button>
+        <button type="button" class="btn-primary" onclick="handleQRDownload()">
+          <span class="icon">⬇️</span>
+          <span>保存</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <span class="icon">✅</span>
+    <span id="toastText">ダウンロードが完了しました。</span>
+  </div>
+
+  <!-- Onboarding Overlay (3-page swipeable) -->
+  <div id="onboarding-overlay" class="onboarding-overlay" aria-modal="true" aria-label="ウェルカム">
     <div class="onboarding-card">
-      <div class="onboarding-header">
-        <h2>MeQRへようこそ！👋</h2>
-        <p>プライバシー重視のシンプルなデジタル名刺アプリ</p>
-      </div>
-      <div class="onboarding-steps">
-        <div class="onboarding-step">
-          <div class="onboarding-step-number">1</div>
-          <div class="onboarding-step-content">
-            <h3>連絡先を入力</h3>
-            <p>「編集」タブで名前・電話・メールなどを入力して保存</p>
+      <button type="button" id="btn-onboarding-skip" class="onboarding-skip" aria-label="スキップ">スキップ</button>
+      <div id="onboarding-slides-wrap" class="onboarding-slides-wrap">
+        <div id="onboarding-slides" class="onboarding-slides">
+          <div class="onboarding-slide" data-page="0">
+            <div class="onboarding-slide-icon" aria-hidden="true">📇</div>
+            <h2 class="onboarding-slide-title">MeQR へようこそ</h2>
+            <p class="onboarding-slide-desc">シンプルで安全なデジタル名刺アプリ</p>
           </div>
-        </div>
-        <div class="onboarding-step">
-          <div class="onboarding-step-number">2</div>
-          <div class="onboarding-step-content">
-            <h3>QRコードで共有</h3>
-            <p>相手にQRコードを見せてスキャンしてもらうだけ！</p>
+          <div class="onboarding-slide" data-page="1">
+            <div class="onboarding-slide-icon" aria-hidden="true">🔐</div>
+            <h2 class="onboarding-slide-title">プライバシー第一</h2>
+            <p class="onboarding-slide-desc">あなたのデータは端末内にのみ保存。外部送信は一切なし。</p>
           </div>
-        </div>
-        <div class="onboarding-step">
-          <div class="onboarding-step-number">3</div>
-          <div class="onboarding-step-content">
-            <h3>複数の名刺を使い分け</h3>
-            <p>ビジネス用・プライベート用など、用途に応じて切り替え可能</p>
-          </div>
-        </div>
-        <div class="onboarding-step">
-          <div class="onboarding-step-number">4</div>
-          <div class="onboarding-step-content">
-            <h3>完全プライバシー保護</h3>
-            <p>データは全てローカル保存。サーバーには一切送信されません</p>
+          <div class="onboarding-slide" data-page="2">
+            <div class="onboarding-slide-icon" aria-hidden="true">📱</div>
+            <h2 class="onboarding-slide-title">さあ、始めましょう</h2>
+            <p class="onboarding-slide-desc">名前とメールアドレスを入力するだけで、QRコード付き名刺が完成！</p>
+            <button type="button" id="btn-onboarding-start" class="onboarding-btn onboarding-btn-primary">使ってみる</button>
           </div>
         </div>
       </div>
-      <div class="onboarding-footer">
-        <button id="btn-onboarding-skip" class="onboarding-btn onboarding-btn-secondary">スキップ</button>
-        <button id="btn-onboarding-start" class="onboarding-btn onboarding-btn-primary">使ってみる</button>
+      <div id="onboarding-indicators" class="onboarding-indicators" role="tablist" aria-label="ページ">
+        <span class="onboarding-dot active" role="tab" aria-selected="true" data-index="0"></span>
+        <span class="onboarding-dot" role="tab" aria-selected="false" data-index="1"></span>
+        <span class="onboarding-dot" role="tab" aria-selected="false" data-index="2"></span>
       </div>
     </div>
   </div>
@@ -1341,6 +2136,8 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"
     referrerpolicy="no-referrer">
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <!-- <script src="i18n.js"></script> -->
   <script>
     (function () {
       "use strict";
@@ -1349,10 +2146,33 @@
       const CURRENT_PROFILE_KEY = "meqr_current_profile";
       const THEME_KEY = "meqr_theme";
       const ONBOARDING_KEY = "meqr_onboarding_completed";
+      const PREVIEW_DEBOUNCE_MS = 150;
+      var CARD_OUTPUT_WIDTH = 1075;
+      var CARD_OUTPUT_HEIGHT = 650;
+      const MAX_PHOTO_BASE64_KB = 200;
+
+      var DEMO_PROFILE_DATA = {
+        lastName: "山田",
+        firstName: "太郎",
+        furigana: "ヤマダ タロウ",
+        phone: "090-1234-5678",
+        email: "yamada.taro@example.com",
+        org: "株式会社サンプル",
+        title: "営業部 マネージャー",
+        url: "https://example.com",
+        address: "",
+        photo: "",
+        twitter: "https://x.com/example",
+        instagram: "https://instagram.com/example",
+        line: ""
+      };
 
       /** @type {ReturnType<typeof createQRCodeInstance> | null} */
       let qrInstance = null;
       let currentProfileId = null;
+      let previewRafId = 0;
+      let previewDebounceTimer = null;
+      let qrDeferredDone = false;
 
       function createQRCodeInstance() {
         const qrContainer = document.getElementById("qrcode");
@@ -1396,6 +2216,52 @@
         };
       }
 
+      function ensureQRReady() {
+        if (qrDeferredDone) return;
+        qrDeferredDone = true;
+        if (!qrInstance) qrInstance = createQRCodeInstance();
+        regenerateQR(loadCurrentProfile() || {});
+      }
+
+      function schedulePreviewDraw() {
+        if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
+        previewDebounceTimer = setTimeout(function () {
+          previewDebounceTimer = null;
+          if (previewRafId) cancelAnimationFrame(previewRafId);
+          previewRafId = requestAnimationFrame(function () {
+            previewRafId = 0;
+            var canvas = document.getElementById("businessCardCanvas");
+            if (!canvas) return;
+            ensureQRReady();
+            var data = loadCurrentProfile() || {};
+            var cardData = buildBusinessCardDataFromProfile(data);
+            cardData.qrCode = getQRCodeDataURL();
+            renderCurrentTemplate(canvas, cardData, isPremiumUser());
+          });
+        }, PREVIEW_DEBOUNCE_MS);
+      }
+
+      function setupLazyObservers() {
+        var qrShell = document.querySelector(".qr-shell");
+        if (qrShell && "IntersectionObserver" in window) {
+          var qrObs = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting) ensureQRReady();
+          }, { rootMargin: "100px", threshold: 0.01 });
+          qrObs.observe(qrShell);
+        } else if (qrShell) {
+          ensureQRReady();
+        }
+        var previewWrap = document.querySelector(".bc-preview-canvas-wrapper");
+        if (previewWrap && "IntersectionObserver" in window) {
+          var prevObs = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting) schedulePreviewDraw();
+          }, { rootMargin: "100px", threshold: 0.01 });
+          prevObs.observe(previewWrap);
+        } else if (previewWrap) {
+          schedulePreviewDraw();
+        }
+      }
+
       function normalizePhone(phone) {
         if (!phone) return "";
         return phone.replace(/[^\d+]/g, "");
@@ -1419,73 +2285,1035 @@
         const org = data.org || "";
         const title = data.title || "";
         const url = data.url || "";
-        const linkedin = data.linkedin || "";
+        const address = data.address || "";
         const twitter = data.twitter || "";
         const instagram = data.instagram || "";
-        const facebook = data.facebook || "";
-        const github = data.github || "";
-        const youtube = data.youtube || "";
-        const customUrl = data.customUrl || "";
+        const line = data.line || "";
 
         const fullName = (lastName + " " + firstName).trim() || "My Contact";
 
         let v = "";
         v += ln("BEGIN:VCARD");
         v += ln("VERSION:3.0");
-        // Outlook など一部クライアントでの文字化け対策として、UTF-8 を明示
-        v += ln("N;CHARSET=UTF-8:" + escapeVCardValue(lastName) + ";" + escapeVCardValue(firstName) + ";;;");
-        v += ln("FN;CHARSET=UTF-8:" + escapeVCardValue(fullName));
+        v += ln("N:" + escapeVCardValue(lastName) + ";" + escapeVCardValue(firstName) + ";;;");
+        v += ln("FN:" + escapeVCardValue(fullName));
 
-        if (org) {
-          v += ln("ORG;CHARSET=UTF-8:" + escapeVCardValue(org));
-        }
+        if (org) v += ln("ORG:" + escapeVCardValue(org));
+        if (title) v += ln("TITLE:" + escapeVCardValue(title));
+        if (phone) v += ln("TEL;TYPE=CELL,VOICE:" + escapeVCardValue(phone));
+        if (email) v += ln("EMAIL;TYPE=INTERNET:" + escapeVCardValue(email));
+        if (address) v += ln("ADR:;;" + escapeVCardValue(address) + ";;;;");
+        if (url) v += ln("URL;TYPE=HOME:" + escapeVCardValue(url));
 
-        if (title) {
-          v += ln("TITLE;CHARSET=UTF-8:" + escapeVCardValue(title));
-        }
-
-        if (phone) {
-          v += ln("TEL;TYPE=CELL,VOICE:" + escapeVCardValue(phone));
-        }
-
-        if (email) {
-          v += ln("EMAIL;TYPE=INTERNET:" + escapeVCardValue(email));
-        }
-
-        if (url) {
-          v += ln("URL;TYPE=HOME:" + escapeVCardValue(url));
-        }
-
-        if (linkedin) {
-          v += ln("URL;TYPE=LINKEDIN:" + escapeVCardValue(linkedin));
-        }
-
-        if (twitter) {
-          v += ln("URL;TYPE=TWITTER:" + escapeVCardValue(twitter));
-        }
-
-        if (instagram) {
-          v += ln("URL;TYPE=INSTAGRAM:" + escapeVCardValue(instagram));
-        }
-
-        if (facebook) {
-          v += ln("URL;TYPE=FACEBOOK:" + escapeVCardValue(facebook));
-        }
-
-        if (github) {
-          v += ln("URL;TYPE=GITHUB:" + escapeVCardValue(github));
-        }
-
-        if (youtube) {
-          v += ln("URL;TYPE=YOUTUBE:" + escapeVCardValue(youtube));
-        }
-
-        if (customUrl) {
-          v += ln("URL;TYPE=OTHER:" + escapeVCardValue(customUrl));
-        }
+        if (twitter) v += ln("URL;TYPE=X:" + escapeVCardValue(twitter));
+        if (instagram) v += ln("URL;TYPE=INSTAGRAM:" + escapeVCardValue(instagram));
+        if (line) v += ln("URL;TYPE=LINE:" + escapeVCardValue(line));
 
         v += ln("END:VCARD");
         return v;
+      }
+
+      // === Business Card Templates (Canvas) ===
+
+      const PREMIUM_KEY = "meqr_premium";
+      const TEMPLATE_KEY = "meqr_template";
+      const DEV_SHOW_PREMIUM_TOGGLE = false;
+
+      const TEMPLATES = [
+        { id: "minimal", label: "Minimal", desc: "シンプル・白背景", icon: "⬜", premium: false, render: function(canvas, cardData, isPremium, onComplete) { renderMinimalTemplate(canvas, cardData, isPremium, onComplete); } },
+        { id: "bold", label: "Bold", desc: "ダーク・インパクト重視", icon: "◼", premium: false, render: function(canvas, cardData, isPremium, onComplete) { renderBoldTemplate(canvas, cardData, isPremium, onComplete); } },
+        { id: "elegant", label: "Elegant", desc: "グラデーション帯・上品", icon: "▨", premium: false, render: function(canvas, cardData, isPremium, onComplete) { renderElegantTemplate(canvas, cardData, isPremium, onComplete); } },
+        { id: "flat", label: "Flat", desc: "右帯カラー・スッキリ", icon: "▐", premium: true, render: function(canvas, cardData, isPremium, onComplete) { renderFlatTemplate(canvas, cardData, isPremium, onComplete); } },
+        { id: "photo", label: "Photo", desc: "左に写真・プロ仕様", icon: "🖼", premium: true, render: function(canvas, cardData, isPremium, onComplete) { renderPhotoTemplate(canvas, cardData, isPremium, onComplete); } }
+      ];
+
+      function getCurrentTemplateId() {
+        return localStorage.getItem(TEMPLATE_KEY) || "minimal";
+      }
+      function setCurrentTemplateId(id) {
+        localStorage.setItem(TEMPLATE_KEY, id);
+      }
+      function getCurrentTemplate() {
+        const id = getCurrentTemplateId();
+        return TEMPLATES.find(function(t) { return t.id === id; }) || TEMPLATES[0];
+      }
+      function renderCurrentTemplate(canvas, cardData, isPremium, onComplete) {
+        const template = getCurrentTemplate();
+        template.render(canvas, cardData, isPremium, onComplete);
+      }
+
+      function getPremiumState() {
+        try {
+          const raw = localStorage.getItem(PREMIUM_KEY);
+          if (!raw) return { status: "free", expireAt: null };
+          const v = JSON.parse(raw);
+          if (v && (v.status === "free" || v.status === "premium")) {
+            return { status: v.status, expireAt: v.expireAt || null };
+          }
+          if (raw === "true") return { status: "premium", expireAt: null };
+          if (raw === "false") return { status: "free", expireAt: null };
+        } catch (e) {}
+        return { status: "free", expireAt: null };
+      }
+
+      function setPremiumState(status, expireAt) {
+        const payload = { status: status === "premium" ? "premium" : "free", expireAt: expireAt || null };
+        try {
+          localStorage.setItem(PREMIUM_KEY, JSON.stringify(payload));
+        } catch (e) {
+          console.warn("MeQR: failed to save premium state", e);
+        }
+      }
+
+      function isPremiumUser() {
+        const state = getPremiumState();
+        if (state.status !== "premium") return false;
+        if (!state.expireAt) return true;
+        const today = new Date().toISOString().slice(0, 10);
+        if (state.expireAt >= today) return true;
+        setPremiumState("free", null);
+        return false;
+      }
+
+      function checkAndApplyPremiumExpiry() {
+        isPremiumUser();
+      }
+
+      async function initBilling() {
+        if (!window.CdvPurchase || !window.CdvPurchase.store) {
+          console.log("MeQR: Billing plugin not available (web/PWA mode).");
+          return;
+        }
+        const store = window.CdvPurchase.store;
+        const PRODUCT_ID = "meqr_premium_monthly";
+        try {
+          await store.initialize([
+            {
+              id: PRODUCT_ID,
+              type: window.CdvPurchase.ProductType.PAID_SUBSCRIPTION
+            }
+          ]);
+
+          store.when().approved(purchase => {
+            if (purchase && purchase.id === PRODUCT_ID) {
+              setPremiumState("premium", null);
+              showToast("Premiumが有効になりました。");
+              try {
+                showSettingsSubmenu();
+                const canvas = document.getElementById("businessCardCanvas");
+                if (canvas) {
+                  const data = loadCurrentProfile() || {};
+                  const cardData = buildBusinessCardDataFromProfile(data);
+                  renderCurrentTemplate(canvas, cardData, true);
+                }
+              } catch (e) {
+                console.warn("MeQR: failed to refresh UI after premium purchase", e);
+              }
+            }
+            try {
+              purchase.finish();
+            } catch (e) {
+              console.warn("MeQR: failed to finish purchase", e);
+            }
+          });
+
+          await store.refresh();
+          const restored = await restorePurchasesInternal(false);
+          if (restored) {
+            showToast("Premiumを復元しました");
+          }
+        } catch (e) {
+          console.warn("MeQR: billing initialization failed", e);
+        }
+      }
+
+      async function restorePurchasesInternal(silent) {
+        if (!window.CdvPurchase || !window.CdvPurchase.store) {
+          if (!silent) console.log("MeQR: Billing plugin not available, skip restore.");
+          return false;
+        }
+        const store = window.CdvPurchase.store;
+        const PRODUCT_ID = "meqr_premium_monthly";
+        try {
+          await store.refresh();
+          let owned = false;
+          if (typeof store.get === "function") {
+            const product = store.get(PRODUCT_ID);
+            owned = product && (product.owned === true || (product.purchases && product.purchases.length > 0));
+          }
+          if (!owned && store.products && Array.isArray(store.products)) {
+            const product = store.products.find(function (p) { return p.id === PRODUCT_ID; });
+            owned = product && (product.owned === true || (product.purchases && product.purchases.length > 0));
+          }
+          if (owned) {
+            setPremiumState("premium", null);
+            return true;
+          }
+          return false;
+        } catch (e) {
+          if (!silent) console.warn("MeQR: restore purchases failed (will retry on next launch)", e);
+          return false;
+        }
+      }
+
+      async function restorePurchases() {
+        const restored = await restorePurchasesInternal(false);
+        if (restored) {
+          showToast("Premiumを復元しました");
+          showSettingsSubmenu();
+          const canvas = document.getElementById("businessCardCanvas");
+          if (canvas) {
+            const data = loadCurrentProfile() || {};
+            const cardData = buildBusinessCardDataFromProfile(data);
+            renderCurrentTemplate(canvas, cardData, true);
+          }
+        } else {
+          const store = window.CdvPurchase && window.CdvPurchase.store;
+          if (store) {
+            showToast("復元する購入がありません。");
+          } else {
+            showToast("この環境では購入の復元はできません。");
+          }
+        }
+      }
+
+      async function startPremiumPurchase() {
+        const PRODUCT_ID = "meqr_premium_monthly";
+        if (window.CdvPurchase && window.CdvPurchase.store) {
+          const store = window.CdvPurchase.store;
+          try {
+            await store.order(PRODUCT_ID);
+            return;
+          } catch (e) {
+            console.warn("MeQR: purchase failed", e);
+            alert("購入処理中にエラーが発生しました。しばらくしてから再度お試しください。");
+            return;
+          }
+        }
+
+        // Cordova/Play Billing がない環境（開発用・Web版）: テスト用に手動で有効化
+        const ok = confirm("この環境では Google Play 課金を利用できません。\n\n開発テスト用として Premium を一時的に有効にしますか？");
+        if (!ok) return;
+        setPremiumState("premium", null);
+        showSettingsSubmenu();
+        const canvas = document.getElementById("businessCardCanvas");
+        if (canvas) {
+          const data = loadCurrentProfile() || {};
+          const cardData = buildBusinessCardDataFromProfile(data);
+          renderCurrentTemplate(canvas, cardData, true);
+        }
+        showToast("Premiumを有効化しました（テスト用）。");
+      }
+
+      function togglePremiumForDev() {
+        const premium = isPremiumUser();
+        setPremiumState(premium ? "free" : "premium", null);
+        showSettingsSubmenu();
+        const canvas = document.getElementById("businessCardCanvas");
+        if (canvas) {
+          const data = loadCurrentProfile() || {};
+          const cardData = buildBusinessCardDataFromProfile(data);
+          renderCurrentTemplate(canvas, cardData, isPremiumUser());
+        }
+      }
+
+      function drawWatermark(ctx, width, height, isPremium) {
+        if (isPremium) return;
+        const text = "MeQR";
+        const fontSize = Math.max(24, Math.min(width, height) * 0.10);
+        ctx.save();
+        ctx.direction = "ltr";
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = "#6b7280";
+        ctx.font = `600 ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, width / 2, height - fontSize * 1.2);
+        ctx.restore();
+      }
+
+      function getBusinessCardPixelSize(dpi) {
+        if (dpi === 300) {
+          return { width: CARD_OUTPUT_WIDTH, height: CARD_OUTPUT_HEIGHT };
+        }
+        var mmToInch = 1 / 25.4;
+        var widthMm = 91;
+        var heightMm = 55;
+        var widthPx = Math.round(widthMm * mmToInch * (dpi || 300));
+        var heightPx = Math.round(heightMm * mmToInch * (dpi || 300));
+        if (widthPx < heightPx) {
+          var t = widthPx; widthPx = heightPx; heightPx = t;
+        }
+        return { width: widthPx, height: heightPx };
+      }
+
+      function buildBusinessCardFilename(ext) {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, "0");
+        const d = String(now.getDate()).padStart(2, "0");
+        return `meqr_card_${y}${m}${d}.${ext}`;
+      }
+
+      function buildBusinessCardDataFromProfile(data) {
+        const lastName = data.lastName || "";
+        const firstName = data.firstName || "";
+        const fullName = (lastName + " " + firstName).trim() || "My Contact";
+
+        return {
+          name: fullName,
+          nameKana: data.furigana || "",
+          company: data.org || "",
+          position: data.title || "",
+          phone: data.phone || "",
+          email: data.email || "",
+          website: data.url || "",
+          address: data.address || "",
+          photo: data.photo || "",
+          sns: {
+            twitter: data.twitter || "",
+            instagram: data.instagram || "",
+            line: data.line || ""
+          },
+          qrCode: null
+        };
+      }
+
+      function getQRCodeDataURL() {
+        var container = document.getElementById("qrcode");
+        if (!container) return null;
+        var svg = container.querySelector("svg");
+        if (!svg) return null;
+        var clone = svg.cloneNode(true);
+        clone.setAttribute("width", "256");
+        clone.setAttribute("height", "256");
+        try {
+          var s = new XMLSerializer().serializeToString(clone);
+          return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(s)));
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function renderMinimalTemplate(canvas, cardData, isPremium, onComplete) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
+
+        var size = getBusinessCardPixelSize(300);
+        var width = size.width;
+        var height = size.height;
+        if (width < height) { var t = width; width = height; height = t; }
+        canvas.width = width;
+        canvas.height = height;
+        ctx.direction = "ltr";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
+
+        try {
+        // 出力は常に横長 1075x650 (91mm x 55mm 300dpi)。フォントは px 単位で絶対指定。
+        // KANAKO OTA サンプル準拠：数値ルール厳守・左揃え1カラム・基準線ベース
+        var DESIGN_W = 360;
+        var scale = width / DESIGN_W;
+
+        function px(v) { return Math.round(v * scale); }
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+
+        var marginLeft = px(26);
+        var marginRight = px(26);
+        var marginTop = px(24);
+        var marginBottom = px(24);
+        var blockGap = px(14);
+        var lineGapInBlock = px(7);
+        var contactLineHeight = 1.7;
+        var fontScale = 1.1;
+
+        var qrSizePct = 0.17;
+        var qrSize = Math.min(px(Math.floor(DESIGN_W * qrSizePct)), Math.floor(height * 0.32));
+        var qrRight = width - marginRight;
+        var qrX = qrRight - qrSize;
+        var leftContentMaxWidth = Math.max(px(100), qrX - marginLeft - px(14));
+
+        const name = cardData.name || "";
+        const nameKana = cardData.nameKana || "";
+        const company = cardData.company || "";
+        const position = cardData.position || "";
+        const phone = cardData.phone || "";
+        const email = cardData.email || "";
+        const website = cardData.website || "";
+        const address = cardData.address || "";
+
+        var y = marginTop;
+
+        // 1. 社名（最上位）
+        if (company) {
+          ctx.font = '500 ' + px(12 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillStyle = "#374151";
+          ctx.fillText(company, marginLeft, y, leftContentMaxWidth);
+          y += px(15 * fontScale);
+        }
+        if (position) {
+          ctx.font = '400 ' + px(12 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillStyle = "#4b5563";
+          ctx.fillText(position, marginLeft, y, leftContentMaxWidth);
+          y += px(15 * fontScale);
+        }
+        y += blockGap;
+
+        // 2. 名前（主役）
+        if (name) {
+          ctx.font = '600 ' + px(21 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillStyle = "#111111";
+          ctx.fillText(name, marginLeft, y, leftContentMaxWidth);
+          y += px(26 * fontScale);
+        }
+        if (nameKana) {
+          ctx.font = '400 ' + px(11 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillStyle = "#6b7280";
+          ctx.fillText(nameKana, marginLeft, y, leftContentMaxWidth);
+          y += px(15 * fontScale);
+        }
+        y += blockGap;
+
+        // 3. 連絡先ブロック・縦中央を記録してQRと揃える
+        var contactStartY = y;
+        var contactFs = 12 * fontScale;
+        ctx.font = '400 ' + px(contactFs) + 'px "Noto Sans JP", system-ui, sans-serif';
+        ctx.fillStyle = "#374151";
+        if (phone) {
+          ctx.fillText("TEL " + phone, marginLeft, y, leftContentMaxWidth);
+          y += Math.round(px(contactFs) * contactLineHeight);
+        }
+        if (email) {
+          ctx.fillStyle = "#666666";
+          ctx.font = '400 ' + px(11 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillText(email, marginLeft, y, leftContentMaxWidth);
+          y += Math.round(px(11 * fontScale) * contactLineHeight);
+        }
+        if (address) {
+          ctx.fillStyle = "#374151";
+          ctx.font = '400 ' + px(contactFs) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillText(address, marginLeft, y, leftContentMaxWidth);
+          y += Math.round(px(contactFs) * contactLineHeight);
+        }
+        if (website) {
+          ctx.fillStyle = "#374151";
+          ctx.font = '400 ' + px(11 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillText(website, marginLeft, y, leftContentMaxWidth);
+          y += Math.round(px(11 * fontScale) * contactLineHeight);
+        }
+        var contactEndY = y;
+        var contactCenterY = (contactStartY + contactEndY) / 2;
+        y += blockGap;
+
+        // 4. 補助（SNS）・ブロック内行間 6〜8px
+        const sns = cardData.sns || {};
+        var snsEntries = [
+          ["X", sns.twitter],
+          ["Instagram", sns.instagram],
+          ["LINE", sns.line]
+        ].filter(function (entry) { return !!entry[1]; });
+        if (snsEntries.length > 0 && y + px(13) < height - marginBottom) {
+          ctx.font = '400 ' + px(10 * fontScale) + 'px "Noto Sans JP", system-ui, sans-serif';
+          ctx.fillStyle = "#9ca3af";
+          snsEntries.forEach(function (entry) {
+          ctx.fillText(entry[0], marginLeft, y, leftContentMaxWidth);
+          y += px(9);
+          });
+        }
+
+        // QR：連絡先ブロックの縦中央に揃える（四隅に孤立させない）
+        var qrY = contactCenterY - qrSize / 2;
+        qrY = Math.max(marginTop, Math.min(qrY, height - marginBottom - qrSize));
+
+        if (cardData.qrCode) {
+          var img = new Image();
+          img.onload = function () {
+            ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+            if (typeof onComplete === "function") onComplete();
+          };
+          img.onerror = function () { if (typeof onComplete === "function") onComplete(); };
+          img.src = cardData.qrCode;
+        } else {
+          if (typeof onComplete === "function") onComplete();
+        }
+
+        drawWatermark(ctx, width, height, isPremium);
+        } catch (e) {
+          console.error("MeQR: canvas render error", e);
+          ctx.fillStyle = "#f3f4f6";
+          ctx.fillRect(0, 0, width, height);
+          ctx.fillStyle = "#6b7280";
+          ctx.font = '14px "Noto Sans JP", sans-serif';
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("プレビューを表示できません", width / 2, height / 2);
+        }
+      }
+
+      // roundRect のポリフィル（Bold テンプレートのQRパディング描画部分で使う）
+      function drawRoundRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+      }
+
+      function measureAndEllipsis(ctx, text, maxWidth) {
+        if (!text) return "";
+        if (ctx.measureText(text).width <= maxWidth) return text;
+        let t = text;
+        while (t.length > 1 && ctx.measureText(t + "…").width > maxWidth) {
+          t = t.slice(0, -1);
+        }
+        return t + "…";
+      }
+
+      function drawCoverImage(ctx, img, x, y, w, h) {
+        const imgAspect = img.naturalWidth / img.naturalHeight;
+        const boxAspect = w / h;
+        let sx, sy, sw, sh;
+        if (imgAspect > boxAspect) {
+          sh = img.naturalHeight;
+          sw = sh * boxAspect;
+          sx = (img.naturalWidth - sw) / 2;
+          sy = 0;
+        } else {
+          sw = img.naturalWidth;
+          sh = sw / boxAspect;
+          sx = 0;
+          sy = (img.naturalHeight - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+      }
+
+      function renderBoldTemplate(canvas, cardData, isPremium, onComplete) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
+        var size = getBusinessCardPixelSize(300);
+        var width = size.width;
+        var height = size.height;
+        if (width < height) { var t = width; width = height; height = t; }
+        canvas.width = width;
+        canvas.height = height;
+        ctx.direction = "ltr";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
+        var fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        function px(v) { return Math.round(v * (width / 400)); }
+        try {
+          ctx.fillStyle = "#111827";
+          ctx.fillRect(0, 0, width, height);
+          ctx.fillStyle = "#667eea";
+          ctx.fillRect(0, 0, px(8), height);
+          const lineRight = px(8);
+          const marginLeft = lineRight + px(20);
+          const marginRight = px(24);
+          const marginBottom = px(24);
+          const company = cardData.company || "";
+          const name = cardData.name || "";
+          const position = cardData.position || "";
+          const phone = cardData.phone || "";
+          const email = cardData.email || "";
+          const website = cardData.website || "";
+          let y = px(28);
+          if (company) {
+            ctx.font = "500 " + px(11) + "px " + fontStack;
+            ctx.fillStyle = "#94a3b8";
+            ctx.fillText(measureAndEllipsis(ctx, company, width - marginLeft - marginRight), marginLeft, y);
+            y += px(14);
+          }
+          ctx.font = "600 " + px(28) + "px " + fontStack;
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(measureAndEllipsis(ctx, name, width - marginLeft - marginRight), marginLeft, y);
+          y += px(32);
+          if (position) {
+            ctx.font = "500 " + px(14) + "px " + fontStack;
+            ctx.fillStyle = "#667eea";
+            ctx.fillText(measureAndEllipsis(ctx, position, width - marginLeft - marginRight), marginLeft, y);
+            y += px(20);
+          }
+          y = height - marginBottom - px(80);
+          ctx.font = "400 " + px(10) + "px " + fontStack;
+          ctx.fillStyle = "#e2e8f0";
+          if (phone) { ctx.fillText("TEL " + phone, marginLeft, y); y += px(14); }
+          if (email) { ctx.fillText(email, marginLeft, y); y += px(14); }
+          if (website) { ctx.fillText(website, marginLeft, y); }
+          const qrSize = Math.min(px(120), height * 0.32);
+          const qrX = width - marginRight - qrSize;
+          const qrY = height - marginBottom - qrSize;
+          const pad = px(6);
+          ctx.fillStyle = "#ffffff";
+          drawRoundRect(ctx, qrX - pad, qrY - pad, qrSize + pad * 2, qrSize + pad * 2, px(4));
+          ctx.fill();
+          if (cardData.qrCode) {
+            const img = new Image();
+            img.onload = function() {
+              ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+              drawWatermark(ctx, width, height, isPremium);
+              if (typeof onComplete === "function") onComplete();
+            };
+            img.onerror = function() { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); };
+            img.src = cardData.qrCode;
+          } else {
+            drawWatermark(ctx, width, height, isPremium);
+            if (typeof onComplete === "function") onComplete();
+          }
+        } catch (e) {
+          console.error("MeQR: Bold template error", e);
+          if (typeof onComplete === "function") onComplete();
+        }
+      }
+
+      function renderElegantTemplate(canvas, cardData, isPremium, onComplete) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
+        var size = getBusinessCardPixelSize(300);
+        var width = size.width;
+        var height = size.height;
+        if (width < height) { var t = width; width = height; height = t; }
+        canvas.width = width;
+        canvas.height = height;
+        ctx.direction = "ltr";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "center";
+        var fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        function px(v) { return Math.round(v * (width / 400)); }
+        try {
+          var bandHeight = height * 0.38;
+          const grad = ctx.createLinearGradient(0, 0, 0, bandHeight);
+          grad.addColorStop(0, "#1e293b");
+          grad.addColorStop(1, "#334155");
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, width, bandHeight);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, bandHeight, width, height - bandHeight);
+          const nameKana = cardData.nameKana || "";
+          const company = cardData.company || "";
+          const name = cardData.name || "";
+          let y = px(20);
+          if (nameKana) {
+            ctx.font = "400 " + px(10) + "px " + fontStack;
+            ctx.fillStyle = "rgba(255,255,255,0.9)";
+            ctx.fillText(nameKana, width / 2, y);
+            y += px(14);
+          }
+          if (company) {
+            ctx.font = "500 " + px(13) + "px " + fontStack;
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(measureAndEllipsis(ctx, company, width - px(40)), width / 2, y);
+            y += px(18);
+          }
+          ctx.font = "600 " + px(26) + "px " + fontStack;
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(measureAndEllipsis(ctx, name, width - px(40)), width / 2, y);
+          ctx.strokeStyle = "#e5e7eb";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(0, bandHeight);
+          ctx.lineTo(width, bandHeight);
+          ctx.stroke();
+          const leftColX = px(28);
+          const rightColX = width / 2 + px(12);
+          const rowH = px(22);
+          let contactY = bandHeight + px(24);
+          ctx.textAlign = "left";
+          ctx.font = "400 " + px(11) + "px " + fontStack;
+          ctx.fillStyle = "#374151";
+          const phone = cardData.phone || "";
+          const email = cardData.email || "";
+          if (phone) { ctx.fillText("TEL " + phone, leftColX, contactY); contactY += rowH; }
+          if (email) { ctx.fillText(email, leftColX, contactY); contactY += rowH; }
+          contactY = bandHeight + px(24);
+          const website = cardData.website || "";
+          const address = cardData.address || "";
+          const urlText = measureAndEllipsis(ctx, website, width / 2 - rightColX - px(20));
+          ctx.fillText(urlText, rightColX, contactY); contactY += rowH;
+          ctx.fillText(measureAndEllipsis(ctx, address, width / 2 - rightColX - px(20)), rightColX, contactY);
+          const qrSize = Math.floor(height * 0.28);
+          const qrX = width - px(24) - qrSize;
+          const qrY = height - px(24) - qrSize;
+          if (cardData.qrCode) {
+            const img = new Image();
+            img.onload = function() {
+              ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+              drawWatermark(ctx, width, height, isPremium);
+              if (typeof onComplete === "function") onComplete();
+            };
+            img.onerror = function() { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); };
+            img.src = cardData.qrCode;
+          } else {
+            drawWatermark(ctx, width, height, isPremium);
+            if (typeof onComplete === "function") onComplete();
+          }
+        } catch (e) {
+          console.error("MeQR: Elegant template error", e);
+          if (typeof onComplete === "function") onComplete();
+        }
+      }
+
+      function renderFlatTemplate(canvas, cardData, isPremium, onComplete) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
+        var size = getBusinessCardPixelSize(300);
+        var width = size.width;
+        var height = size.height;
+        if (width < height) { var t = width; width = height; height = t; }
+        canvas.width = width;
+        canvas.height = height;
+        ctx.direction = "ltr";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
+        var fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        function px(v) { return Math.round(v * (width / 400)); }
+        try {
+          var bandWidth = width * 0.08;
+          const contentWidth = width - bandWidth;
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, contentWidth, height);
+          ctx.fillStyle = "#2563eb";
+          ctx.fillRect(contentWidth, 0, bandWidth, height);
+          const marginLeft = px(24);
+          const marginRight = px(24);
+          let y = px(28);
+          ctx.font = "600 " + px(24) + "px " + fontStack;
+          ctx.fillStyle = "#111827";
+          ctx.fillText(measureAndEllipsis(ctx, cardData.name || "", contentWidth - marginLeft - marginRight), marginLeft, y);
+          y += px(28);
+          const company = cardData.company || "";
+          const position = cardData.position || "";
+          const subLine = [company, position].filter(Boolean).join(" ／ ");
+          if (subLine) {
+            ctx.font = "400 " + px(11) + "px " + fontStack;
+            ctx.fillStyle = "#6b7280";
+            ctx.fillText(measureAndEllipsis(ctx, subLine, contentWidth - marginLeft - marginRight), marginLeft, y);
+            y += px(20);
+          }
+          const dotR = px(3);
+          const lineH = px(18);
+          ctx.fillStyle = "#2563eb";
+          const phone = cardData.phone || "";
+          const email = cardData.email || "";
+          const website = cardData.website || "";
+          if (phone) { ctx.beginPath(); ctx.arc(marginLeft + dotR, y + lineH / 2, dotR, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#374151"; ctx.font = "400 " + px(11) + "px " + fontStack; ctx.fillText(phone, marginLeft + px(14), y); y += lineH; ctx.fillStyle = "#2563eb"; }
+          if (email) { ctx.beginPath(); ctx.arc(marginLeft + dotR, y + lineH / 2, dotR, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#374151"; ctx.font = "400 " + px(11) + "px " + fontStack; ctx.fillText(measureAndEllipsis(ctx, email, contentWidth - marginLeft - px(40)), marginLeft + px(14), y); y += lineH; ctx.fillStyle = "#2563eb"; }
+          if (website) { ctx.beginPath(); ctx.arc(marginLeft + dotR, y + lineH / 2, dotR, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#374151"; ctx.font = "400 " + px(11) + "px " + fontStack; ctx.fillText(measureAndEllipsis(ctx, website, contentWidth - marginLeft - px(40)), marginLeft + px(14), y); }
+          const qrPadding = px(10);
+          const qrMaxInBand = Math.max(0, bandWidth - qrPadding * 2);
+          let qrSize = Math.min(qrMaxInBand, height * 0.35);
+          let qrX = contentWidth - qrSize - qrPadding;
+          if (qrSize < px(40)) {
+            qrSize = Math.min(px(140), height * 0.28);
+            qrX = contentWidth - qrSize - px(10);
+          }
+          const qrY = (height - qrSize) / 2;
+          if (cardData.qrCode) {
+            const img = new Image();
+            img.onload = function() {
+              ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+              drawWatermark(ctx, width, height, isPremium);
+              if (typeof onComplete === "function") onComplete();
+            };
+            img.onerror = function() { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); };
+            img.src = cardData.qrCode;
+          } else {
+            drawWatermark(ctx, width, height, isPremium);
+            if (typeof onComplete === "function") onComplete();
+          }
+        } catch (e) {
+          console.error("MeQR: Flat template error", e);
+          if (typeof onComplete === "function") onComplete();
+        }
+      }
+
+      function renderPhotoTemplate(canvas, cardData, isPremium, onComplete) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (typeof isPremium !== "boolean") isPremium = isPremiumUser();
+        var size = getBusinessCardPixelSize(300);
+        var width = size.width;
+        var height = size.height;
+        if (width < height) { var t = width; width = height; height = t; }
+        canvas.width = width;
+        canvas.height = height;
+        ctx.direction = "ltr";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
+        var fontStack = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif';
+        function px(v) { return Math.round(v * (width / 400)); }
+        try {
+          var photoW = width * 0.35;
+          ctx.fillStyle = "#1e293b";
+          ctx.fillRect(0, 0, photoW, height);
+          const photoImg = cardData.photo;
+          if (photoImg) {
+            const img = new Image();
+            img.onload = function() {
+              drawCoverImage(ctx, img, 0, 0, photoW, height);
+              ctx.fillStyle = "rgba(0,0,0,0.25)";
+              ctx.fillRect(0, 0, photoW, height);
+              drawPhotoRightSide();
+              if (cardData.qrCode) drawQRPhoto(); else { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); }
+            };
+            img.onerror = function() { drawPhotoRightSide(); if (cardData.qrCode) drawQRPhoto(); else { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); } };
+            img.src = photoImg;
+          } else {
+            ctx.font = "400 " + px(40) + "px " + fontStack;
+            ctx.fillStyle = "#ffffff";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("👤", photoW / 2, height / 2);
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+            drawPhotoRightSide();
+            if (cardData.qrCode) drawQRPhoto(); else { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); }
+          }
+          function drawPhotoRightSide() {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(photoW, 0, width - photoW, height);
+            const left = photoW + px(24);
+            const maxW = width - left - px(24);
+            let y = px(28);
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+            ctx.font = "600 " + px(22) + "px " + fontStack;
+            ctx.fillStyle = "#111827";
+            ctx.fillText(measureAndEllipsis(ctx, cardData.name || "", maxW), left, y);
+            y += px(26);
+            ctx.font = "500 " + px(14) + "px " + fontStack;
+            ctx.fillStyle = "#667eea";
+            if (cardData.position) { ctx.fillText(measureAndEllipsis(ctx, cardData.position, maxW), left, y); y += px(20); }
+            ctx.font = "400 " + px(11) + "px " + fontStack;
+            ctx.fillStyle = "#4b5563";
+            if (cardData.company) { ctx.fillText(measureAndEllipsis(ctx, cardData.company, maxW), left, y); y += px(18); }
+            y += px(8);
+            ctx.strokeStyle = "#e5e7eb";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(left, y);
+            ctx.lineTo(width - px(24), y);
+            ctx.stroke();
+            y += px(16);
+            ctx.fillStyle = "#374151";
+            ctx.font = "400 " + px(10) + "px " + fontStack;
+            if (cardData.phone) { ctx.fillText("TEL " + cardData.phone, left, y); y += px(16); }
+            if (cardData.email) { ctx.fillText(measureAndEllipsis(ctx, cardData.email, maxW), left, y); y += px(16); }
+            if (cardData.website) { ctx.fillText(measureAndEllipsis(ctx, cardData.website, maxW), left, y); }
+          }
+          function drawQRPhoto() {
+            const qrSize = Math.min(px(100), height * 0.22);
+            const qrX = width - px(24) - qrSize;
+            const qrY = height - px(24) - qrSize;
+            const img = new Image();
+            img.onload = function() {
+              ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+              drawWatermark(ctx, width, height, isPremium);
+              if (typeof onComplete === "function") onComplete();
+            };
+            img.onerror = function() { drawWatermark(ctx, width, height, isPremium); if (typeof onComplete === "function") onComplete(); };
+            img.src = cardData.qrCode;
+          }
+        } catch (e) {
+          console.error("MeQR: Photo template error", e);
+          if (typeof onComplete === "function") onComplete();
+        }
+      }
+
+      async function exportBusinessCardAsPDF() {
+        try {
+          if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert("PDFライブラリの読み込みに失敗しました。ネットワーク接続を確認してください。");
+            return;
+          }
+          ensureQRReady();
+          var canvas = document.createElement("canvas");
+          var data = loadCurrentProfile() || {};
+          var cardData = buildBusinessCardDataFromProfile(data);
+          cardData.qrCode = getQRCodeDataURL();
+          renderCurrentTemplate(canvas, cardData, isPremiumUser(), function () {
+            var img = canvas.toDataURL("image/png", 1.0);
+            var jsPDF = window.jspdf.jsPDF;
+            var doc = new jsPDF({
+              unit: "mm",
+              format: [91, 55],
+              compress: true
+            });
+            doc.addImage(img, "PNG", 0, 0, 91, 55);
+            doc.save(buildBusinessCardFilename("pdf"));
+          });
+        } catch (e) {
+          console.error("MeQR: failed to export business card PDF", e);
+          alert("名刺のPDF書き出しに失敗しました。\n\nブラウザや接続環境を確認し、もう一度お試しください。");
+        }
+      }
+
+      async function exportBusinessCardAsPNG() {
+        try {
+          ensureQRReady();
+          var canvas = document.createElement("canvas");
+          canvas.width = CARD_OUTPUT_WIDTH;
+          canvas.height = CARD_OUTPUT_HEIGHT;
+          var data = loadCurrentProfile() || {};
+          var cardData = buildBusinessCardDataFromProfile(data);
+          cardData.qrCode = getQRCodeDataURL();
+          var filename = buildBusinessCardFilename("png");
+          renderCurrentTemplate(canvas, cardData, isPremiumUser(), function () {
+            canvas.toBlob(
+              function (blob) {
+                if (!blob) {
+                  alert("名刺のPNG書き出しに失敗しました。もう一度お試しください。");
+                  return;
+                }
+                try {
+                  var url = URL.createObjectURL(blob);
+                  var a = document.createElement("a");
+                  a.href = url;
+                  a.download = filename;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                } catch (err) {
+                  console.error("MeQR: PNG download failed", err);
+                  alert("ダウンロードの開始に失敗しました。ポップアップがブロックされていないか確認してください。");
+                }
+              },
+              "image/png",
+              0.9
+            );
+          });
+        } catch (e) {
+          console.error("MeQR: failed to export business card PNG", e);
+          alert("名刺のPNG書き出しに失敗しました。\n\nもう一度お試しください。");
+        }
+      }
+
+      function downloadDisplaySectionAsPrintPNG() {
+        var data = loadCurrentProfile();
+        if (!data || (!data.lastName && !data.firstName && !data.email && !data.org)) {
+          alert("名刺情報がありません。先に編集画面で名前などを入力して保存してください。");
+          return;
+        }
+        ensureQRReady();
+        var canvas = document.createElement("canvas");
+        canvas.width = CARD_OUTPUT_WIDTH;
+        canvas.height = CARD_OUTPUT_HEIGHT;
+        var cardData = buildBusinessCardDataFromProfile(data);
+        cardData.qrCode = getQRCodeDataURL();
+        renderCurrentTemplate(canvas, cardData, isPremiumUser(), function () {
+          canvas.toBlob(
+            function (blob) {
+              if (!blob) {
+                alert("印刷用PNGの生成に失敗しました。もう一度お試しください。");
+                return;
+              }
+              try {
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement("a");
+                a.href = url;
+                a.download = buildBusinessCardFilename("png").replace(".png", "_print.png");
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast("印刷用PNGをダウンロードしました（91×55mm・300dpi）");
+              } catch (err) {
+                console.error("MeQR: print PNG download failed", err);
+                alert("ダウンロードの開始に失敗しました。");
+              }
+            },
+            "image/png",
+            1.0
+          );
+        });
+      }
+
+      function openExportModal() {
+        const overlay = document.getElementById("exportModalOverlay");
+        if (!overlay) return;
+
+        var radios = overlay.querySelectorAll('input[name="export-format"]');
+        radios.forEach(function (r) { r.checked = r.value === "pdf"; });
+
+        var opts = overlay.querySelectorAll(".export-usage-option");
+        opts.forEach(function (o) {
+          o.classList.remove("selected");
+          if (o.getAttribute("data-usage") === "printshop") o.classList.add("selected");
+        });
+
+        overlay.classList.add("active");
+        overlay.setAttribute("aria-hidden", "false");
+
+        var previewCanvas = document.getElementById("exportPreviewCanvas");
+        if (previewCanvas && "requestAnimationFrame" in window) {
+          ensureQRReady();
+          requestAnimationFrame(function () {
+            var data = loadCurrentProfile() || {};
+            var cardData = buildBusinessCardDataFromProfile(data);
+            cardData.qrCode = getQRCodeDataURL();
+            var ctx = previewCanvas.getContext("2d");
+            if (ctx) {
+              var size = getBusinessCardPixelSize(150);
+              previewCanvas.width = size.width;
+              previewCanvas.height = size.height;
+            }
+            renderCurrentTemplate(previewCanvas, cardData, isPremiumUser());
+          });
+        }
+      }
+
+      function closeExportModal() {
+        const overlay = document.getElementById("exportModalOverlay");
+        if (!overlay) return;
+        overlay.classList.remove("active");
+        overlay.setAttribute("aria-hidden", "true");
+      }
+
+      async function handleExportDownload() {
+        const overlay = document.getElementById("exportModalOverlay");
+        if (!overlay) return;
+        const radios = overlay.querySelectorAll('input[name="export-format"]');
+        let format = "pdf";
+        radios.forEach(r => {
+          if (r.checked) format = r.value;
+        });
+
+        if (format === "png") {
+          await exportBusinessCardAsPNG();
+        } else {
+          await exportBusinessCardAsPDF();
+        }
+
+        closeExportModal();
+        showToast("名刺のダウンロードを開始しました。");
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        const text = document.getElementById("toastText");
+        if (!toast || !text) return;
+        text.textContent = message;
+        toast.classList.add("active");
+        setTimeout(() => {
+          toast.classList.remove("active");
+        }, 2500);
       }
 
       // === Profile Management Functions ===
@@ -1506,7 +3334,11 @@
           localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
         } catch (e) {
           console.error("Failed to save profiles", e);
-          alert("プロファイルの保存に失敗しました。");
+          if (e && e.name === "QuotaExceededError") {
+            alert("保存容量が不足しています。\n\n不要な名刺を削除するか、ブラウザの保存データを整理してから再度お試しください。");
+          } else {
+            alert("プロファイルの保存に失敗しました。しばらくしてから再度お試しください。");
+          }
         }
       }
 
@@ -1534,14 +3366,12 @@
             org: "",
             title: "",
             url: "",
+            address: "",
             photo: "",
-            linkedin: "",
+            furigana: "",
             twitter: "",
             instagram: "",
-            facebook: "",
-            github: "",
-            youtube: "",
-            customUrl: ""
+            line: ""
           },
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
@@ -1601,7 +3431,30 @@
         fillDisplay(profile.data);
         fillForm(profile.data);
         regenerateQR(profile.data);
+        schedulePreviewDraw();
         updateProfileSelector();
+      }
+
+      function loadDemoDataForScreenshots() {
+        var profiles = getAllProfiles();
+        var profileId = getCurrentProfileId();
+        var profile = profiles.find(function (p) { return p.id === profileId; });
+        if (!profile) {
+          profile = profiles[0];
+          if (!profile) return;
+        }
+        profile.data = Object.assign({}, profile.data || {}, DEMO_PROFILE_DATA);
+        profile.updatedAt = new Date().toISOString();
+        saveAllProfiles(profiles);
+        fillDisplay(profile.data);
+        fillForm(profile.data);
+        ensureQRReady();
+        regenerateQR(profile.data);
+        schedulePreviewDraw();
+        updateProfileSelector();
+        closeMenu();
+        switchMode("view");
+        if (typeof showToast === "function") showToast("スクリーンショット用のデモデータを読み込みました。");
       }
 
       function deleteProfile(profileId) {
@@ -1657,6 +3510,69 @@
           localStorage.removeItem(OLD_KEY);
         } catch (e) {
           console.error("Migration failed", e);
+        }
+      }
+
+      function cleanupLocalStorage() {
+        try {
+          var obsolete = ["meqr_contact_v2", "meqr_contact_v1"];
+          obsolete.forEach(function (key) {
+            try { localStorage.removeItem(key); } catch (e) {}
+          });
+        } catch (e) {}
+      }
+
+      function renderTemplateSelector() {
+        const container = document.getElementById("templateSelector");
+        if (!container) return;
+        container.innerHTML = "";
+        const currentId = getCurrentTemplateId();
+        TEMPLATES.forEach(function(template) {
+          const chip = document.createElement("div");
+          chip.className = "template-chip" + (template.id === currentId ? " selected" : "");
+          chip.setAttribute("role", "radio");
+          chip.setAttribute("aria-checked", template.id === currentId ? "true" : "false");
+          chip.setAttribute("aria-label", template.label + (template.premium ? "（Premium）" : ""));
+          chip.setAttribute("tabindex", "0");
+          chip.dataset.templateId = template.id;
+          chip.innerHTML =
+            "<span class=\"template-chip-icon\">" + template.icon + "</span>" +
+            "<span class=\"template-chip-label\">" + template.label + "</span>" +
+            "<span class=\"template-chip-desc\">" + template.desc + "</span>" +
+            (template.premium ? "<span class=\"template-chip-lock\">PRO</span>" : "");
+          chip.addEventListener("click", function() { onTemplateSelect(template.id); });
+          chip.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onTemplateSelect(template.id); }
+          });
+          container.appendChild(chip);
+        });
+        var titleEl = document.querySelector(".bc-preview-title");
+        if (titleEl) {
+          var tpl = getCurrentTemplate();
+          titleEl.textContent = "名刺デザインプレビュー（" + tpl.label + "）";
+        }
+      }
+
+      function onTemplateSelect(templateId) {
+        var template = TEMPLATES.find(function(t) { return t.id === templateId; });
+        if (!template) return;
+        if (template.premium && !isPremiumUser()) {
+          var ok = confirm(
+            "「" + template.label + "」はPremiumテンプレートです。\n\n" +
+            "Premiumにアップグレードすると、ウォーターマークなしで全テンプレートが使えます。\n\n" +
+            "（現在のところ無料でプレビューのみ可能）"
+          );
+          if (!ok) return;
+        }
+        setCurrentTemplateId(templateId);
+        renderTemplateSelector();
+        var canvas = document.getElementById("businessCardCanvas");
+        if (canvas) {
+          ensureQRReady();
+          var data = loadCurrentProfile() || {};
+          var cardData = buildBusinessCardDataFromProfile(data);
+          cardData.qrCode = getQRCodeDataURL();
+          renderCurrentTemplate(canvas, cardData, isPremiumUser());
         }
       }
 
@@ -1724,57 +3640,151 @@
       function fillForm(data) {
         document.getElementById("lastName").value = data.lastName || "";
         document.getElementById("firstName").value = data.firstName || "";
+        var furiganaEl = document.getElementById("furigana");
+        if (furiganaEl) furiganaEl.value = data.furigana || "";
         document.getElementById("phone").value = data.phone || "";
         document.getElementById("email").value = data.email || "";
         document.getElementById("org").value = data.org || "";
         document.getElementById("title").value = data.title || "";
         document.getElementById("url").value = data.url || "";
+        var addressEl = document.getElementById("address");
+        if (addressEl) addressEl.value = data.address || "";
         
         // SNS fields (if they exist in DOM)
-        const linkedinInput = document.getElementById("linkedin");
         const twitterInput = document.getElementById("twitter");
         const instagramInput = document.getElementById("instagram");
-        const facebookInput = document.getElementById("facebook");
-        const githubInput = document.getElementById("github");
-        const youtubeInput = document.getElementById("youtube");
-        const customUrlInput = document.getElementById("customUrl");
-        
-        if (linkedinInput) linkedinInput.value = data.linkedin || "";
+        const lineInput = document.getElementById("line");
         if (twitterInput) twitterInput.value = data.twitter || "";
         if (instagramInput) instagramInput.value = data.instagram || "";
-        if (facebookInput) facebookInput.value = data.facebook || "";
-        if (githubInput) githubInput.value = data.github || "";
-        if (youtubeInput) youtubeInput.value = data.youtube || "";
-        if (customUrlInput) customUrlInput.value = data.customUrl || "";
+        if (lineInput) lineInput.value = data.line || "";
+      }
+
+      // === バリデーション・エラー表示 ===
+      const LIMIT = { name: 50, orgTitle: 100, address: 200, url: 100 };
+      const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const PHONE_REGEX = /^[0-9\-+\s()]*$/;
+      const URL_PREFIX = /^https?:\/\//i;
+
+      function validateEmail(v) {
+        if (!v) return { valid: true };
+        if (!EMAIL_REGEX.test(v)) return { valid: false, message: "メールアドレスの形式が正しくありません。" };
+        return { valid: true };
+      }
+
+      function validatePhone(v) {
+        if (!v) return { valid: true };
+        if (!PHONE_REGEX.test(v)) return { valid: false, message: "電話番号は数字とハイフンのみ入力できます。" };
+        return { valid: true };
+      }
+
+      function validateUrl(v, fieldLabel) {
+        if (!v) return { valid: true };
+        if (!URL_PREFIX.test(v)) return { valid: false, message: "URLは http:// または https:// で始めてください。" };
+        if (v.length > LIMIT.url) return { valid: false, message: "URLは" + LIMIT.url + "文字以内で入力してください。" };
+        return { valid: true };
+      }
+
+      function validateForm(data) {
+        const errors = [];
+        const lastName = (data.lastName || "").trim();
+        const firstName = (data.firstName || "").trim();
+        const fullNameLen = (lastName + " " + firstName).trim().length;
+
+        if (!lastName && !firstName) {
+          errors.push({ field: "name", message: "名前を入力してください。（姓または名のどちらか必須）" });
+        } else if (fullNameLen > LIMIT.name) {
+          errors.push({ field: "name", message: "名前は合計" + LIMIT.name + "文字以内で入力してください。" });
+        }
+
+        const phone = (data.phone || "").trim();
+        const email = (data.email || "").trim();
+        if (!phone && !email) {
+          var contactMsg = "メールアドレスまたは電話番号の少なくとも1つを入力してください。";
+          errors.push({ field: "phone", message: contactMsg });
+          errors.push({ field: "email", message: contactMsg });
+        } else {
+          var r = validatePhone(phone);
+          if (!r.valid) errors.push({ field: "phone", message: r.message });
+          r = validateEmail(email);
+          if (!r.valid) errors.push({ field: "email", message: r.message });
+        }
+
+        var r = validateUrl(data.url || "", "URL");
+        if (!r.valid) errors.push({ field: "url", message: r.message });
+
+        const org = (data.org || "").trim();
+        if (org.length > LIMIT.orgTitle) errors.push({ field: "org", message: "会社名は" + LIMIT.orgTitle + "文字以内で入力してください。" });
+        const title = (data.title || "").trim();
+        if (title.length > LIMIT.orgTitle) errors.push({ field: "title", message: "役職は" + LIMIT.orgTitle + "文字以内で入力してください。" });
+
+        var addressStr = (data.address || "").trim();
+        if (addressStr.length > LIMIT.address) errors.push({ field: "address", message: "住所は" + LIMIT.address + "文字以内で入力してください。" });
+
+        ["twitter", "instagram", "line"].forEach(function (key) {
+          var res = validateUrl(data[key] || "", key);
+          if (!res.valid) errors.push({ field: key, message: res.message });
+        });
+
+        return { valid: errors.length === 0, errors: errors };
+      }
+
+      function showFieldError(fieldId, message) {
+        var el = document.getElementById("error-" + fieldId);
+        var shell = document.getElementById("input-shell-" + fieldId);
+        if (el) el.textContent = message || "";
+        if (shell) shell.classList.toggle("has-error", !!message);
+        if (fieldId === "name") {
+          var shellL = document.getElementById("input-shell-lastName");
+          var shellF = document.getElementById("input-shell-firstName");
+          if (shellL) shellL.classList.toggle("has-error", !!message);
+          if (shellF) shellF.classList.toggle("has-error", !!message);
+        }
+      }
+
+      function clearAllErrors() {
+        var ids = ["name", "phone", "email", "org", "title", "url", "furigana", "address", "twitter", "instagram", "line"];
+        ids.forEach(function (id) {
+          showFieldError(id, "");
+        });
+      }
+
+      function runRealtimeValidation() {
+        var data = readForm();
+        var result = validateForm(data);
+        result.errors.forEach(function (e) {
+          if (e.message) showFieldError(e.field, e.message);
+        });
+        var shown = {};
+        result.errors.forEach(function (e) {
+          if (e.message && !shown[e.field]) { shown[e.field] = true; }
+        });
+        ["name", "phone", "email", "org", "title", "url", "furigana", "address", "twitter", "instagram", "line"].forEach(function (id) {
+          if (!shown[id]) showFieldError(id, "");
+        });
       }
 
       function readForm() {
         const currentData = loadCurrentProfile() || {};
         
-        const linkedinInput = document.getElementById("linkedin");
         const twitterInput = document.getElementById("twitter");
         const instagramInput = document.getElementById("instagram");
-        const facebookInput = document.getElementById("facebook");
-        const githubInput = document.getElementById("github");
-        const youtubeInput = document.getElementById("youtube");
-        const customUrlInput = document.getElementById("customUrl");
-        
+        const lineInput = document.getElementById("line");
+        var furiganaEl = document.getElementById("furigana");
+        var addressEl = document.getElementById("address");
         return {
           lastName: document.getElementById("lastName").value.trim(),
           firstName: document.getElementById("firstName").value.trim(),
+          furigana: furiganaEl ? furiganaEl.value.trim() : "",
           phone: document.getElementById("phone").value.trim(),
           email: document.getElementById("email").value.trim(),
           org: document.getElementById("org").value.trim(),
           title: document.getElementById("title").value.trim(),
           url: document.getElementById("url").value.trim(),
+          address: addressEl ? addressEl.value.trim() : "",
           photo: currentData.photo || "",
-          linkedin: linkedinInput ? linkedinInput.value.trim() : "",
           twitter: twitterInput ? twitterInput.value.trim() : "",
           instagram: instagramInput ? instagramInput.value.trim() : "",
-          facebook: facebookInput ? facebookInput.value.trim() : "",
-          github: githubInput ? githubInput.value.trim() : "",
-          youtube: youtubeInput ? youtubeInput.value.trim() : "",
-          customUrl: customUrlInput ? customUrlInput.value.trim() : ""
+          line: lineInput ? lineInput.value.trim() : ""
         };
       }
 
@@ -1815,25 +3825,60 @@
         return "MECARD:" + parts.join(";") + ";;";
       }
 
-      function switchMode(mode) {
-        const isView = mode === "view";
+      function updateStepIndicator(mode) {
+        var s1 = document.getElementById("step-1");
+        var s2 = document.getElementById("step-2");
+        var s3 = document.getElementById("step-3");
+        if (!s1 || !s2 || !s3) return;
+        [s1, s2, s3].forEach(function (el) {
+          el.classList.remove("active", "completed");
+          el.querySelector(".step-num").textContent = el.getAttribute("data-step");
+        });
+        s1.classList.add("completed");
+        s1.querySelector(".step-num").textContent = "✓";
+        if (mode === "edit") {
+          s2.classList.add("active");
+        } else {
+          s3.classList.add("active");
+        }
+      }
+
+      function switchView(viewName) {
+        const isDisplay = viewName === "display";
+        const displaySection = document.getElementById("meqr-display-section");
+        const formSection = document.getElementById("meqr-form-section");
         const viewBtn = document.getElementById("btn-view-mode");
         const editBtn = document.getElementById("btn-edit-mode");
-        const formSection = document.getElementById("editFormSection");
+        const bottomDisplay = document.getElementById("btn-bottom-display");
+        const bottomEdit = document.getElementById("btn-bottom-edit");
 
-        if (isView) {
-          viewBtn.classList.add("active");
-          viewBtn.setAttribute("aria-selected", "true");
-          editBtn.classList.remove("active");
-          editBtn.setAttribute("aria-selected", "false");
-          formSection.classList.remove("active");
-        } else {
-          viewBtn.classList.remove("active");
-          viewBtn.setAttribute("aria-selected", "false");
-          editBtn.classList.add("active");
-          editBtn.setAttribute("aria-selected", "true");
-          formSection.classList.add("active");
+        if (displaySection) displaySection.classList.toggle("active", isDisplay);
+        if (formSection) formSection.classList.toggle("active", !isDisplay);
+
+        function setActive(btn, active) {
+          if (!btn) return;
+          btn.classList.toggle("active", active);
+          btn.setAttribute("aria-selected", active ? "true" : "false");
         }
+        setActive(viewBtn, isDisplay);
+        setActive(editBtn, !isDisplay);
+        setActive(bottomDisplay, isDisplay);
+        setActive(bottomEdit, !isDisplay);
+
+        if (isDisplay) {
+          ensureQRReady();
+          schedulePreviewDraw();
+          var banner = document.getElementById("freemiumBanner");
+          if (banner) banner.style.display = "none";
+        } else {
+          var banner = document.getElementById("freemiumBanner");
+          if (banner) banner.style.display = isPremiumUser() ? "none" : "flex";
+        }
+        updateStepIndicator(isDisplay ? "view" : "edit");
+      }
+
+      function switchMode(mode) {
+        switchView(mode === "view" ? "display" : "form");
       }
 
       function setupOfflineBadge() {
@@ -2011,15 +4056,41 @@
         img.src = url;
       }
 
-      function downloadQRCode(data) {
-        // Show format selection
-        const format = confirm('QRコードを保存します。\n\nOK = PNG形式（印刷用・高解像度）\nキャンセル = SVG形式（編集可能・軽量）');
-        
-        if (format) {
-          downloadQRCodeAsPNG(data);
-        } else {
+      // QRダウンロードモーダルを開く
+      function openQRDownloadModal() {
+        const overlay = document.getElementById("qrDownloadModalOverlay");
+        if (!overlay) return;
+        overlay.classList.add("active");
+        overlay.setAttribute("aria-hidden", "false");
+      }
+
+      // QRダウンロードモーダルを閉じる
+      window.closeQRDownloadModal = function() {
+        const overlay = document.getElementById("qrDownloadModalOverlay");
+        if (!overlay) return;
+        overlay.classList.remove("active");
+        overlay.setAttribute("aria-hidden", "true");
+      };
+
+      // QRダウンロード実行
+      window.handleQRDownload = function() {
+        const overlay = document.getElementById("qrDownloadModalOverlay");
+        if (!overlay) return;
+        const selected = overlay.querySelector('input[name="qr-format"]:checked');
+        const format = selected ? selected.value : "png";
+        const data = loadCurrentProfile();
+        if (!data) return;
+        if (format === "svg") {
           downloadQRCodeAsSVG(data);
+        } else {
+          downloadQRCodeAsPNG(data);
         }
+        closeQRDownloadModal();
+        showToast("QRコードを保存しました。");
+      };
+
+      function downloadQRCode(data) {
+        openQRDownloadModal();
       }
 
       function initTheme() {
@@ -2153,19 +4224,84 @@
 
       // === Onboarding Functions ===
 
+      let onboardingCurrentPage = 0;
+      const ONBOARDING_PAGE_COUNT = 3;
+
+      function updateOnboardingSlide(page) {
+        page = Math.max(0, Math.min(page, ONBOARDING_PAGE_COUNT - 1));
+        onboardingCurrentPage = page;
+        const slidesEl = document.getElementById("onboarding-slides");
+        if (slidesEl) {
+          const pct = (page / ONBOARDING_PAGE_COUNT) * 100;
+          slidesEl.style.transform = "translateX(-" + pct + "%)";
+        }
+        const dots = document.querySelectorAll("#onboarding-indicators .onboarding-dot");
+        dots.forEach(function (dot, i) {
+          const isActive = i === page;
+          dot.classList.toggle("active", isActive);
+          dot.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
+      }
+
+      function setupOnboardingSwipe() {
+        const wrap = document.getElementById("onboarding-slides-wrap");
+        if (!wrap) return;
+        let startX = 0;
+        let currentX = 0;
+        function onStart(e) {
+          startX = ("touches" in e ? e.touches[0] : e).clientX;
+          currentX = startX;
+        }
+        function onMove(e) {
+          currentX = ("touches" in e ? e.touches[0] : e).clientX;
+        }
+        function onEnd() {
+          const delta = startX - currentX;
+          if (Math.abs(delta) > 50) {
+            if (delta > 0) {
+              updateOnboardingSlide(onboardingCurrentPage + 1);
+            } else {
+              updateOnboardingSlide(onboardingCurrentPage - 1);
+            }
+          }
+        }
+        wrap.addEventListener("touchstart", onStart, { passive: true });
+        wrap.addEventListener("touchmove", onMove, { passive: true });
+        wrap.addEventListener("touchend", onEnd);
+        wrap.addEventListener("mousedown", function (e) {
+          if (e.button !== 0) return;
+          onStart(e);
+          const up = function (e2) {
+            onEnd();
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", up);
+          };
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", up);
+        });
+        document.querySelectorAll("#onboarding-indicators .onboarding-dot").forEach(function (dot) {
+          dot.addEventListener("click", function () {
+            const i = parseInt(dot.getAttribute("data-index"), 10);
+            if (!isNaN(i)) updateOnboardingSlide(i);
+          });
+        });
+      }
+
       function showOnboarding() {
         const overlay = document.getElementById("onboarding-overlay");
         if (overlay) {
-          overlay.classList.add('active');
+          onboardingCurrentPage = 0;
+          updateOnboardingSlide(0);
+          overlay.classList.add("active");
         }
       }
 
       function hideOnboarding() {
         const overlay = document.getElementById("onboarding-overlay");
         if (overlay) {
-          overlay.classList.remove('active');
+          overlay.classList.remove("active");
         }
-        localStorage.setItem(ONBOARDING_KEY, 'true');
+        localStorage.setItem(ONBOARDING_KEY, "true");
       }
 
       function shouldShowOnboarding() {
@@ -2255,9 +4391,9 @@
             closeMenu();
             switchMode("edit");
             setTimeout(() => {
-              const linkedinInput = document.getElementById("linkedin");
-              if (linkedinInput) {
-                linkedinInput.scrollIntoView({ behavior: "smooth", block: "center" });
+              const lineInput = document.getElementById("line");
+              if (lineInput) {
+                lineInput.scrollIntoView({ behavior: "smooth", block: "center" });
               }
             }, 100);
           },
@@ -2338,27 +4474,45 @@
       }
 
       function showSettingsSubmenu() {
-        let html = '<div class="menu-header"><div class="menu-title">設定</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
-        
+        checkAndApplyPremiumExpiry();
+        const premium = isPremiumUser();
+        const planLabel = premium ? '<span class="badge-premium">★ Premium</span>' : '<span style="font-size:13px; color: var(--text-muted);">無料版</span>';
+        let html = '<div class="menu-header"><div class="menu-title" data-i18n="menu.settingsTitle">設定</div><button class="menu-close-btn" onclick="showMainMenu()">←</button></div><div class="menu-content">';
+        html += '<div class="menu-section-title">現在のプラン</div>';
+        html += '<div class="menu-item" style="padding-top:8px; padding-bottom:8px;">' + planLabel + '</div>';
+        if (!premium) {
+          html += '<div class="menu-item" onclick="startPremiumPurchase()" style="cursor:pointer;"><span class="menu-item-icon">👑</span><span class="menu-item-text" style="font-size:13px;">Premiumにアップグレード（ウォーターマークなし・全テンプレート）</span></div>';
+          html += '<div class="menu-item" onclick="restorePurchases()" style="cursor:pointer;"><span class="menu-item-icon">🔄</span><span class="menu-item-text" style="font-size:13px;">購入を復元</span></div>';
+        }
+        if (DEV_SHOW_PREMIUM_TOGGLE) {
+          html += '<div class="menu-item" onclick="togglePremiumForDev()" style="cursor:pointer;"><span class="menu-item-icon">🔄</span><span class="menu-item-text" style="font-size:12px; color: var(--text-muted);">Premium状態を切り替え（開発用）</span></div>';
+        }
+        html += '<div class="menu-divider"></div>';
         html += `
-          <div class="menu-section-title">QRコードサイズ</div>
+          <div class="menu-section-title" data-i18n="menu.settingsQrSizeSection">QRコードサイズ</div>
           <div class="menu-item" onclick="setQRSize('large')">
             <span class="menu-item-icon">📐</span>
-            <span class="menu-item-text">大（読み取りやすい）</span>
+            <span class="menu-item-text" data-i18n="menu.settingsQrSizeLarge">大（読み取りやすい）</span>
           </div>
           <div class="menu-item" onclick="setQRSize('medium')">
             <span class="menu-item-icon">📐</span>
-            <span class="menu-item-text">中（標準・推奨）</span>
+            <span class="menu-item-text" data-i18n="menu.settingsQrSizeMedium">中（標準・推奨）</span>
           </div>
           <div class="menu-item" onclick="setQRSize('small')">
             <span class="menu-item-icon">📐</span>
-            <span class="menu-item-text">小（コンパクト）</span>
+            <span class="menu-item-text" data-i18n="menu.settingsQrSizeSmall">小（コンパクト）</span>
           </div>
           <div class="menu-divider"></div>
-          <div class="menu-section-title">プライバシー</div>
+          <div class="menu-section-title" data-i18n="menu.settingsPrivacySection">プライバシー</div>
           <div class="menu-item">
             <span class="menu-item-icon">🔐</span>
-            <span class="menu-item-text">パスワード保護（準備中）</span>
+            <span class="menu-item-text" data-i18n="menu.settingsPasswordComingSoon">パスワード保護（準備中）</span>
+          </div>
+          <div class="menu-divider"></div>
+          <div class="menu-section-title">ストア公開用</div>
+          <div class="menu-item" onclick="loadDemoDataForScreenshots()" style="cursor:pointer;">
+            <span class="menu-item-icon">📸</span>
+            <span class="menu-item-text" style="font-size:13px;">スクリーンショット用デモを読み込む</span>
           </div>
         `;
         
@@ -2366,6 +4520,11 @@
         
         const drawer = document.getElementById("menu-drawer");
         drawer.innerHTML = html;
+
+        if (window.MeQRI18n && typeof window.MeQRI18n.attachLanguageControlHandlers === "function") {
+          window.MeQRI18n.attachLanguageControlHandlers();
+          window.MeQRI18n.applyTranslations();
+        }
       }
 
       function showDataSubmenu() {
@@ -2416,8 +4575,15 @@
               ✅ オープンソース
             </div>
           </div>
+          <div style="margin-top: 20px;">
+            <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">名刺作成コンセプト（統合ドキュメント）</div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <a href="docs/specification.html" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none; font-size: 13px;">📋 仕様書（確定仕様書）</a>
+              <a href="docs/wireframe-v2.html" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none; font-size: 13px;">🎨 ワイヤーフレーム v2</a>
+            </div>
+          </div>
           <div style="margin-top: 20px; text-align: center;">
-            <a href="https://github.com/YumaKakuya/meqr" target="_blank" style="color: var(--accent); text-decoration: none; font-size: 13px;">
+            <a href="https://github.com/YumaKakuya/meqr" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none; font-size: 13px;">
               📂 GitHubリポジトリ
             </a>
           </div>
@@ -2432,6 +4598,15 @@
       // Menu helper functions (called from onclick)
       // Menu helper functions (called from onclick in dynamic HTML)
       window.showMainMenu = showMainMenu;
+      window.togglePremiumForDev = togglePremiumForDev;
+      window.exportBusinessCardAsPDF = exportBusinessCardAsPDF;
+      window.exportBusinessCardAsPNG = exportBusinessCardAsPNG;
+      window.openExportModal = openExportModal;
+      window.closeExportModal = closeExportModal;
+      window.handleExportDownload = handleExportDownload;
+      window.startPremiumPurchase = startPremiumPurchase;
+      window.restorePurchases = restorePurchases;
+      window.loadDemoDataForScreenshots = loadDemoDataForScreenshots;
 
       window.switchProfileAndClose = function(profileId) {
         switchProfile(profileId);
@@ -2521,19 +4696,17 @@
             data: {
               lastName: "山田",
               firstName: "太郎",
+              furigana: "ヤマダ タロウ",
               phone: "090-1234-5678",
               email: "yamada.taro@example.co.jp",
               org: "株式会社サンプル",
               title: "営業部長",
               url: "https://example.co.jp",
+              address: "〒100-0001 東京都千代田区千代田1-1",
               photo: "",
-              linkedin: "https://linkedin.com/in/yamada-taro",
               twitter: "https://x.com/yamada_taro",
               instagram: "https://instagram.com/yamada.taro",
-              facebook: "https://facebook.com/yamada.taro",
-              github: "https://github.com/yamada-taro",
-              youtube: "https://youtube.com/@yamadataro",
-              customUrl: "https://portfolio.example.com"
+              line: ""
             },
             createdAt: now,
             updatedAt: now
@@ -2544,19 +4717,17 @@
             data: {
               lastName: "山田",
               firstName: "太郎",
+              furigana: "",
               phone: "080-9876-5432",
               email: "taro.yamada@gmail.com",
               org: "",
               title: "",
               url: "https://taro-yamada.blog",
+              address: "",
               photo: "",
-              linkedin: "",
               twitter: "https://x.com/taro_private",
               instagram: "https://instagram.com/taro_private",
-              facebook: "",
-              github: "https://github.com/taro-yamada",
-              youtube: "",
-              customUrl: ""
+              line: ""
             },
             createdAt: now,
             updatedAt: now
@@ -2597,27 +4768,36 @@
         location.reload();
       };
 
-      function onDOMContentLoaded() {
-        console.log("MeQR: DOM loaded, initializing...");
-        
+      async function onDOMContentLoaded() {
         try {
+          // Initialize language first
+          if (window.MeQRI18n && typeof window.MeQRI18n.initI18n === "function") {
+            await window.MeQRI18n.initI18n();
+          }
+
           // Initialize theme first
           initTheme();
+
+          // Check Premium expiry and downgrade if needed
+          checkAndApplyPremiumExpiry();
+          // Initialize billing (if running under Cordova/Android)
+          initBilling();
           
           // Migrate old data if exists
           migrateOldData();
-          
-          qrInstance = createQRCodeInstance();
+          cleanupLocalStorage();
 
-          // Load current profile
+          // Load current profile (QR and canvas are deferred via Intersection Observer)
           const initialData = loadCurrentProfile();
-          console.log("MeQR: Initial data loaded", initialData);
 
         fillDisplay(initialData);
         fillForm(initialData);
-        regenerateQR(initialData);
         updateProfileSelector();
         applyQRSize();
+        setupLazyObservers();
+        renderTemplateSelector();
+        var hasData = initialData && (initialData.lastName || initialData.firstName || initialData.email || initialData.phone || initialData.org);
+        switchView(hasData ? "display" : "form");
         } catch (err) {
           console.error("MeQR: Initialization error", err);
           alert("初期化エラーが発生しました: " + err.message);
@@ -2645,6 +4825,8 @@
           });
         }
 
+        setupOnboardingSwipe();
+
         // Hamburger menu
         document.getElementById("btn-hamburger").addEventListener("click", () => {
           openMenu();
@@ -2655,50 +4837,79 @@
         });
 
         document.getElementById("btn-view-mode").addEventListener("click", () => {
-          switchMode("view");
+          switchView("display");
         });
         document.getElementById("btn-edit-mode").addEventListener("click", () => {
-          switchMode("edit");
+          switchView("form");
         });
+        var btnBottomDisplay = document.getElementById("btn-bottom-display");
+        var btnBottomEdit = document.getElementById("btn-bottom-edit");
+        if (btnBottomDisplay) btnBottomDisplay.addEventListener("click", function() { switchView("display"); });
+        if (btnBottomEdit) btnBottomEdit.addEventListener("click", function() { switchView("form"); });
 
         (function attachSaveHandler(){
           const btnSave = document.getElementById("btn-save");
-          if (!btnSave) {
-            console.error("btn-save element not found. Save handler not attached.");
-            return;
-          }
-          console.log("btn-save found, attaching click handler.");
+          if (!btnSave) return;
           btnSave.addEventListener("click", () => {
-            console.log("btn-save clicked");
             const data = readForm();
-            console.log("form data:", data);
-            if (!data.lastName && !data.firstName) {
-              if (!confirm("姓・名が未入力です。このまま QR を更新しますか？")) {
-                return;
+            clearAllErrors();
+            const result = validateForm(data);
+            if (!result.valid) {
+              result.errors.forEach(function (e) {
+                if (e.message) showFieldError(e.field, e.message);
+              });
+              var first = result.errors[0];
+              if (first && first.field === "name") {
+                var el = document.getElementById("lastName");
+                if (el) el.focus();
+              } else if (first) {
+                var input = document.getElementById(first.field);
+                if (input) input.focus();
               }
+              return;
             }
             saveCurrentProfile(data);
             fillDisplay(data);
             regenerateQR(data);
+            schedulePreviewDraw();
             switchMode("view");
+          });
+        })();
+
+        (function setupValidationListeners() {
+          var fields = ["lastName", "firstName", "furigana", "phone", "email", "org", "title", "url", "address", "twitter", "instagram", "line"];
+          var timer = null;
+          function runSoon() {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(runRealtimeValidation, 300);
+          }
+          fields.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener("input", runSoon);
+            el.addEventListener("blur", runRealtimeValidation);
           });
         })();
 
         document.getElementById("btn-clear").addEventListener("click", () => {
           const ok = confirm("現在の名刺の情報をクリアします。よろしいですか？");
           if (!ok) return;
-          
+          clearAllErrors();
           const emptyData = {
             lastName: "",
             firstName: "",
+            furigana: "",
             phone: "",
             email: "",
             org: "",
             title: "",
             url: "",
-            photo: ""
+            address: "",
+            photo: "",
+            twitter: "",
+            instagram: "",
+            line: ""
           };
-          
           saveCurrentProfile(emptyData);
           fillDisplay(emptyData);
           fillForm(emptyData);
@@ -2719,6 +4930,48 @@
           }
           exportVCard(data);
         });
+
+        document.getElementById("btn-export-card").addEventListener("click", () => {
+          const data = loadCurrentProfile();
+          if (!data || (!data.lastName && !data.firstName)) {
+            alert("ダウンロードする名刺情報がありません。先に名前を入力して保存してください。");
+            return;
+          }
+          openExportModal();
+        });
+
+        document.getElementById("btn-print-png").addEventListener("click", () => {
+          downloadDisplaySectionAsPrintPNG();
+        });
+
+        (function setupExportUsageOptions() {
+          var overlay = document.getElementById("exportModalOverlay");
+          if (!overlay) return;
+          overlay.querySelectorAll(".export-usage-option").forEach(function (el) {
+            el.addEventListener("click", function () {
+              overlay.querySelectorAll(".export-usage-option").forEach(function (o) { o.classList.remove("selected"); });
+              el.classList.add("selected");
+              var usage = el.getAttribute("data-usage");
+              var pdfRadio = overlay.querySelector('input[name="export-format"][value="pdf"]');
+              var pngRadio = overlay.querySelector('input[name="export-format"][value="png"]');
+              if (usage === "sns" && pngRadio) pngRadio.checked = true;
+              else if (pdfRadio) pdfRadio.checked = true;
+            });
+            el.addEventListener("keydown", function (e) {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                el.click();
+              }
+            });
+          });
+        })();
+
+        const qrModalOverlay = document.getElementById("qrDownloadModalOverlay");
+        if (qrModalOverlay) {
+          qrModalOverlay.addEventListener("click", function(e) {
+            if (e.target === qrModalOverlay) closeQRDownloadModal();
+          });
+        }
 
         document.getElementById("btn-share-vcard").addEventListener("click", async () => {
           const data = loadCurrentProfile();

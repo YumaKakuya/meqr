@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "language": "ja",
+    "languageName": "日本語",
+    "appName": "MeQR",
+    "appFullName": "MeQR - デジタル名刺"
+  },
+  "language": {
+    "label": "言語 / Language",
+    "auto": "自動（ブラウザ設定）",
+    "ja": "日本語",
+    "en": "English"
+  }
+}

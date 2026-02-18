@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeQR 名刺作成コンセプト - 確定仕様書</title>
+  <style>
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a67d8;
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --bg-section: #334155;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #475569;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
+      border-radius: 16px;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    .header .subtitle {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .header .version {
+      margin-top: 16px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .header .integrated {
+      margin-top: 8px;
+      font-size: 12px;
+      opacity: 0.85;
+    }
+
+    .section {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title .icon {
+      font-size: 24px;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 20px 0 12px;
+      color: var(--primary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--bg-section);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    td {
+      background: var(--bg);
+    }
+
+    tr:hover td {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+    }
+
+    .badge-warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .badge-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .check {
+      color: var(--success);
+    }
+
+    .cross {
+      color: var(--danger);
+    }
+
+    .code-block {
+      background: #0d1117;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      border: 1px solid var(--border);
+      margin: 12px 0;
+    }
+
+    .code-block .comment {
+      color: #6a737d;
+    }
+
+    .code-block .keyword {
+      color: #ff7b72;
+    }
+
+    .code-block .string {
+      color: #a5d6ff;
+    }
+
+    .code-block .property {
+      color: #7ee787;
+    }
+
+    .flow-diagram {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      padding: 20px;
+      background: var(--bg);
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .flow-step {
+      background: var(--bg-section);
+      padding: 16px 20px;
+      border-radius: 8px;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .flow-step .number {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .flow-step .label {
+      font-size: 12px;
+    }
+
+    .flow-step.premium {
+      background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+    }
+
+    .flow-arrow {
+      font-size: 20px;
+      color: var(--primary);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .info-card {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .info-card h4 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+
+    .info-card ul {
+      list-style: none;
+      font-size: 13px;
+    }
+
+    .info-card li {
+      padding: 4px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .info-card li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+    }
+
+    .file-tree {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      background: #0d1117;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .file-tree .folder {
+      color: var(--primary);
+    }
+
+    .file-tree .file {
+      color: var(--text);
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .timeline-phase {
+      background: var(--primary);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      height: fit-content;
+    }
+
+    .timeline-content {
+      flex: 1;
+    }
+
+    .timeline-content h4 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .timeline-content p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .timeline-hours {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--warning);
+      white-space: nowrap;
+    }
+
+    .toc {
+      background: var(--bg-section);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .toc h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .toc ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+    }
+
+    .toc a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: var(--primary);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 28px;
+      }
+      
+      table {
+        font-size: 12px;
+      }
+      
+      th, td {
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../index.html" class="back-link">← MeQR に戻る</a>
+
+    <div class="header">
+      <h1>名刺作成コンセプト</h1>
+      <div class="subtitle">誰でも簡単に名刺が作成できる！</div>
+      <div class="integrated">（MeQR に統合された仕様・メイシットコンセプト）</div>
+      <div class="version">確定仕様書 v1.0 | 最終更新: 2026年2月6日</div>
+    </div>
+
+    <div class="toc">
+      <h3>📋 目次</h3>
+      <ul>
+        <li><a href="#basic">1. 基本情報</a></li>
+        <li><a href="#features">2. 機能要件</a></li>
+        <li><a href="#templates">3. テンプレート</a></li>
+        <li><a href="#qr">4. QRコード</a></li>
+        <li><a href="#output">5. 出力仕様</a></li>
+        <li><a href="#billing">6. 課金モデル</a></li>
+        <li><a href="#tech">7. 技術要件</a></li>
+        <li><a href="#data">8. データ構造</a></li>
+        <li><a href="#flow">9. ユーザーフロー</a></li>
+        <li><a href="#schedule">10. 開発スケジュール</a></li>
+        <li><a href="#v2">11. v2予定機能</a></li>
+      </ul>
+    </div>
+
+    <!-- 1. 基本情報 -->
+    <div class="section" id="basic">
+      <h2 class="section-title"><span class="icon">📱</span> 1. 基本情報</h2>
+      <table>
+        <tr>
+          <th>コンセプト名</th>
+          <td><strong>メイシット</strong>（MeQR 名刺作成コンセプト）</td>
+        </tr>
+        <tr>
+          <th>コンセプト</th>
+          <td>誰でも簡単に名刺が作成できる！</td>
+        </tr>
+        <tr>
+          <th>価格</th>
+          <td><strong>¥780</strong>（買い切り）</td>
+        </tr>
+        <tr>
+          <th>プラットフォーム</th>
+          <td>Google Play (Android)</td>
+        </tr>
+        <tr>
+          <th>リリース目標</th>
+          <td>2026年6-7月（MeQRリリース後）</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 2. 機能要件 -->
+    <div class="section" id="features">
+      <h2 class="section-title"><span class="icon">⚙️</span> 2. 機能要件</h2>
+      
+      <h3>名刺フォーマット</h3>
+      <table>
+        <tr>
+          <th>項目</th>
+          <th>v1</th>
+          <th>v2</th>
+        </tr>
+        <tr>
+          <td>サイズ</td>
+          <td>91mm × 55mm（日本標準）</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>横型</td>
+          <td><span class="check">✅ 対応</span></td>
+          <td><span class="check">✅</span></td>
+        </tr>
+        <tr>
+          <td>縦型</td>
+          <td><span class="check">✅ 対応</span></td>
+          <td><span class="check">✅</span></td>
+        </tr>
+        <tr>
+          <td>両面</td>
+          <td><span class="cross">❌ 非対応</span></td>
+          <td><span class="check">✅ 対応</span></td>
+        </tr>
+      </table>
+
+      <h3>入力項目</h3>
+      <div class="grid-2">
+        <div class="info-card">
+          <h4>基本情報</h4>
+          <ul>
+            <li>姓・名</li>
+            <li>フリガナ</li>
+            <li>会社名・屋号</li>
+            <li>役職・肩書き</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>連絡先</h4>
+          <ul>
+            <li>電話番号</li>
+            <li>メールアドレス</li>
+            <li>住所（任意）</li>
+            <li>WebサイトURL（任意）</li>
+            <li>SNSリンク（QR用）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. テンプレート -->
+    <div class="section" id="templates">
+      <h2 class="section-title"><span class="icon">🎨</span> 3. テンプレート</h2>
+      
+      <table>
+        <tr>
+          <th>項目</th>
+          <th>仕様</th>
+        </tr>
+        <tr>
+          <td>初期数</td>
+          <td><strong>10種類</strong></td>
+        </tr>
+        <tr>
+          <td>方式</td>
+          <td>テンプレート置き換え方式</td>
+        </tr>
+        <tr>
+          <td>ロゴ挿入</td>
+          <td><span class="cross">❌ 非対応</span>（著作権・解像度問題のため）</td>
+        </tr>
+        <tr>
+          <td>カラー</td>
+          <td>テンプレートごとに選択可能</td>
+        </tr>
+        <tr>
+          <td>フォント</td>
+          <td>日本語5種 + 英語5種 = 計10種</td>
+        </tr>
+      </table>
+
+      <h3>カテゴリ別テンプレート</h3>
+      <table>
+        <tr>
+          <th>カテゴリ</th>
+          <th>数</th>
+          <th>テンプレート名</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">シンプル</span></td>
+          <td>3種</td>
+          <td>ベーシック / ミニマルライン / モノトーン</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">ビジネス</span></td>
+          <td>3種</td>
+          <td>コーポレート / プロフェッショナル / モダンビジネス</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">北欧風</span></td>
+          <td>2種</td>
+          <td>ノルディック / ボタニカル</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">クリエイティブ</span></td>
+          <td>1種</td>
+          <td>アーティスト</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">和モダン</span></td>
+          <td>1種</td>
+          <td>和紙風</td>
+        </tr>
+      </table>
+
+      <h3>日本語フォント（OFLライセンス）</h3>
+      <table>
+        <tr>
+          <th>フォント名</th>
+          <th>種類</th>
+        </tr>
+        <tr><td>Noto Sans JP</td><td>ゴシック</td></tr>
+        <tr><td>Noto Serif JP</td><td>明朝</td></tr>
+        <tr><td>M PLUS 1p</td><td>ゴシック</td></tr>
+        <tr><td>Zen Kaku Gothic</td><td>ゴシック</td></tr>
+        <tr><td>Shippori Mincho</td><td>明朝</td></tr>
+      </table>
+    </div>
+
+    <!-- 4. QRコード -->
+    <div class="section" id="qr">
+      <h2 class="section-title"><span class="icon">📱</span> 4. QRコード</h2>
+      <table>
+        <tr>
+          <th>項目</th>
+          <th>仕様</th>
+        </tr>
+        <tr>
+          <td>最大数</td>
+          <td><strong>2つ</strong></td>
+        </tr>
+        <tr>
+          <td>配置</td>
+          <td>選択可能（右下 / 左下 / 裏面 等）</td>
+        </tr>
+      </table>
+
+      <h3>対応リンク種類</h3>
+      <div class="grid-2">
+        <div class="info-card">
+          <h4>主要リンク</h4>
+          <ul>
+            <li>連絡先（vCard）</li>
+            <li>WebサイトURL</li>
+            <li>SNSリンク</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>ビジネス向け</h4>
+          <ul>
+            <li>Googleマップ</li>
+            <li>Googleレビューページ</li>
+            <li>カスタムURL</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 出力仕様 -->
+    <div class="section" id="output">
+      <h2 class="section-title"><span class="icon">📤</span> 5. 出力仕様</h2>
+      <table>
+        <tr>
+          <th>項目</th>
+          <th>仕様</th>
+        </tr>
+        <tr>
+          <td>形式</td>
+          <td><strong>PDF / PNG</strong></td>
+        </tr>
+        <tr>
+          <td>サイズ</td>
+          <td>97mm × 61mm（塗り足し3mm込み）</td>
+        </tr>
+        <tr>
+          <td>解像度</td>
+          <td>350dpi</td>
+        </tr>
+        <tr>
+          <td>トンボ</td>
+          <td>あり/なし選択可能</td>
+        </tr>
+        <tr>
+          <td>カラーモード</td>
+          <td>RGB</td>
+        </tr>
+        <tr>
+          <td>想定発注先</td>
+          <td>ラクスル / プリントパック</td>
+        </tr>
+        <tr>
+          <td>入稿ガイド</td>
+          <td>アプリ内に搭載</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 6. 課金モデル -->
+    <div class="section" id="billing">
+      <h2 class="section-title"><span class="icon">💰</span> 6. 課金モデル（フリーミアム）</h2>
+      <table>
+        <tr>
+          <th>機能</th>
+          <th>無料</th>
+          <th>有料（¥780）</th>
+        </tr>
+        <tr>
+          <td>テンプレート選択</td>
+          <td><span class="check">✅</span></td>
+          <td><span class="check">✅</span></td>
+        </tr>
+        <tr>
+          <td>情報入力</td>
+          <td><span class="check">✅</span></td>
+          <td><span class="check">✅</span></td>
+        </tr>
+        <tr>
+          <td>QRコード設定</td>
+          <td><span class="check">✅</span></td>
+          <td><span class="check">✅</span></td>
+        </tr>
+        <tr>
+          <td>プレビュー</td>
+          <td><span class="check">✅</span> ウォーターマーク付き</td>
+          <td><span class="check">✅</span> クリア</td>
+        </tr>
+        <tr>
+          <td>ダウンロード</td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="check">✅</span></td>
+        </tr>
+        <tr>
+          <td>名刺保存数</td>
+          <td>1枚</td>
+          <td>無制限</td>
+        </tr>
+      </table>
+
+      <h3>課金実装</h3>
+      <table>
+        <tr>
+          <th>項目</th>
+          <th>仕様</th>
+        </tr>
+        <tr>
+          <td>商品タイプ</td>
+          <td>非消費型（買い切り）</td>
+        </tr>
+        <tr>
+          <td>商品ID</td>
+          <td><code>meishit_premium_unlock</code></td>
+        </tr>
+        <tr>
+          <td>価格</td>
+          <td>¥780</td>
+        </tr>
+        <tr>
+          <td>復元機能</td>
+          <td>あり（再インストール対応）</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 7. 技術要件 -->
+    <div class="section" id="tech">
+      <h2 class="section-title"><span class="icon">🔧</span> 7. 技術要件</h2>
+      
+      <h3>技術スタック</h3>
+      <table>
+        <tr>
+          <th>レイヤー</th>
+          <th>技術</th>
+        </tr>
+        <tr>
+          <td>フレームワーク</td>
+          <td><strong>Vue.js (Vue 3 + Vite)</strong></td>
+        </tr>
+        <tr>
+          <td>名刺レンダリング</td>
+          <td><strong>SVGベース</strong></td>
+        </tr>
+        <tr>
+          <td>PDF生成</td>
+          <td><strong>pdf-lib + SVG→PNG変換</strong></td>
+        </tr>
+        <tr>
+          <td>QRコード</td>
+          <td>qrcode.js</td>
+        </tr>
+        <tr>
+          <td>ネイティブ化</td>
+          <td>Capacitor</td>
+        </tr>
+        <tr>
+          <td>課金</td>
+          <td>Google Play Billing（Capacitor Plugin）</td>
+        </tr>
+        <tr>
+          <td>データ保存</td>
+          <td>LocalStorage / IndexedDB</td>
+        </tr>
+      </table>
+
+      <h3>テンプレート管理</h3>
+      <p>JSON定義 + SVGファイル方式</p>
+      <div class="file-tree">
+        <span class="folder">templates/</span><br>
+        ├── index.json<br>
+        ├── <span class="folder">simple-basic/</span><br>
+        │   ├── meta.json<br>
+        │   ├── front.svg<br>
+        │   └── thumbnail.png<br>
+        ├── <span class="folder">business-corporate/</span><br>
+        │   └── ...<br>
+        └── ...
+      </div>
+
+      <h3>ファイル構成</h3>
+      <div class="file-tree">
+        <span class="folder">meishit/</span><br>
+        ├── <span class="folder">src/</span><br>
+        │   ├── main.js<br>
+        │   ├── App.vue<br>
+        │   ├── <span class="folder">components/</span><br>
+        │   │   ├── TemplateSelector.vue<br>
+        │   │   ├── CardEditor.vue<br>
+        │   │   ├── QRSettings.vue<br>
+        │   │   ├── CardPreview.vue<br>
+        │   │   └── PremiumModal.vue<br>
+        │   ├── <span class="folder">composables/</span><br>
+        │   │   ├── useCardData.js<br>
+        │   │   └── useBilling.js<br>
+        │   └── <span class="folder">utils/</span><br>
+        │       ├── pdfGenerator.js<br>
+        │       └── qrGenerator.js<br>
+        ├── <span class="folder">public/</span><br>
+        │   ├── <span class="folder">fonts/</span><br>
+        │   └── <span class="folder">templates/</span><br>
+        ├── index.html<br>
+        └── vite.config.js
+      </div>
+    </div>
+
+    <!-- 8. データ構造 -->
+    <div class="section" id="data">
+      <h2 class="section-title"><span class="icon">💾</span> 8. データ構造</h2>
+      
+      <h3>名刺データ</h3>
+      <div class="code-block">
+<span class="keyword">const</span> cardData = {<br>
+&nbsp;&nbsp;<span class="property">id</span>: <span class="string">"card-001"</span>,<br>
+&nbsp;&nbsp;<span class="property">templateId</span>: <span class="string">"simple-basic"</span>,<br>
+&nbsp;&nbsp;<span class="property">orientation</span>: <span class="string">"horizontal"</span>, <span class="comment">// "horizontal" | "vertical"</span><br>
+&nbsp;&nbsp;<span class="property">colorScheme</span>: <span class="string">"blue"</span>,<br>
+&nbsp;&nbsp;<span class="property">fontFamily</span>: <span class="string">"noto-sans-jp"</span>,<br>
+<br>
+&nbsp;&nbsp;<span class="property">content</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">lastName</span>: <span class="string">""</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">firstName</span>: <span class="string">""</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">furigana</span>: <span class="string">""</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">company</span>: <span class="string">""</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">title</span>: <span class="string">""</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">phone</span>: <span class="string">""</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">email</span>: <span class="string">""</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">address</span>: <span class="string">""</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">website</span>: <span class="string">""</span><br>
+&nbsp;&nbsp;},<br>
+<br>
+&nbsp;&nbsp;<span class="property">qrCodes</span>: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">type</span>: <span class="string">"vcard"</span>, <span class="comment">// "vcard" | "url" | "sns" | "map" | "review" | "custom"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">position</span>: <span class="string">"bottom-right"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="property">data</span>: {}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;],<br>
+<br>
+&nbsp;&nbsp;<span class="property">createdAt</span>: <span class="string">""</span>,<br>
+&nbsp;&nbsp;<span class="property">updatedAt</span>: <span class="string">""</span><br>
+};
+      </div>
+
+      <h3>ユーザー設定</h3>
+      <div class="code-block">
+<span class="keyword">const</span> userSettings = {<br>
+&nbsp;&nbsp;<span class="property">isPremium</span>: <span class="keyword">false</span>,<br>
+&nbsp;&nbsp;<span class="property">purchasedAt</span>: <span class="keyword">null</span>,<br>
+&nbsp;&nbsp;<span class="property">savedCards</span>: []<br>
+};
+      </div>
+    </div>
+
+    <!-- 9. ユーザーフロー -->
+    <div class="section" id="flow">
+      <h2 class="section-title"><span class="icon">🔄</span> 9. ユーザーフロー</h2>
+      <div class="flow-diagram">
+        <div class="flow-step">
+          <div class="number">1️⃣</div>
+          <div class="label">テンプレート選択</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="number">2️⃣</div>
+          <div class="label">情報入力</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="number">3️⃣</div>
+          <div class="label">QR設定</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="number">4️⃣</div>
+          <div class="label">プレビュー</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step premium">
+          <div class="number">5️⃣</div>
+          <div class="label">課金 ¥780</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="number">6️⃣</div>
+          <div class="label">ダウンロード</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. 開発スケジュール -->
+    <div class="section" id="schedule">
+      <h2 class="section-title"><span class="icon">📅</span> 10. 開発スケジュール</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 1</div>
+          <div class="timeline-content">
+            <h4>基本UI・テンプレート選択画面</h4>
+            <p>Vue.jsセットアップ、テンプレート選択UI、向き選択</p>
+          </div>
+          <div class="timeline-hours">4-6時間</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 2</div>
+          <div class="timeline-content">
+            <h4>入力フォーム・データ管理</h4>
+            <p>名刺情報入力フォーム、LocalStorage保存</p>
+          </div>
+          <div class="timeline-hours">4-6時間</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 3</div>
+          <div class="timeline-content">
+            <h4>名刺レンダリング（SVG）</h4>
+            <p>SVGテンプレート実装、プレースホルダー置換、リアルタイムプレビュー</p>
+          </div>
+          <div class="timeline-hours">8-12時間</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 4</div>
+          <div class="timeline-content">
+            <h4>PDF/PNG出力</h4>
+            <p>pdf-lib実装、高解像度変換、トンボ対応</p>
+          </div>
+          <div class="timeline-hours">6-8時間</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 5</div>
+          <div class="timeline-content">
+            <h4>QRコード統合</h4>
+            <p>qrcode.js統合、配置設定、複数QR対応</p>
+          </div>
+          <div class="timeline-hours">2-4時間</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 6</div>
+          <div class="timeline-content">
+            <h4>フリーミアム制限・ウォーターマーク</h4>
+            <p>無料版制限、ウォーターマーク追加、課金誘導UI</p>
+          </div>
+          <div class="timeline-hours">2-3時間</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 7</div>
+          <div class="timeline-content">
+            <h4>Capacitor化・課金実装</h4>
+            <p>Capacitorセットアップ、Google Play Billing連携、購入復元</p>
+          </div>
+          <div class="timeline-hours">6-10時間</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 8</div>
+          <div class="timeline-content">
+            <h4>テスト・バグ修正</h4>
+            <p>実機テスト、バグ修正、ストア申請準備</p>
+          </div>
+          <div class="timeline-hours">4-6時間</div>
+        </div>
+      </div>
+      <table style="margin-top: 20px;">
+        <tr>
+          <th>合計工数</th>
+          <td><strong>35-55時間</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 11. v2予定機能 -->
+    <div class="section" id="v2">
+      <h2 class="section-title"><span class="icon">🚀</span> 11. v2 予定機能</h2>
+      <table>
+        <tr>
+          <th>機能</th>
+          <th>説明</th>
+        </tr>
+        <tr>
+          <td>両面対応</td>
+          <td>表面・裏面のデザイン編集</td>
+        </tr>
+        <tr>
+          <td>テンプレート追加</td>
+          <td>ユーザーフィードバックに基づく新デザイン</td>
+        </tr>
+        <tr>
+          <td>iOS対応</td>
+          <td>App Storeへの展開</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="footer">
+      <p>MeQR 名刺作成コンセプト 確定仕様書 v1.0</p>
+      <p>作成日: 2026年2月6日</p>
+      <p><a href="wireframe-v2.html" style="color: var(--primary);">ワイヤーフレーム v2 を見る</a></p>
+    </div>
+
+  </div>
+</body>
+</html>

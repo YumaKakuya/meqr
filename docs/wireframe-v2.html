@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeQR 名刺作成コンセプト - ワイヤーフレーム v2</title>
+  <style>
+    :root { --bg: #1a1a2e; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Noto Sans JP", sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .wireframe-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .wireframe-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+    }
+
+    .wireframe-header h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .wireframe-header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    .wireframe-header .integrated {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 6px;
+    }
+
+    .version-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-top: 12px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #667eea;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .changelog {
+      background: #16213e;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 32px;
+      border: 1px solid #334155;
+    }
+
+    .changelog h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: #22c55e;
+    }
+
+    .changelog-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .changelog-item .tag {
+      background: #22c55e;
+      color: #0f172a;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .changelog-item .tag.improved {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+    }
+
+    .screen {
+      background: #16213e;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #334155;
+    }
+
+    .screen.new {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+    }
+
+    .screen.improved {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .screen-title {
+      background: #0f3460;
+      padding: 16px 20px;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .screen-title .badge {
+      background: #667eea;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .screen-title .new-badge {
+      background: #22c55e;
+      color: #0f172a;
+    }
+
+    .screen-title .improved-badge {
+      background: #3b82f6;
+    }
+
+    .screen-content {
+      padding: 20px;
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .wf-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #0f3460;
+      border-radius: 8px;
+    }
+
+    .wf-logo {
+      font-weight: 700;
+      font-size: 18px;
+      color: #667eea;
+    }
+
+    .wf-menu-btn {
+      width: 32px;
+      height: 32px;
+      background: #334155;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wf-section {
+      background: #0f3460;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .wf-section-title {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .wf-hero {
+      text-align: center;
+      padding: 24px 16px;
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f3460 100%);
+      border-radius: 12px;
+    }
+
+    .wf-hero h2 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .wf-hero p {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .wf-job-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .wf-job-card {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .wf-job-card:hover {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .wf-job-card.selected {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.15);
+    }
+
+    .wf-job-card .icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .wf-job-card .label {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .wf-recommend-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .wf-recommend-card {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .wf-recommend-card:hover {
+      border-color: #667eea;
+    }
+
+    .wf-recommend-card.recommended {
+      border-color: #22c55e;
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .wf-recommend-card .preview {
+      width: 80px;
+      height: 48px;
+      background: linear-gradient(135deg, #475569 0%, #334155 100%);
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .wf-recommend-card .info {
+      flex: 1;
+    }
+
+    .wf-recommend-card .name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .wf-recommend-card .desc {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .wf-recommend-card .tag-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .wf-recommend-card .tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      background: #334155;
+      border-radius: 4px;
+      color: #94a3b8;
+    }
+
+    .wf-recommend-card .tag.best {
+      background: #22c55e;
+      color: #0f172a;
+    }
+
+    .wf-template-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .wf-template-item {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .wf-template-item .thumb {
+      width: 60px;
+      height: 36px;
+      background: #475569;
+      border-radius: 4px;
+    }
+
+    .wf-template-item .content {
+      flex: 1;
+    }
+
+    .wf-template-item .title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .wf-template-item .subtitle {
+      font-size: 11px;
+      color: #667eea;
+    }
+
+    .wf-template-item .target {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .wf-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .wf-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .wf-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .wf-input-row .wf-input {
+      flex: 1;
+    }
+
+    .wf-btn {
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .wf-btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .wf-btn-secondary {
+      background: #334155;
+      color: #e0e0e0;
+    }
+
+    .wf-btn-premium {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+    }
+
+    .wf-btn-full {
+      width: 100%;
+    }
+
+    .wf-tabs {
+      display: flex;
+      gap: 4px;
+      background: #0f3460;
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .wf-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .wf-tab.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .wf-card-preview {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 20px;
+      color: #1f2937;
+      aspect-ratio: 91/55;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .wf-card-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .wf-card-title {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .wf-card-info {
+      font-size: 10px;
+      color: #374151;
+      line-height: 1.6;
+    }
+
+    .wf-qr-placeholder {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      width: 40px;
+      height: 40px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: #9ca3af;
+    }
+
+    .wf-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+      font-size: 24px;
+      font-weight: 700;
+      color: rgba(102, 126, 234, 0.2);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .wf-print-option {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+
+    .wf-print-option:hover {
+      border-color: #667eea;
+    }
+
+    .wf-print-option.selected {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .wf-print-option .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .wf-print-option .radio {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #475569;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wf-print-option.selected .radio {
+      border-color: #667eea;
+    }
+
+    .wf-print-option.selected .radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: #667eea;
+      border-radius: 50%;
+    }
+
+    .wf-print-option .title {
+      font-size: 14px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .wf-print-option .badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      background: #22c55e;
+      color: #0f172a;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .wf-print-option .desc {
+      font-size: 12px;
+      color: #94a3b8;
+      padding-left: 28px;
+    }
+
+    .wf-freemium-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%);
+      border: 1px solid #f59e0b;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wf-freemium-banner .icon {
+      font-size: 24px;
+    }
+
+    .wf-freemium-banner .text {
+      flex: 1;
+    }
+
+    .wf-freemium-banner .title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f59e0b;
+    }
+
+    .wf-freemium-banner .desc {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .wf-step-flow {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      background: #0f3460;
+      border-radius: 10px;
+    }
+
+    .wf-step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .wf-step-item .number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .wf-step-item.active .number {
+      background: #667eea;
+    }
+
+    .wf-step-item.completed .number {
+      background: #22c55e;
+    }
+
+    .wf-step-item .label {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    .wf-step-item.active .label {
+      color: #667eea;
+    }
+
+    .wf-step-arrow {
+      color: #475569;
+      font-size: 12px;
+    }
+
+    .wf-premium-modal {
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+      border: 1px solid #334155;
+    }
+
+    .wf-premium-modal h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .wf-premium-modal .subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    .wf-premium-price {
+      font-size: 40px;
+      font-weight: 700;
+      color: #f59e0b;
+      margin-bottom: 8px;
+    }
+
+    .wf-premium-price span {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    .wf-premium-note {
+      font-size: 12px;
+      color: #22c55e;
+      margin-bottom: 20px;
+    }
+
+    .wf-feature-list {
+      text-align: left;
+      margin-bottom: 24px;
+    }
+
+    .wf-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      background: rgba(34, 197, 94, 0.1);
+      border-radius: 8px;
+    }
+
+    .wf-feature-item .check {
+      color: #22c55e;
+      font-weight: 700;
+    }
+
+    .annotation {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-top: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .annotation.new {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .annotation .icon {
+      font-size: 14px;
+    }
+
+    .flow-diagram {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      padding: 24px;
+      background: var(--bg);
+      border-radius: 12px;
+      margin: 24px 0;
+    }
+
+    .flow-step {
+      background: #0f3460;
+      padding: 16px 20px;
+      border-radius: 10px;
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .flow-step .number {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .flow-step .label {
+      font-size: 11px;
+    }
+
+    .flow-step.new {
+      border: 2px solid #22c55e;
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .flow-step.premium {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .flow-arrow {
+      font-size: 20px;
+      color: #667eea;
+    }
+
+    .comparison-section {
+      margin-top: 48px;
+      padding: 24px;
+      background: #16213e;
+      border-radius: 16px;
+    }
+
+    .comparison-section h2 {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .comparison-table {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .comparison-col {
+      background: #0f3460;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .comparison-col h3 {
+      font-size: 14px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .comparison-col.old h3 {
+      color: #94a3b8;
+    }
+
+    .comparison-col.new h3 {
+      color: #22c55e;
+    }
+
+    .comparison-item {
+      font-size: 13px;
+      padding: 8px 0;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .comparison-item .icon {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wireframe-container">
+    <a href="../index.html" class="back-link">← MeQR に戻る</a>
+    <div class="wireframe-header">
+      <h1>名刺作成コンセプト</h1>
+      <p>誰でも簡単に名刺が作成できる！ - ワイヤーフレーム</p>
+      <div class="integrated">（MeQR に統合されたメイシットワイヤーフレーム）</div>
+      <div class="version-badge">v2.0 - フィードバック反映版</div>
+    </div>
+
+    <div class="changelog">
+      <h3>🔄 v1.0 → v2.0 変更点</h3>
+      <div class="changelog-item">
+        <span class="tag">NEW</span>
+        <span>初回導線の一本化：「職業選択 → おすすめ3つ」フロー追加</span>
+      </div>
+      <div class="changelog-item">
+        <span class="tag">NEW</span>
+        <span>テンプレートにラベル追加：「誰向け」「どんな印象」を明示</span>
+      </div>
+      <div class="changelog-item">
+        <span class="tag improved">IMPROVED</span>
+        <span>印刷設定の言い換え：「トンボ」→「どこで印刷しますか？」</span>
+      </div>
+      <div class="changelog-item">
+        <span class="tag improved">IMPROVED</span>
+        <span>フリーミアム境界の明示：編集中から課金要素を可視化</span>
+      </div>
+      <div class="changelog-item">
+        <span class="tag improved">IMPROVED</span>
+        <span>ステップフローの可視化：「選ぶ→編集→印刷」を常に表示</span>
+      </div>
+    </div>
+
+    <div class="screen-grid">
+
+      <div class="screen new">
+        <div class="screen-title">
+          <span class="badge new-badge">NEW</span>
+          <span class="badge">1</span>
+          初回：職業を選ぶ
+        </div>
+        <div class="screen-content">
+          <div class="wf-header">
+            <div class="wf-logo">メイシット</div>
+            <div class="wf-menu-btn">☰</div>
+          </div>
+          <div class="wf-hero">
+            <h2>👋 はじめまして！</h2>
+            <p>あなたのお仕事は？</p>
+          </div>
+          <div class="wf-job-grid">
+            <div class="wf-job-card selected">
+              <div class="icon">💼</div>
+              <div class="label">会社員・営業</div>
+            </div>
+            <div class="wf-job-card">
+              <div class="icon">🎨</div>
+              <div class="label">クリエイター</div>
+            </div>
+            <div class="wf-job-card">
+              <div class="icon">💻</div>
+              <div class="label">フリーランス</div>
+            </div>
+            <div class="wf-job-card">
+              <div class="icon">🏪</div>
+              <div class="label">店舗・サロン</div>
+            </div>
+            <div class="wf-job-card">
+              <div class="icon">📚</div>
+              <div class="label">士業・専門職</div>
+            </div>
+            <div class="wf-job-card">
+              <div class="icon">✨</div>
+              <div class="label">その他</div>
+            </div>
+          </div>
+          <div style="flex: 1;"></div>
+          <div class="annotation new">
+            <span class="icon">💡</span>
+            <span>1問だけ。選ぶとおすすめテンプレートが3つ表示される</span>
+          </div>
+          <button class="wf-btn wf-btn-primary wf-btn-full">おすすめを見る →</button>
+        </div>
+      </div>
+
+      <div class="screen new">
+        <div class="screen-title">
+          <span class="badge new-badge">NEW</span>
+          <span class="badge">2</span>
+          おすすめテンプレート
+        </div>
+        <div class="screen-content">
+          <div class="wf-header">
+            <div style="font-size: 14px;">← 戻る</div>
+            <div style="font-size: 12px; color: #94a3b8;">すべて見る</div>
+          </div>
+          <div class="wf-step-flow">
+            <div class="wf-step-item active"><div class="number">1</div><div class="label">選ぶ</div></div>
+            <div class="wf-step-arrow">→</div>
+            <div class="wf-step-item"><div class="number">2</div><div class="label">編集</div></div>
+            <div class="wf-step-arrow">→</div>
+            <div class="wf-step-item"><div class="number">3</div><div class="label">印刷</div></div>
+          </div>
+          <div class="wf-section">
+            <div class="wf-section-title">💼 会社員・営業 におすすめ</div>
+            <div class="wf-recommend-list">
+              <div class="wf-recommend-card recommended">
+                <div class="preview"></div>
+                <div class="info">
+                  <div class="name">コーポレート</div>
+                  <div class="desc">信頼感を重視したビジネス向けデザイン</div>
+                  <div class="tag-row"><span class="tag best">おすすめ</span><span class="tag">営業向け</span><span class="tag">信頼感</span></div>
+                </div>
+              </div>
+              <div class="wf-recommend-card">
+                <div class="preview"></div>
+                <div class="info">
+                  <div class="name">ベーシック</div>
+                  <div class="desc">迷ったらこれ。万人向けのシンプルデザイン</div>
+                  <div class="tag-row"><span class="tag">定番</span><span class="tag">万人向け</span></div>
+                </div>
+              </div>
+              <div class="wf-recommend-card">
+                <div class="preview"></div>
+                <div class="info">
+                  <div class="name">モダンビジネス</div>
+                  <div class="desc">現代的でスタイリッシュな印象に</div>
+                  <div class="tag-row"><span class="tag">IT系</span><span class="tag">スタートアップ</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="annotation new">
+            <span class="icon">✨</span>
+            <span>職業に合わせて自動でおすすめ。タップで即編集開始</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen improved">
+        <div class="screen-title">
+          <span class="badge improved-badge">IMPROVED</span>
+          <span class="badge">3</span>
+          全テンプレート（ラベル付き）
+        </div>
+        <div class="screen-content">
+          <div class="wf-header"><div style="font-size: 14px;">← 戻る</div><div></div></div>
+          <div class="wf-tabs">
+            <div class="wf-tab active">すべて</div>
+            <div class="wf-tab">シンプル</div>
+            <div class="wf-tab">ビジネス</div>
+            <div class="wf-tab">その他</div>
+          </div>
+          <div class="wf-template-list" style="flex: 1; overflow-y: auto;">
+            <div class="wf-template-item"><div class="thumb"></div><div class="content"><div class="title">ベーシック</div><div class="subtitle">迷ったらこれ・万人向け</div><div class="target">👤 誰にでも / 新入社員～管理職</div></div></div>
+            <div class="wf-template-item"><div class="thumb"></div><div class="content"><div class="title">コーポレート</div><div class="subtitle">営業向け・信頼重視</div><div class="target">👤 営業・管理職 / BtoB</div></div></div>
+            <div class="wf-template-item"><div class="thumb"></div><div class="content"><div class="title">アーティスト</div><div class="subtitle">個性派・クリエイター向け</div><div class="target">👤 デザイナー・アーティスト</div></div></div>
+            <div class="wf-template-item"><div class="thumb"></div><div class="content"><div class="title">ノルディック</div><div class="subtitle">やわらかい・ナチュラル</div><div class="target">👤 サロン・カフェ・女性向け</div></div></div>
+            <div class="wf-template-item"><div class="thumb"></div><div class="content"><div class="title">和紙風</div><div class="subtitle">落ち着き・和の印象</div><div class="target">👤 飲食・伝統工芸・士業</div></div></div>
+          </div>
+          <div class="annotation new"><span class="icon">🏷️</span><span>「誰向け」「どんな印象」を全テンプレートに明示</span></div>
+        </div>
+      </div>
+
+      <div class="screen improved">
+        <div class="screen-title"><span class="badge improved-badge">IMPROVED</span><span class="badge">4</span>編集（課金要素を明示）</div>
+        <div class="screen-content">
+          <div class="wf-header"><div style="font-size: 14px;">← 戻る</div><div style="font-size: 14px; color: #667eea;">プレビュー</div></div>
+          <div class="wf-step-flow">
+            <div class="wf-step-item completed"><div class="number">✓</div><div class="label">選ぶ</div></div>
+            <div class="wf-step-arrow">→</div>
+            <div class="wf-step-item active"><div class="number">2</div><div class="label">編集</div></div>
+            <div class="wf-step-arrow">→</div>
+            <div class="wf-step-item"><div class="number">3</div><div class="label">印刷</div></div>
+          </div>
+          <div class="wf-freemium-banner">
+            <div class="icon">🔓</div>
+            <div class="text">
+              <div class="title">無料でプレビューまで作成できます</div>
+              <div class="desc">ダウンロードは ¥780（買い切り）</div>
+            </div>
+          </div>
+          <div class="wf-section" style="flex: 1; overflow-y: auto;">
+            <div class="wf-section-title">基本情報</div>
+            <div class="wf-input-row">
+              <input type="text" class="wf-input" placeholder="姓">
+              <input type="text" class="wf-input" placeholder="名">
+            </div>
+            <input type="text" class="wf-input" placeholder="会社名・屋号">
+            <input type="text" class="wf-input" placeholder="役職・肩書き">
+            <div class="wf-section-title" style="margin-top: 16px;">連絡先</div>
+            <input type="tel" class="wf-input" placeholder="電話番号">
+            <input type="email" class="wf-input" placeholder="メールアドレス">
+          </div>
+          <div class="annotation new"><span class="icon">💡</span><span>編集開始時点で「無料の範囲」と「有料」を明示</span></div>
+          <button class="wf-btn wf-btn-primary wf-btn-full">プレビューを見る →</button>
+        </div>
+      </div>
+
+      <div class="screen improved">
+        <div class="screen-title"><span class="badge improved-badge">IMPROVED</span><span class="badge">5</span>プレビュー（課金誘導強化）</div>
+        <div class="screen-content">
+          <div class="wf-header"><div style="font-size: 14px;">← 編集に戻る</div><div></div></div>
+          <div class="wf-step-flow">
+            <div class="wf-step-item completed"><div class="number">✓</div><div class="label">選ぶ</div></div>
+            <div class="wf-step-arrow">→</div>
+            <div class="wf-step-item completed"><div class="number">✓</div><div class="label">編集</div></div>
+            <div class="wf-step-arrow">→</div>
+            <div class="wf-step-item active"><div class="number">3</div><div class="label">印刷</div></div>
+          </div>
+          <div class="wf-tabs"><div class="wf-tab active">表面</div><div class="wf-tab">裏面 🔒</div></div>
+          <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px;">
+            <div class="wf-card-preview" style="width: 100%; max-width: 300px; position: relative;">
+              <div class="wf-watermark">PREVIEW</div>
+              <div><div class="wf-card-name">山田 太郎</div><div class="wf-card-title">株式会社サンプル / 代表取締役</div></div>
+              <div class="wf-card-info">〒100-0001 東京都千代田区...<br>TEL: 03-1234-5678<br>Email: yamada@example.com</div>
+              <div class="wf-qr-placeholder">QR</div>
+            </div>
+          </div>
+          <div class="wf-freemium-banner">
+            <div class="icon">👑</div>
+            <div class="text">
+              <div class="title">ウォーターマークを削除してダウンロード</div>
+              <div class="desc">¥780 で全機能が永久に使えます</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="wf-btn wf-btn-secondary" style="flex: 1;">✏️ 編集</button>
+            <button class="wf-btn wf-btn-premium" style="flex: 2;">⬇️ ダウンロード ¥780</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen improved">
+        <div class="screen-title"><span class="badge improved-badge">IMPROVED</span><span class="badge">6</span>印刷設定（言い換え版）</div>
+        <div class="screen-content">
+          <div class="wf-header"><div style="font-size: 14px;">← 戻る</div><div></div></div>
+          <div class="wf-section">
+            <div class="wf-section-title">どこで印刷しますか？</div>
+            <div class="wf-print-option selected">
+              <div class="header"><div class="radio"></div><div class="title">印刷会社に発注する</div><div class="badge">推奨</div></div>
+              <div class="desc">ラクスル・プリントパック等に最適な設定で出力します</div>
+            </div>
+            <div class="wf-print-option">
+              <div class="header"><div class="radio"></div><div class="title">自宅プリンターで印刷</div></div>
+              <div class="desc">A4用紙に4枚配置。切り取り線付き</div>
+            </div>
+            <div class="wf-print-option">
+              <div class="header"><div class="radio"></div><div class="title">こだわり設定（上級者）</div></div>
+              <div class="desc">トンボ・裁ち落とし・解像度を個別に設定</div>
+            </div>
+          </div>
+          <div class="wf-section">
+            <div class="wf-section-title">ファイル形式</div>
+            <div style="display: flex; gap: 8px;">
+              <button class="wf-btn wf-btn-primary" style="flex: 1;">📄 PDF</button>
+              <button class="wf-btn wf-btn-secondary" style="flex: 1;">🖼️ PNG</button>
+            </div>
+          </div>
+          <div class="annotation new"><span class="icon">🎯</span><span>「トンボ」を知らなくても正しく出力できる設計</span></div>
+          <div style="flex: 1;"></div>
+          <button class="wf-btn wf-btn-premium wf-btn-full">ダウンロード（¥780）</button>
+        </div>
+      </div>
+
+      <div class="screen improved">
+        <div class="screen-title"><span class="badge improved-badge">IMPROVED</span><span class="badge">7</span>課金モーダル（明確化）</div>
+        <div class="screen-content" style="justify-content: center;">
+          <div class="wf-premium-modal">
+            <h3>🎉 名刺が完成しました！</h3>
+            <div class="subtitle">ダウンロードしてすぐに印刷できます</div>
+            <div class="wf-premium-price">¥780 <span>（税込）</span></div>
+            <div class="wf-premium-note">✨ 一度購入すれば永久に使えます</div>
+            <div class="wf-feature-list">
+              <div class="wf-feature-item"><span class="check">✓</span><span>ウォーターマークなしで保存</span></div>
+              <div class="wf-feature-item"><span class="check">✓</span><span>高解像度PDF/PNG出力</span></div>
+              <div class="wf-feature-item"><span class="check">✓</span><span>名刺を何枚でも作成・保存</span></div>
+              <div class="wf-feature-item"><span class="check">✓</span><span>全テンプレート利用可能</span></div>
+            </div>
+            <button class="wf-btn wf-btn-premium wf-btn-full">購入してダウンロード</button>
+            <button class="wf-btn wf-btn-secondary wf-btn-full" style="margin-top: 8px;">今はしない</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen">
+        <div class="screen-title"><span class="badge">8</span>ダウンロード完了</div>
+        <div class="screen-content" style="justify-content: center; align-items: center; text-align: center;">
+          <div style="font-size: 64px; margin-bottom: 16px;">✅</div>
+          <h2 style="margin-bottom: 8px;">ダウンロード完了！</h2>
+          <p style="color: #94a3b8; margin-bottom: 24px; font-size: 14px;">名刺データを保存しました</p>
+          <div class="wf-section" style="width: 100%; text-align: left;">
+            <div class="wf-section-title">次のステップ</div>
+            <div class="wf-print-option" style="margin-bottom: 8px;">
+              <div class="header"><div class="title">📱 ラクスルで印刷する</div></div>
+              <div class="desc">アプリを開いて、ダウンロードしたファイルをアップロード</div>
+            </div>
+            <div class="wf-print-option">
+              <div class="header"><div class="title">🖨️ 自宅で印刷する</div></div>
+              <div class="desc">A4用紙に印刷して、切り取り線でカット</div>
+            </div>
+          </div>
+          <div style="flex: 1;"></div>
+          <button class="wf-btn wf-btn-primary wf-btn-full">新しい名刺を作成</button>
+          <button class="wf-btn wf-btn-secondary wf-btn-full" style="margin-top: 8px;">ホームに戻る</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="comparison-section">
+      <h2>🔄 ユーザーフロー（v2）</h2>
+      <div class="flow-diagram">
+        <div class="flow-step new"><div class="number">1️⃣</div><div class="label">職業選択</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step new"><div class="number">2️⃣</div><div class="label">おすすめ3つ</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="number">3️⃣</div><div class="label">編集</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="number">4️⃣</div><div class="label">プレビュー</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step premium"><div class="number">5️⃣</div><div class="label">課金 ¥780</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="number">6️⃣</div><div class="label">ダウンロード</div></div>
+      </div>
+    </div>
+
+    <div class="comparison-section">
+      <h2>📊 v1 vs v2 比較</h2>
+      <div class="comparison-table">
+        <div class="comparison-col old">
+          <h3>❌ v1（Before）</h3>
+          <div class="comparison-item"><span class="icon">📋</span><span>カテゴリ・テンプレ一覧が並列で迷う</span></div>
+          <div class="comparison-item"><span class="icon">🏷️</span><span>テンプレ名だけで違いがわからない</span></div>
+          <div class="comparison-item"><span class="icon">💰</span><span>課金ポイントがダウンロード時まで不明確</span></div>
+          <div class="comparison-item"><span class="icon">🖨️</span><span>「トンボ」等の専門用語をそのまま表示</span></div>
+          <div class="comparison-item"><span class="icon">📍</span><span>現在地（ステップ）がわかりにくい</span></div>
+        </div>
+        <div class="comparison-col new">
+          <h3>✅ v2（After）</h3>
+          <div class="comparison-item"><span class="icon">🎯</span><span>職業選択→おすすめ3つで迷わない</span></div>
+          <div class="comparison-item"><span class="icon">👤</span><span>「誰向け」「どんな印象」をラベル表示</span></div>
+          <div class="comparison-item"><span class="icon">🔓</span><span>編集開始時点で無料/有料を明示</span></div>
+          <div class="comparison-item"><span class="icon">🎯</span><span>「印刷会社に発注」「自宅印刷」で選択</span></div>
+          <div class="comparison-item"><span class="icon">📍</span><span>「選ぶ→編集→印刷」を常に表示</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; padding: 32px; color: #94a3b8; font-size: 13px;">
+      MeQR 名刺作成コンセプト ワイヤーフレーム v2.0 | 最終更新: 2026年2月6日<br>
+      <a href="specification.html" style="color: #667eea;">仕様書を見る</a>
+    </div>
+
+  </div>
+</body>
+</html>
